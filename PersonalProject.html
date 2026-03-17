@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEU Library - Firebase System</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  
+  <style>
+    :root {
+      --neu-green: #006400; /* Dark Green */
+      --neu-gold: #FFD700;  /* Gold */
+      --neu-green-dark: #004d00;
+      --bg: #f0f2f5;
+      --nav-bg: #ffffff;
+      --text: #1a1a1a;
+      --surface: #ffffff;
+      --muted: rgba(0,0,0,0.45);
+    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; color: var(--text); min-height: 100vh; }
+
+    /* Top Navigation with Logo */
+    .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; position: sticky; top: 0; z-index: 50; background: var(--nav-bg); box-shadow: 0 10px 22px rgba(0,0,0,0.12); border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .topnav .logo-area { display: flex; align-items: center; gap: 10px; }
+    
+    /* Ginamit ang filename mo: image_0.png */
+    .topnav .logo-img { height: 50px; width: auto; }
+    .topnav .logo-text { font-weight: 900; font-size: 20px; color: var(--text); letter-spacing: 1px; }
+
+    .nav-links { display: flex; gap: 10px; }
+    .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; transition: 0.3s; font-weight: 600; border: 1px solid transparent; }
+    .nav-links a.active { background: rgba(0,100,0,0.12); color: var(--neu-green-dark); border-color: rgba(0,100,0,0.2); }
+    .nav-links a:hover:not(.active) { background: rgba(0,100,0,0.08); }
+
+    .container { max-width: 900px; margin: 40px auto; background: var(--surface); padding: 30px; border-radius: 18px; box-shadow: 0 16px 35px rgba(0,0,0,0.16); border: 1px solid rgba(0,0,0,0.08); }
+
+    input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.18); background: rgba(255,255,255,0.9); color: var(--text); font-size: 16px; box-sizing: border-box; }
+    input::placeholder { color: rgba(0,0,0,0.45); }
+    select option { background: #fff; color: var(--text); }
+
+    button { background: var(--neu-green); color: white; border: none; padding: 15px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; width: 100%; margin-top: 10px; border-bottom: 3px solid var(--neu-green-dark); font-size: 16px; }
+    button:hover { background: #008000; transform: translateY(-1px); }
+    button:active { border-bottom: 1px solid var(--neu-green-dark); transform: translateY(1px); }
+    
+    /* Profile Card with NEU Colors */
+    #userProfile { display: none; margin-top: 25px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: white; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+    .profile-pic { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid var(--neu-green); margin-bottom: 15px; background: #eee; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; color: white; font-size: 14px; }
+    th, td { border: 1px solid rgba(255,255,255,0.2); padding: 12px; text-align: center; }
+    th { background: var(--neu-green); }
+    
+    /* Admin and History Specific Table Colors */
+    #section-admin table, #userProfile table { color: #333; }
+    #section-admin table { background: white; border-radius: 8px; overflow: hidden; }
+    #section-admin th, #userProfile th { background: #eee; color: #333; }
+    #section-admin td, #userProfile td { border: 1px solid #ddd; background: white; }
+
+    .hidden { display: none; }
+    h2 { color: var(--text); border-bottom: 2px solid var(--neu-gold); padding-bottom: 10px; display: inline-block; }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo-area">
+    <img src="neu.png" alt="NEU Logo" class="logo-img">
+    <div class="logo-text">NEU LIBRARY</div>
+  </div>
+  <div class="nav-links">
+    <a href="#" id="link-timein" class="active" onclick="switchTab('timein')">Dashboard</a>
+    <a href="#" id="link-signup" onclick="switchTab('signup')">Register</a>
+    <a href="#" id="link-admin" onclick="switchTab('admin')">Admin</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div id="section-timein">
+    <h2>Library Attendance Portal</h2>
+    <p style="margin-top: 0; opacity: 0.8">Enter your Student or Faculty ID number to record your attendance.</p>
+    <input type="text" id="idInput" placeholder="Enter ID (e.g., 24-12782-483)" onkeydown="if(event.key==='Enter') handleTimeIn()">
+    <button onclick="handleTimeIn()">SUBMIT TIME LOG →</button>
+
+    <div id="userProfile">
+      <img id="dispPic" src="" class="profile-pic" alt="Profile Picture">
+      <h2 id="dispName" style="margin:0; color: var(--neu-green); border-bottom:none;"></h2>
+      <p id="dispDetails" style="font-style: italic; margin-top: 5px; color: #666"></p>
+      
+      <div style="text-align: left; margin-top: 20px;">
+        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 5px;">Your Recent History:</h3>
+        <table>
+          <thead><tr><th>Date</th><th>Time</th></tr></thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="section-signup" class="hidden">
+    <h2>User Registration</h2>
+    <p style="margin-top: 0; opacity: 0.8">Create a personal account for Student or Faculty members.</p>
+    
+    <label>ID Number (Required)</label>
+    <input type="text" id="regID" placeholder="e.g., 24-XXXXX-XXX">
+    
+    <label>Full Name</label>
+    <input type="text" id="regName" placeholder="Juan Dela Cruz">
+    
+    <label>User Type</label>
+    <select id="regType">
+      <option value="Student">Student</option>
+      <option value="Faculty">Faculty / Staff</option>
+    </select>
+    
+    <label>Course & Year Level (or Department)</label>
+    <input type="text" id="regCourse" placeholder="e.g., BSCS - 3rd Year">
+    
+    <label>Profile Picture URL (Link from social media or SAPE)</label>
+    <input type="text" id="regPhoto" placeholder="https://example.com/your-photo.jpg">
+    
+    <button onclick="handleSignUp()">REGISTER ACCOUNT (SAVE TO FIREBASE) →</button>
+  </div>
+
+  <div id="section-admin" class="hidden">
+    <h2>Live Admin Dashboard (Realtime)</h2>
+    <p style="margin-top: 0; opacity: 0.8">Displays the last 50 attendance logs across all users.</p>
+    <table id="adminTable">
+      <thead><tr><th>Name</th><th>ID</th><th>Type</th><th>Date / Time Logged</th></tr></thead>
+      <tbody id="adminBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // ==========================================
+  // 1. DITO MO I-PASTE ANG IYONG CONFIG GALING FIREBASE
+  // ==========================================
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY_HERE",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  // If the config still contains placeholders (YOUR_), fall back to localStorage.
+  const isFirebaseConfigured = !Object.values(firebaseConfig).some(v => typeof v === 'string' && v.includes('YOUR_'));
+  let db = null;
+  if (isFirebaseConfigured && window.firebase) {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  } else {
+    console.warn("Firebase not configured — using localStorage backend.");
+  }
+
+  // Utility to replace dots in ID for Firebase compatibility (if user adds 24.XXXXX)
+  const safeId = (id) => id.trim().replace(/\./g, '_');
+
+  // LocalStorage helpers (fallback backend)
+  const localStorageKeyUsers = "neu_users";
+  const localStorageKeyLogs = "neu_logs";
+  const getLocalUsers = () => JSON.parse(localStorage.getItem(localStorageKeyUsers) || "{}");
+  const getLocalLogs = () => JSON.parse(localStorage.getItem(localStorageKeyLogs) || "[]");
+  const saveLocalUsers = (users) => localStorage.setItem(localStorageKeyUsers, JSON.stringify(users));
+  const saveLocalLogs = (logs) => localStorage.setItem(localStorageKeyLogs, JSON.stringify(logs));
+
+  function switchTab(tab) {
+    document.getElementById('section-timein').classList.add('hidden');
+    document.getElementById('section-signup').classList.add('hidden');
+    document.getElementById('section-admin').classList.add('hidden');
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    
+    document.getElementById('section-' + tab).classList.remove('hidden');
+    document.getElementById('link-' + tab).classList.add('active');
+    
+    // Clear profile display when switching tabs
+    if(tab !== 'timein') {
+      document.getElementById('userProfile').style.display = 'none';
+      document.getElementById('idInput').value = '';
+    }
+    
+    // Listen for realtime logs when in admin tab
+    if(tab === 'admin') {
+      listenToLogs();
+    } else {
+      // Turn off admin listener when not on the page to save resources
+      if (db) {
+        db.ref('logs').off();
+      }
+    }
+  }
+
+  // Handle Enter Key in input
+  document.getElementById('idInput').focus();
+
+  // ------------------------------------------
+  // FUNCTION: REGISTER / SIGN UP USER
+  // ------------------------------------------
+  function handleSignUp() {
+    const rawId = document.getElementById('regID').value;
+    const sId = safeId(rawId);
+    if(!sId) return alert("Please enter an ID Number.");
+
+    const userData = {
+      name: document.getElementById('regName').value.trim(),
+      type: document.getElementById('regType').value,
+      course: document.getElementById('regCourse').value.trim(),
+      // Ginamit ang filename mo: image_0.png bilang placeholder kung walang URL
+      photo: document.getElementById('regPhoto').value.trim() || "image_0.png"
+    };
+
+    if(!userData.name || !userData.course) return alert("Please fill Name and Course.");
+
+    if (db) {
+      db.ref('users/' + sId).set(userData)
+        .then(() => {
+          alert("Saved Successfully to Firebase! User can now log-in.");
+          switchTab('timein');
+        })
+        .catch((error) => {
+          alert("Firebase Error: " + error.message);
+        });
+    } else {
+      const users = getLocalUsers();
+      users[sId] = userData;
+      saveLocalUsers(users);
+      alert("Saved locally! User can now log-in.");
+      switchTab('timein');
+    }
+  }
+
+  // ------------------------------------------
+  // Utility: Record a time-in entry + update UI
+  // ------------------------------------------
+  function recordTimeIn(user, rawId) {
+    const now = new Date();
+    const datePart = now.toLocaleDateString();
+    const timePart = now.toLocaleTimeString();
+
+    // Save log (Firebase or localStorage)
+    if (db) {
+      const newLogRef = db.ref('logs').push();
+      newLogRef.set({ id: rawId, name: user.name, type: user.type, date: datePart, time: timePart });
+    } else {
+      const logs = getLocalLogs();
+      logs.push({ id: rawId, name: user.name, type: user.type, date: datePart, time: timePart });
+      saveLocalLogs(logs);
+    }
+
+    // Update Profile Card
+    document.getElementById('userProfile').style.display = 'block';
+    document.getElementById('dispPic').src = user.photo;
+    if (user.photo === 'image_0.png') { document.getElementById('dispPic').src = './image_0.png'; }
+    document.getElementById('dispName').innerText = user.name;
+    document.getElementById('dispDetails').innerText = `${user.type} | ${user.course}`;
+
+    // Show last 5 logs
+    const renderLogs = (logs) => {
+      let html = "";
+      logs.slice(-5).reverse().forEach(l => {
+        html += `<tr><td>${l.date || ''}</td><td>${l.time || ''}</td></tr>`;
+      });
+      document.getElementById('logBody').innerHTML = html || "<tr><td colspan='2'>No logs found.</td></tr>";
+    };
+
+    if (db) {
+      db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).once('value', (logSnap) => {
+        const logs = [];
+        logSnap.forEach(child => logs.push(child.val()));
+        renderLogs(logs);
+      });
+    } else {
+      const logs = getLocalLogs().filter(l => l.id === rawId);
+      renderLogs(logs);
+    }
+
+    alert("Log Successful: " + datePart + " " + timePart);
+    document.getElementById('idInput').value = '';
+    document.getElementById('idInput').focus();
+  }
+
+  // ------------------------------------------
+  // FUNCTION: TIME IN / ATTENDANCE SUBMIT
+  // ------------------------------------------
+  function handleTimeIn() {
+    const rawId = document.getElementById('idInput').value;
+    const sId = safeId(rawId);
+
+    if(!sId) return alert("Please enter ID Number.");
+
+    if (db) {
+      db.ref('users/' + sId).once('value', (snapshot) => {
+        if(!snapshot.exists()) {
+          alert("ID not found in database. Please sign up first.");
+          return switchTab('signup');
+        }
+
+        recordTimeIn(snapshot.val(), rawId);
+      });
+    } else {
+      const users = getLocalUsers();
+      const user = users[sId];
+      if (!user) {
+        alert("ID not found. Please sign up first.");
+        return switchTab('signup');
+      }
+      recordTimeIn(user, rawId);
+    }
+  }
+
+  // ------------------------------------------
+  // FUNCTION: ADMIN - LISTENER (REALTIME)
+  // ------------------------------------------
+  function listenToLogs() {
+    if (db) {
+      // Listen for changes in the 'logs' node, show last 50
+      db.ref('logs').limitToLast(50).on('value', (snapshot) => {
+        let html = "";
+        snapshot.forEach(child => {
+          const l = child.val();
+          const dateValue = l.date || "";
+          const timeValue = l.time || "";
+          // Newest logs first
+          html = `<tr><td>${l.name}</td><td>${l.id}</td><td>${l.type}</td><td style="font-weight: bold;">${dateValue} ${timeValue}</td></tr>` + html;
+        });
+        document.getElementById('adminBody').innerHTML = html || "<tr><td colspan='4'>No logs available.</td></tr>";
+      });
+    } else {
+      // LocalStorage fallback
+      const logs = getLocalLogs().slice(-50).reverse();
+      let html = "";
+      logs.forEach(l => {
+        html += `<tr><td>${l.name}</td><td>${l.id}</td><td>${l.type}</td><td style="font-weight: bold;">${l.date || ''} ${l.time || ''}</td></tr>`;
+      });
+      document.getElementById('adminBody').innerHTML = html || "<tr><td colspan='4'>No logs available.</td></tr>";
+    }
+  }
+</script>
+
+</body>
+</html>
