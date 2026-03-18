@@ -8,12 +8,13 @@
 //       The Google Sign-In will only work if you enable Authentication -> Sign-in method -> Google
 //       and add your app's domain to Authorized domains.
 const firebaseConfig = {
-  apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
-  authDomain: "sfdasdafd.firebaseapp.com",
-  projectId: "sfdasdafd",
-  storageBucket: "sfdasdafd.firebasestorage.app",
-  messagingSenderId: "701386389930",
-  appId: "1:701386389930:web:d1d08e0f520dd7770993d3"
+  apiKey: "AIzaSyDNzn1FoPhn-pU1t0_AEEusHsZmiZ8b5Tc",
+  authDomain: "neulibrary-64dca.firebaseapp.com",
+  projectId: "neulibrary-64dca",
+  storageBucket: "neulibrary-64dca.firebasestorage.app",
+  messagingSenderId: "964459243201",
+  appId: "1:964459243201:web:321f1e9aa0b73e6e0b5640",
+  measurementId: "G-968RRPDHJC"
 };
 
 firebase.initializeApp(firebaseConfig);
