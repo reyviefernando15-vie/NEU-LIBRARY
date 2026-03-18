@@ -19,7 +19,6 @@
     }
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: var(--text); overflow-x: hidden; }
     
-    /* IMPROVED RESPONSIVE NAVBAR */
     .topnav { 
       display: flex; 
       align-items: center; 
@@ -33,7 +32,7 @@
     }
     .logo-area { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
     .logo-img { height: 30px; }
-    .logo-text { font-weight: 900; font-size: 0.9rem; white-space: nowrap; }
+    .logo-text { font-weight: 900; font-size: 0.9rem; white-space: nowrap; color: var(--neu-green); }
 
     .nav-links { display: flex; align-items: center; gap: 5px; }
     .nav-links a { 
@@ -44,25 +43,9 @@
       font-weight: 600; 
       font-size: 0.8rem; 
       cursor: pointer; 
-      white-space: nowrap;
     }
     .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
-    
-    /* FIXED LOGOUT BUTTON FOR MOBILE */
-    .logout-nav { 
-      color: #dc3545 !important; 
-      border: 1.5px solid #dc3545; 
-      padding: 5px 8px !important;
-      font-size: 0.75rem !important;
-      margin-left: 2px;
-    }
-
-    @media (min-width: 992px) {
-        .logo-img { height: 45px; }
-        .logo-text { font-size: 1.2rem; }
-        .nav-links a { font-size: 0.9rem; padding: 8px 15px; }
-        .topnav { padding: 10px 30px; }
-    }
+    .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; }
 
     .container { width: 92%; max-width: 600px; margin: 20px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     .container.admin-mode { max-width: 1100px; }
@@ -72,31 +55,20 @@
     
     .field-label { font-size: 0.7rem; font-weight: 800; color: #8e949a; margin-bottom: 5px; display: block; text-transform: uppercase; }
 
-    .filter-bar { background: #f8f9fa; padding: 12px; border-radius: 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 20px; border: 1px solid #eee; }
-    .filter-bar select { width: auto; flex-grow: 1; margin-bottom: 0; padding: 8px; font-size: 0.75rem; border-radius: 10px; height: 35px; }
-    .record-count { width: 100%; text-align: center; font-weight: 900; color: #3b82f6; font-size: 0.7rem; background: #eff6ff; padding: 5px; border-radius: 8px; margin-top: 5px; }
-
     .admin-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 992px) {
-        .admin-grid { grid-template-columns: 1fr 1fr; }
-        .record-count { width: auto; margin-top: 0; margin-left: auto; }
-    }
+    @media (min-width: 992px) { .admin-grid { grid-template-columns: 1fr 1fr; } }
 
-    .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #eee; border-radius: 8px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 450px; }
+    .table-wrapper { width: 100%; overflow-x: auto; border: 1px solid #eee; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 400px; }
     th, td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
-    th { background: #f8f8f8; color: var(--neu-green); font-weight: 800; }
-    .admin-thumb { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 5px; }
+    th { background: #f8f8f8; color: var(--neu-green); }
 
-    .btn-delete { background: #dc3545; color: white; padding: 5px 8px; border-radius: 6px; border: none; font-size: 0.7rem; }
-    .btn-bulk-delete { background: #dc3545; color: white; padding: 8px 12px; border-radius: 6px; border: none; font-size: 0.8rem; display: none; }
-    
+    .admin-thumb { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 8px; }
     .hidden { display: none; }
     .admin-box { margin-bottom: 15px; border: 1px solid #eee; padding: 12px; border-radius: 12px; background: #fff; }
     
     #userProfile { display: none; margin-top: 20px; padding: 20px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; }
     .profile-pic { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
-    .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -147,31 +119,6 @@
   </div>
 
   <div id="section-admin" class="hidden">
-    <div class="filter-bar">
-        <select id="filterReason" onchange="loadLiveLogs()">
-            <option value="All">All Reasons</option>
-            <option value="Study / Reading">Study</option>
-            <option value="Research">Research</option>
-            <option value="Borrow / Return Books">Books</option>
-            <option value="Computer Use">Computer</option>
-        </select>
-        <select id="filterDept" onchange="loadLiveLogs()">
-            <option value="All">All Colleges</option>
-            <option value="CICS">CICS</option>
-            <option value="COE">COE</option>
-            <option value="CAS">CAS</option>
-            <option value="CBA">CBA</option>
-            <option value="CED">CED</option>
-            <option value="CON">CON</option>
-        </select>
-        <select id="filterType" onchange="loadLiveLogs()">
-            <option value="All">All Users</option>
-            <option value="Student">Student</option>
-            <option value="Faculty">Faculty</option>
-        </select>
-        <div class="record-count" id="countDisplay">0 RECORDS</div>
-    </div>
-
     <div class="admin-grid">
         <div>
             <div class="admin-box">
@@ -179,10 +126,10 @@
                 <div style="height: 150px;"><canvas id="trafficChart"></canvas></div>
             </div>
             <div class="admin-box">
-                <h3 style="font-size: 0.9rem;">Database</h3>
-                <div class="table-wrapper" style="max-height: 250px; overflow-y:auto;">
+                <h3 style="font-size: 0.9rem;">User Database</h3>
+                <div class="table-wrapper" style="max-height: 300px; overflow-y:auto;">
                   <table>
-                    <thead><tr><th>Name</th><th>Dept</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Member</th><th>Dept</th><th>Action</th></tr></thead>
                     <tbody id="userListBody"></tbody>
                   </table>
                 </div>
@@ -190,22 +137,13 @@
         </div>
         <div>
             <div class="admin-box">
-                <div class="flex-header">
-                  <h3 style="font-size: 0.9rem;">Activity Logs</h3>
-                  <div style="display:flex; gap:5px;">
-                    <button id="btnBulkDelete" class="btn-bulk-delete" onclick="deleteSelectedLogs()">Del</button>
-                    <button class="btn-clear" style="padding:5px 10px; width:auto; font-size:0.7rem; background:#6c757d; color:white; border-radius:5px; border:none;" onclick="clearLogs()">Clear</button>
-                  </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <h3 style="font-size: 0.9rem; margin:0;">Activity Logs</h3>
+                  <button style="padding:5px 10px; font-size:0.7rem; background:#6c757d; color:white; border:none; border-radius:5px;" onclick="clearLogs()">Clear All</button>
                 </div>
-                <div class="table-wrapper" style="max-height: 400px; overflow-y:auto;">
+                <div class="table-wrapper" style="max-height: 475px; overflow-y:auto;">
                   <table>
-                    <thead>
-                      <tr>
-                        <th style="width: 25px;"><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
-                        <th style="text-align: left;">User</th>
-                        <th>Time</th>
-                      </tr>
-                    </thead>
+                    <thead><tr><th>User</th><th>Time</th></tr></thead>
                     <tbody id="adminLogsBody"></tbody>
                   </table>
                 </div>
@@ -216,7 +154,7 @@
 
   <div id="section-signup" class="hidden">
     <h2 style="text-align: center; font-size: 1.2rem;">Register Member</h2>
-    <input type="text" id="regID" placeholder="ID Number (e.g. 24-12787-308)">
+    <input type="text" id="regID" placeholder="ID Number (e.g. 24-0000)">
     <input type="text" id="regName" placeholder="Full Name">
     
     <span class="field-label">User Type</span>
@@ -227,27 +165,15 @@
 
     <span class="field-label">College</span>
     <select id="regDept">
-        <option value="CICS">College of Informatics & Computing Sciences (CICS)</option>
-        <option value="COE">College of Engineering (COE)</option>
-        <option value="CAS">College of Arts and Sciences (CAS)</option>
-        <option value="CBA">College of Business Administration (CBA)</option>
-        <option value="CED">College of Education (CED)</option>
-        <option value="CON">College of Nursing (CON)</option>
-    </select>
-
-    <span class="field-label">Year Level</span>
-    <select id="regYear">
-        <option value="1st Year">1st Year</option>
-        <option value="2nd Year">2nd Year</option>
-        <option value="3rd Year">3rd Year</option>
-        <option value="4th Year">4th Year</option>
-        <option value="5th Year">5th Year</option>
-        <option value="N/A">N/A (Faculty)</option>
+        <option value="CICS">CICS</option>
+        <option value="COE">COE</option>
+        <option value="CAS">CAS</option>
+        <option value="CBA">CBA</option>
     </select>
 
     <input type="text" id="regCourse" placeholder="Course (e.g. BSIT)">
     
-    <span class="field-label">Profile Photo</span>
+    <span class="field-label">Profile Photo (Required)</span>
     <input type="file" id="regFile" accept="image/*" style="font-size: 0.8rem;">
     <input type="hidden" id="regBase64">
     
@@ -257,7 +183,6 @@
 </div>
 
 <script>
-  // IPALIT ANG IYONG FIREBASE CONFIG DITO
   const firebaseConfig = {
     apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
     authDomain: "sfdasdafd.firebaseapp.com",
@@ -272,37 +197,61 @@
   const db = firebase.database();
   let trafficChart = null;
   let isAdmin = false;
-  let hideTimeout = null;
+
+  // SIGN UP WITH STRICT VALIDATION
+  function handleSignUp() {
+    const id = document.getElementById('regID').value.trim();
+    const name = document.getElementById('regName').value.trim();
+    const course = document.getElementById('regCourse').value.trim();
+    const photo = document.getElementById('regBase64').value;
+
+    if(!id || !name || !course || !photo) {
+      alert("❌ Error: All fields and photo are required!");
+      return;
+    }
+
+    const sId = id.replace(/\./g, '_');
+    const data = {
+      name: name,
+      type: document.getElementById('regType').value,
+      dept: document.getElementById('regDept').value,
+      course: course,
+      photo: photo
+    };
+
+    db.ref('users/' + sId).set(data).then(() => {
+      alert("✅ Registration Success!");
+      // Reset fields
+      document.getElementById('regID').value = "";
+      document.getElementById('regName').value = "";
+      document.getElementById('regCourse').value = "";
+      document.getElementById('regFile').value = "";
+      document.getElementById('regBase64').value = "";
+      switchTab('timein');
+    });
+  }
 
   function handleTimeIn() {
     const rawId = document.getElementById('idInput').value.trim();
-    const reason = document.getElementById('visitReason').value;
+    if(!rawId) return;
     const sId = rawId.replace(/\./g, '_');
-
     db.ref('users/' + sId).once('value', snap => {
-      if(!snap.exists()) return alert("Not Registered!");
+      if(!snap.exists()) return alert("User Not Found!");
       const u = snap.val();
       const now = new Date();
       const log = {
-        id: rawId, name: u.name, photo: u.photo, reason: reason,
-        dept: u.dept, type: u.type, course: u.course, year: u.year || "",
-        date: now.toLocaleDateString(),
+        id: rawId, name: u.name, photo: u.photo, reason: document.getElementById('visitReason').value,
+        dept: u.dept, date: now.toLocaleDateString(),
         time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
         day: now.toLocaleDateString('en-US', {weekday:'short'})
       };
-
       db.ref('logs').push(log).then(() => {
-        const profileDiv = document.getElementById('userProfile');
-        profileDiv.style.display = 'block';
+        document.getElementById('userProfile').style.display = 'block';
         document.getElementById('dispPic').src = u.photo;
         document.getElementById('dispName').innerText = u.name;
-        document.getElementById('dispDetails').innerText = u.course;
-        document.getElementById('dispYear').innerText = u.year || "";
+        document.getElementById('dispDetails').innerText = u.course + " | " + u.dept;
         document.getElementById('idInput').value = "";
-
-        if(hideTimeout) clearTimeout(hideTimeout);
-        hideTimeout = setTimeout(() => { profileDiv.style.display = 'none'; }, 6000);
-
+        
         db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', s => {
           let h = ""; let a = []; s.forEach(c => a.push(c.val()));
           a.reverse().forEach(l => { h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`; });
@@ -312,119 +261,59 @@
     });
   }
 
-  function handleSignUp() {
-    const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
-    if(!id) return alert("Please enter ID Number");
-    const data = {
-      name: document.getElementById('regName').value,
-      type: document.getElementById('regType').value,
-      dept: document.getElementById('regDept').value,
-      year: document.getElementById('regYear').value,
-      course: document.getElementById('regCourse').value,
-      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
-    };
-    db.ref('users/' + id).set(data).then(() => { alert("Registration Success!"); switchTab('timein'); });
-  }
-
-  function loadLiveLogs() {
-    const rFilt = document.getElementById('filterReason').value;
-    const dFilt = document.getElementById('filterDept').value;
-    const tFilt = document.getElementById('filterType').value;
-
-    db.ref('logs').on('value', snap => {
-      let h = ""; let count = 0;
-      let logsArr = [];
-      snap.forEach(c => { 
-        const l = c.val();
-        if((rFilt === "All" || l.reason.includes(rFilt)) && (dFilt === "All" || l.dept === dFilt) && (tFilt === "All" || l.type === tFilt)) {
-            logsArr.push({ key: c.key, data: l });
-            count++;
-        }
-      });
-      
-      logsArr.reverse().forEach(item => {
-        const l = item.data;
-        h += `<tr>
-          <td><input type="checkbox" name="logCheck" value="${item.key}" onclick="updateBulkBtn()"></td>
-          <td style="text-align:left;">
-            <img src="${l.photo}" class="admin-thumb">
-            <b>${l.name}</b> <br><small>${l.course} | ${l.dept}</small>
-          </td>
-          <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td>
-        </tr>`;
-      });
-      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='3'>No History</td></tr>";
-      document.getElementById('countDisplay').innerText = `DISPLAYING: ${count} RECORDS`;
-      updateBulkBtn();
-    });
-  }
-
-  function switchTab(tab) {
-    const container = document.getElementById('mainContainer');
-    if (tab === 'admin' && !isAdmin) {
-      const pass = prompt("Admin Password:");
-      if (pass !== "admin123") return;
-      isAdmin = true;
-      document.getElementById('logout-btn').classList.remove('hidden');
-    }
-    if(tab === 'admin') container.classList.add('admin-mode');
-    else container.classList.remove('admin-mode');
-    
-    document.getElementById('section-timein').classList.add('hidden');
-    document.getElementById('section-admin').classList.add('hidden');
-    document.getElementById('section-signup').classList.add('hidden');
-    document.getElementById('section-' + tab).classList.remove('hidden');
-    
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    const activeLink = document.getElementById('link-' + (tab === 'admin' ? 'admin' : 'timein'));
-    if(activeLink) activeLink.classList.add('active');
-
-    if(tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
-  }
-
   function loadUserDB() {
     db.ref('users').on('value', snap => {
       let h = "";
       snap.forEach(c => {
-        h += `<tr><td style="text-align:left;"><img src="${c.val().photo}" class="admin-thumb">${c.val().name}</td>
-          <td>${c.val().dept}</td>
-          <td><button class="btn-delete" onclick="deleteUser('${c.key}')">Del</button></td></tr>`;
+        const u = c.val();
+        h += `<tr>
+          <td style="text-align:left;">
+            <img src="${u.photo}" class="admin-thumb">
+            <b>${u.name}</b><br><small>${u.course}</small>
+          </td>
+          <td>${u.dept}</td>
+          <td><button class="btn-delete" onclick="deleteUser('${c.key}')">Del</button></td>
+        </tr>`;
       });
-      document.getElementById('userListBody').innerHTML = h;
+      document.getElementById('userListBody').innerHTML = h || "<tr><td colspan='3'>No Members</td></tr>";
     });
   }
 
-  function updateBulkBtn() {
-    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
-    document.getElementById('btnBulkDelete').style.display = checkboxes.length > 0 ? 'inline-block' : 'none';
+  function loadLiveLogs() {
+    db.ref('logs').on('value', snap => {
+      let h = ""; let arr = [];
+      snap.forEach(c => arr.push(c.val()));
+      arr.reverse().forEach(l => {
+        h += `<tr>
+          <td style="text-align:left;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b></td>
+          <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td>
+        </tr>`;
+      });
+      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='2'>No History</td></tr>";
+    });
   }
 
-  function deleteSelectedLogs() {
-    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
-    if (confirm(`Delete ${checkboxes.length} logs?`)) {
-      checkboxes.forEach(cb => db.ref('logs/' + cb.value).remove());
+  function switchTab(tab) {
+    if (tab === 'admin' && !isAdmin) {
+      if (prompt("Admin Password:") !== "admin123") return;
+      isAdmin = true;
+      document.getElementById('logout-btn').classList.remove('hidden');
     }
-  }
-
-  function toggleSelectAll(source) {
-    const checkboxes = document.getElementsByName('logCheck');
-    for (let i = 0; i < checkboxes.length; i++) checkboxes[i].checked = source.checked;
-    updateBulkBtn();
+    document.getElementById('mainContainer').classList.toggle('admin-mode', tab === 'admin');
+    ['timein', 'admin', 'signup'].forEach(s => document.getElementById('section-'+s).classList.add('hidden'));
+    document.getElementById('section-'+tab).classList.remove('hidden');
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    if(tab !== 'signup') document.getElementById('link-'+(tab==='admin'?'admin':'timein')).classList.add('active');
+    if(tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
   }
 
   function clearLogs() { if(confirm("Clear all logs?")) db.ref('logs').remove(); }
-  function deleteUser(id) { if(confirm("Delete this user permanently?")) db.ref('users/' + id).remove(); }
-  
-  function adminLogout() { 
-    isAdmin = false; 
-    document.getElementById('logout-btn').classList.add('hidden'); 
-    switchTab('timein'); 
-  }
+  function deleteUser(id) { if(confirm("Delete this user permanently?")) db.ref('users/'+id).remove(); }
+  function adminLogout() { isAdmin = false; document.getElementById('logout-btn').classList.add('hidden'); switchTab('timein'); }
 
-  document.getElementById('regFile').addEventListener('change', function(e) {
-    const reader = new FileReader();
-    reader.onload = () => document.getElementById('regBase64').value = reader.result;
-    if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+  document.getElementById('regFile').addEventListener('change', e => {
+    const r = new FileReader(); r.onload = () => document.getElementById('regBase64').value = r.result;
+    if(e.target.files[0]) r.readAsDataURL(e.target.files[0]);
   });
 
   function loadAnalytics() {
@@ -435,7 +324,7 @@
       if(trafficChart) trafficChart.destroy();
       trafficChart = new Chart(ctx, {
         type: 'line',
-        data: { labels: Object.keys(counts), datasets: [{ label: 'Logs', data: Object.values(counts), borderColor: '#006400', tension: 0.3, fill: true, backgroundColor: 'rgba(0,100,0,0.1)' }] },
+        data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), borderColor: '#006400', tension: 0.3, fill: true, backgroundColor: 'rgba(0,100,0,0.1)' }] },
         options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
       });
     });
