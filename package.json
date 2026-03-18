@@ -1,6 +1,6 @@
 {
   "rules": {
-    ".read": "now < 1893456000000", // Test mode rules
+    ".read": "now < 1893456000000", 
     ".write": "now < 1893456000000",
     "logs": {
       ".indexOn": ["id"]
