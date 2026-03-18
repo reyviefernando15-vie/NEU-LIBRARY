@@ -43,14 +43,17 @@
 
     .btn-edit { background: #007bff; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
     .btn-delete { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
-    .btn-clear { background: #6c757d; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; float: right; font-size: 0.8rem; margin-bottom: 10px; }
+    .btn-clear { background: #6c757d; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; }
     .btn-clear:hover { background: #343a40; }
+    .btn-bulk-delete { background: #dc3545; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; margin-right: 10px; display: none; }
 
     .hidden { display: none; }
     .admin-box { margin-bottom: 40px; border-bottom: 2px solid #f0f2f5; padding-bottom: 20px; position: relative; }
     
     #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
     .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
+    
+    .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -117,11 +120,23 @@
     </div>
 
     <div class="admin-box">
-      <button class="btn-clear" onclick="clearLogs()">Delete All History</button>
-      <h3>Live Activity Logs</h3>
+      <div class="flex-header">
+        <h3>Live Activity Logs</h3>
+        <div>
+          <button id="btnBulkDelete" class="btn-bulk-delete" onclick="deleteSelectedLogs()">Delete Selected</button>
+          <button class="btn-clear" onclick="clearLogs()">Clear All History</button>
+        </div>
+      </div>
       <div style="max-height: 400px; overflow-y:auto; border: 1px solid #eee;">
         <table>
-          <thead><tr><th>User</th><th>Date</th><th>Time</th></tr></thead>
+          <thead>
+            <tr>
+              <th style="width: 40px;"><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+              <th>User</th>
+              <th>Date</th>
+              <th>Time</th>
+            </tr>
+          </thead>
           <tbody id="adminLogsBody"></tbody>
         </table>
       </div>
@@ -145,7 +160,6 @@
   let trafficChart = null;
   let isAdmin = false;
 
-  // File to Base64
   document.getElementById('regFile').addEventListener('change', function(e) {
     const reader = new FileReader();
     reader.onload = () => document.getElementById('regBase64').value = reader.result;
@@ -170,6 +184,37 @@
     document.getElementById('logout-btn').classList.add('hidden');
     alert("Logged out");
     switchTab('timein');
+  }
+
+  // LOG SELECTION LOGIC
+  function toggleSelectAll(source) {
+    const checkboxes = document.getElementsByName('logCheck');
+    for (let i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = source.checked;
+    }
+    updateBulkBtn();
+  }
+
+  function updateBulkBtn() {
+    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
+    const btn = document.getElementById('btnBulkDelete');
+    btn.style.display = checkboxes.length > 0 ? 'inline-block' : 'none';
+    btn.innerText = `Delete Selected (${checkboxes.length})`;
+  }
+
+  function deleteSelectedLogs() {
+    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
+    if (confirm(`Burahin ang ${checkboxes.length} na napiling logs?`)) {
+      const promises = [];
+      checkboxes.forEach(cb => {
+        promises.push(db.ref('logs/' + cb.value).remove());
+      });
+      Promise.all(promises).then(() => {
+        alert("Selected logs deleted!");
+        document.getElementById('selectAll').checked = false;
+        updateBulkBtn();
+      });
+    }
   }
 
   function clearLogs() {
@@ -256,13 +301,22 @@
   }
 
   function loadLiveLogs() {
-    db.ref('logs').limitToLast(20).on('value', snap => {
-      let h = ""; let a = []; snap.forEach(c => a.push(c.val()));
-      a.reverse().forEach(l => {
-        h += `<tr><td style="text-align:left; padding-left:15px;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b></td>
+    db.ref('logs').limitToLast(50).on('value', snap => {
+      let h = "";
+      let logsArr = [];
+      snap.forEach(c => {
+        logsArr.push({ key: c.key, data: c.val() });
+      });
+      logsArr.reverse().forEach(item => {
+        const l = item.data;
+        const key = item.key;
+        h += `<tr>
+          <td><input type="checkbox" name="logCheck" value="${key}" onclick="updateBulkBtn()"></td>
+          <td style="text-align:left; padding-left:15px;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b></td>
           <td>${l.date}</td><td style="color:var(--neu-green); font-weight:bold;">${l.time}</td></tr>`;
       });
-      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='3'>No History</td></tr>";
+      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='4'>No History</td></tr>";
+      updateBulkBtn();
     });
   }
 
