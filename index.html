@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEU Library - Admin System</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo-area">
+    <img src="neu.png" alt="NEU Logo" class="logo-img">
+    <div class="logo-text">NEU LIBRARY</div>
+  </div>
+  <div class="nav-links">
+    <a id="link-timein" class="active">Dashboard</a>
+    <a id="link-admin">Admin</a>
+    <a id="logout-btn" class="logout-nav hidden">Logout</a>
+  </div>
+</nav>
+
+<div class="container" id="mainContainer">
+  <div id="section-timein">
+    <h2 class="section-title">Attendance Portal</h2>
+
+    <span class="field-label">REASON FOR VISITING</span>
+    <select id="visitReason">
+      <option value="Study / Reading">Study / Reading</option>
+      <option value="Research">Research</option>
+      <option value="Borrow / Return Books">Borrow / Return Books</option>
+      <option value="Computer Use">Computer Use</option>
+    </select>
+
+    <input type="text" id="idInput" placeholder="Enter ID Number">
+    <button id="btnTimeIn" type="button">TIME IN →</button>
+
+    <div class="text-center mt-15">
+      <span class="link-text" id="link-signup">Don't have an account? <b class="text-highlight">Register</b></span>
+    </div>
+
+    <div id="userProfile">
+      <img id="dispPic" src="" class="profile-pic">
+      <h2 id="dispName" class="profile-name"></h2>
+      <p id="dispDetails" class="profile-details"></p>
+      <p id="dispYear" class="profile-year"></p>
+
+      <div class="text-left">
+        <strong class="box-title">Recent History:</strong>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr class="text-highlight"><th>Date</th><th>Time</th></tr></thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="section-admin" class="hidden">
+    <div class="filter-bar">
+      <select id="filterReason">
+        <option value="All">All Reasons</option>
+        <option value="Study / Reading">Study</option>
+        <option value="Research">Research</option>
+        <option value="Borrow / Return Books">Books</option>
+        <option value="Computer Use">Computer</option>
+      </select>
+
+      <select id="filterDept">
+        <option value="All">All Colleges</option>
+        <option value="CICS">CICS</option>
+        <option value="COE">COE</option>
+        <option value="CAS">CAS</option>
+        <option value="CBA">CBA</option>
+        <option value="CED">CED</option>
+        <option value="CON">CON</option>
+      </select>
+
+      <select id="filterType">
+        <option value="All">All Users</option>
+        <option value="Student">Student</option>
+        <option value="Faculty">Faculty</option>
+      </select>
+
+      <div class="record-count" id="countDisplay">0 RECORDS</div>
+    </div>
+
+    <div class="admin-grid">
+      <div>
+        <div class="admin-box">
+          <h3 class="box-title">Traffic Chart</h3>
+          <div class="chart-wrap"><canvas id="trafficChart"></canvas></div>
+        </div>
+
+        <div class="admin-box">
+          <h3 class="box-title">Database</h3>
+          <div class="table-wrapper table-scroll">
+            <table>
+              <thead><tr><th>Name</th><th>Dept</th><th>Action</th></tr></thead>
+              <tbody id="userListBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="admin-box">
+          <div class="flex-header">
+            <h3 class="box-title">Activity Logs</h3>
+            <div class="flex-gap">
+              <button id="btnBulkDelete" class="btn-bulk-delete" type="button">Del</button>
+              <button id="btnClearLogs" class="btn-secondary" type="button">Clear</button>
+            </div>
+          </div>
+
+          <div class="table-wrapper table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th class="text-left th-checkbox"><input type="checkbox" id="selectAll"></th>
+                  <th class="text-left">User</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="adminLogsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-toggle">
+    <span id="authSignUp" class="auth-link active">SIGN UP</span> |
+    <span id="authLogIn" class="auth-link">LOG IN</span>
+  </div>
+
+  <div id="section-login" class="hidden">
+    <h2 class="section-title">Log in</h2>
+    <button id="btnGoogleSignIn" type="button" class="btn-secondary">Sign in with Google</button>
+    <div id="googleUserInfo" class="hidden">Signed in as: <strong id="googleUserName"></strong></div>
+    <div class="mt-10">After signing in, proceed to <span id="authGoToSignup" class="link-text">Sign up</span>.</div>
+  </div>
+
+  <div id="section-signup" class="hidden">
+    <h2 class="section-title">Register Member</h2>
+
+    <input type="text" id="regID" placeholder="ID Number (e.g. 24-12787-308)">
+    <input type="text" id="regName" placeholder="Full Name">
+    <input type="hidden" id="regEmail">
+    <input type="hidden" id="regPhoto">
+
+    <span class="field-label">User Type</span>
+    <select id="regType">
+      <option value="Student">Student</option>
+      <option value="Faculty">Faculty</option>
+    </select>
+
+    <span class="field-label">College</span>
+    <select id="regDept">
+      <option value="CICS">College of Informatics & Computing Sciences (CICS)</option>
+      <option value="COE">College of Engineering (COE)</option>
+      <option value="CAS">College of Arts and Sciences (CAS)</option>
+      <option value="CBA">College of Business Administration (CBA)</option>
+      <option value="CED">College of Education (CED)</option>
+      <option value="CON">College of Nursing (CON)</option>
+    </select>
+
+    <span class="field-label">Year Level</span>
+    <select id="regYear">
+      <option value="1st Year">1st Year</option>
+      <option value="2nd Year">2nd Year</option>
+      <option value="3rd Year">3rd Year</option>
+      <option value="4th Year">4th Year</option>
+      <option value="5th Year">5th Year</option>
+      <option value="N/A">N/A (Faculty)</option>
+    </select>
+
+    <input type="text" id="regCourse" placeholder="Course (e.g. BSIT)">
+
+    <span class="field-label">Profile Photo</span>
+    <input type="file" id="regFile" accept="image/*" class="file-input">
+    <input type="hidden" id="regBase64">
+
+    <button id="regCreate" type="button">CREATE ACCOUNT</button>
+    <button id="btnCancelSignup" type="button" class="btn-secondary">CANCEL</button>
+  </div>
+</div>
+
+</body>
+</html>
