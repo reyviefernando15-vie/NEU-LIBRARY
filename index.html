@@ -20,54 +20,43 @@
     }
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: var(--text); }
     
-    /* NAVIGATION */
     .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; background: var(--nav-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
     .logo-area { display: flex; align-items: center; gap: 10px; }
-    .logo-img { height: 45px; }
-    .logo-text { font-weight: 900; font-size: 1.2rem; }
-    .nav-links { display: flex; align-items: center; }
-    .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; cursor: pointer; }
+    .logo-img { height: 40px; }
+    .logo-text { font-weight: 900; font-size: 1.1rem; }
+    
+    .nav-links a { color: var(--text); text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
     .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
     .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 10px; }
-    .logout-nav:hover { background: #dc3545; color: white !important; }
 
-    .container { max-width: 1000px; margin: 40px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-    input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 1rem; }
-    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
+    /* PINALIIT NA CONTAINER PARA SA LOGIN */
+    .container { max-width: 850px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     
-    /* LABEL FOR REASON */
-    .field-label { font-size: 0.75rem; font-weight: 800; color: #8e949a; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    /* FILTER BAR */
-    .filter-bar { 
-        background: #f8f9fa; padding: 15px 20px; border-radius: 50px; 
-        display: flex; align-items: center; gap: 10px; margin-bottom: 25px;
-        border: 1px solid #eee;
-    }
-    .filter-bar select { width: auto; margin-bottom: 0; padding: 8px 12px; font-size: 0.85rem; border-radius: 20px; }
-    .record-count { margin-left: auto; font-weight: bold; color: var(--neu-green); font-size: 0.8rem; background: #e6f0e6; padding: 5px 15px; border-radius: 15px; }
-
-    .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-    .reg-link-container { text-align: center; margin-top: 20px; }
-    .reg-link { color: #555; text-decoration: none; font-size: 0.9rem; transition: 0.3s; cursor: pointer; }
-    .reg-link b { color: var(--neu-green); }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
-    th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
-    th { background: #f8f8f8; color: var(--neu-green); }
-    .admin-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 10px; }
-
-    .btn-delete { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
-    .btn-clear { background: #6c757d; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; }
+    /* COMPACT INPUTS */
+    input, select { width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; font-size: 0.9rem; }
+    button { background: var(--neu-green); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 0.95rem; }
     
+    .field-label { font-size: 0.7rem; font-weight: 800; color: #8e949a; margin-bottom: 4px; display: block; text-transform: uppercase; }
+
+    /* ADMIN STYLES */
+    .filter-bar { background: #f8f9fa; padding: 12px 20px; border-radius: 50px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; border: 1px solid #eee; }
+    .filter-bar select { width: auto; margin-bottom: 0; padding: 6px 10px; font-size: 0.8rem; border-radius: 20px; }
+    .record-count { margin-left: auto; font-weight: bold; color: var(--neu-green); font-size: 0.75rem; background: #e6f0e6; padding: 4px 12px; border-radius: 15px; }
+
+    .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .admin-box { border: 1px solid #eee; padding: 15px; border-radius: 10px; }
+
+    /* PINALIIT NA PROFILE CARD */
+    #userProfile { display: none; margin: 20px auto 0; padding: 15px; border: 2px solid var(--neu-gold); border-radius: 12px; text-align: center; background: #fff; max-width: 450px; }
+    .profile-pic { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--neu-green); object-fit: cover; }
+    #dispName { font-size: 1.2rem; margin: 8px 0 2px; }
+    #dispDetails { font-size: 0.85rem; margin-bottom: 15px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { border: 1px solid #eee; padding: 8px; text-align: center; }
+    .admin-thumb { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 8px; }
+
     .hidden { display: none; }
-    .admin-box { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 12px; }
-    
-    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
-    .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
-    
-    .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -86,7 +75,7 @@
 
 <div class="container">
   <div id="section-timein">
-    <h2>Attendance Portal</h2>
+    <h2 style="margin-top:0; font-size: 1.4rem;">Attendance Portal</h2>
     
     <span class="field-label">REASON FOR VISITING</span>
     <select id="visitReason">
@@ -99,16 +88,16 @@
     <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
     <button onclick="handleTimeIn()">TIME IN →</button>
     
-    <div class="reg-link-container">
-      <span class="reg-link" onclick="switchTab('signup')">Don't have an account? <b>Register here</b></span>
+    <div style="text-align: center; margin-top: 15px;">
+      <span style="font-size: 0.85rem; cursor: pointer;" onclick="switchTab('signup')">Don't have an account? <b style="color:var(--neu-green)">Register here</b></span>
     </div>
 
     <div id="userProfile">
       <img id="dispPic" src="" class="profile-pic">
-      <h2 id="dispName" style="margin:10px 0 0; color: var(--neu-green);"></h2>
+      <h2 id="dispName" style="color: var(--neu-green);"></h2>
       <p id="dispDetails" style="color: #666;"></p>
-      <div style="text-align: left; margin-top: 20px;">
-        <strong>Your Recent History:</strong>
+      <div style="text-align: left;">
+        <strong style="font-size: 0.8rem;">Recent History:</strong>
         <table>
           <thead><tr><th>Date</th><th>Time</th></tr></thead>
           <tbody id="logBody"></tbody>
@@ -120,44 +109,34 @@
   <div id="section-admin" class="hidden">
     <div class="filter-bar">
         <span style="font-size: 0.7rem; font-weight: bold; color: #888;">FILTERS:</span>
-        <select><option>All Reasons</option><option>Study</option><option>Research</option></select>
-        <select><option>All Colleges</option><option>CAS</option><option>CEA</option><option>COED</option><option>BSIT</option></select>
-        <select><option>All Users</option><option>Student</option><option>Faculty</option></select>
-        <div class="record-count" id="countDisplay">DISPLAYING: 0 RECORDS</div>
+        <select><option>All Reasons</option></select>
+        <select><option>All Colleges</option></select>
+        <div class="record-count" id="countDisplay">0 RECORDS</div>
     </div>
 
     <div class="admin-grid">
         <div>
             <div class="admin-box">
-                <h3>Traffic Chart</h3>
-                <div style="height: 180px;"><canvas id="trafficChart"></canvas></div>
+                <h3 style="font-size: 1rem; margin-top:0;">Traffic Chart</h3>
+                <div style="height: 150px;"><canvas id="trafficChart"></canvas></div>
             </div>
-            <div class="admin-box">
-                <h3>Student Database</h3>
-                <div style="overflow-x:auto;">
+            <div class="admin-box" style="margin-top:10px;">
+                <h3 style="font-size: 1rem; margin-top:0;">Users</h3>
+                <div style="max-height: 200px; overflow-y:auto;">
                   <table>
-                    <thead><tr><th>Name</th><th>Actions</th></tr></thead>
                     <tbody id="userListBody"></tbody>
                   </table>
                 </div>
             </div>
         </div>
-
         <div>
             <div class="admin-box">
                 <div class="flex-header">
-                  <h3>Live Activity Logs</h3>
-                  <button class="btn-clear" onclick="clearLogs()">Clear</button>
+                  <h3 style="font-size: 1rem; margin-top:0;">Activity Logs</h3>
+                  <button style="padding: 5px 10px; width:auto; font-size:0.7rem; background:#6c757d;" onclick="clearLogs()">Clear</button>
                 </div>
-                <div style="max-height: 500px; overflow-y:auto; border: 1px solid #eee;">
+                <div style="max-height: 400px; overflow-y:auto;">
                   <table>
-                    <thead>
-                      <tr>
-                        <th style="width: 20px;"><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
-                        <th style="text-align: left;">User</th>
-                        <th>Time</th>
-                      </tr>
-                    </thead>
                     <tbody id="adminLogsBody"></tbody>
                   </table>
                 </div>
@@ -167,15 +146,15 @@
   </div>
 
   <div id="section-signup" class="hidden">
-    <h2 id="regTitle">Register Member</h2>
+    <h3>Register Member</h3>
     <input type="text" id="regID" placeholder="ID Number">
     <input type="text" id="regName" placeholder="Full Name">
     <select id="regType"><option value="Student">Student</option><option value="Faculty">Faculty</option></select>
     <input type="text" id="regCourse" placeholder="Course/Department">
     <input type="file" id="regFile" accept="image/*">
     <input type="hidden" id="regBase64">
-    <button id="btnSave" onclick="handleSignUp()">Create New Account</button>
-    <button onclick="switchTab('timein')" style="background:#6c757d; margin-top:10px;">BACK TO LOGIN</button>
+    <button onclick="handleSignUp()">Create Account</button>
+    <button onclick="switchTab('timein')" style="background:#6c757d; margin-top:8px;">Back</button>
   </div>
 </div>
 
@@ -194,7 +173,7 @@
   const db = firebase.database();
   let trafficChart = null;
   let isAdmin = false;
-  let hideTimeout = null; // Timer variable
+  let hideTimeout = null;
 
   function handleTimeIn() {
     const rawId = document.getElementById('idInput').value.trim();
@@ -207,17 +186,13 @@
       const u = snap.val();
       const now = new Date();
       const log = {
-        id: rawId, 
-        name: u.name, 
-        photo: u.photo, 
-        reason: reason, // Isasama sa database
+        id: rawId, name: u.name, photo: u.photo, reason: reason,
         date: now.toLocaleDateString(),
-        time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
         day: now.toLocaleDateString('en-US', {weekday:'short'})
       };
 
       db.ref('logs').push(log).then(() => {
-        // Show Profile
         const profileDiv = document.getElementById('userProfile');
         profileDiv.style.display = 'block';
         document.getElementById('dispPic').src = u.photo;
@@ -225,14 +200,13 @@
         document.getElementById('dispDetails').innerText = u.course;
         document.getElementById('idInput').value = "";
 
-        // Auto-Hide Logic (5 Seconds)
+        // TIMER SET TO 3 SECONDS (3000ms)
         if(hideTimeout) clearTimeout(hideTimeout);
         hideTimeout = setTimeout(() => {
             profileDiv.style.display = 'none';
-        }, 5000);
+        }, 3000);
 
-        // Update history table
-        db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', s => {
+        db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(3).on('value', s => {
           let h = ""; let a = []; s.forEach(c => a.push(c.val()));
           a.reverse().forEach(l => { h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`; });
           document.getElementById('logBody').innerHTML = h;
@@ -241,7 +215,6 @@
     });
   }
 
-  // --- EXISTING FUNCTIONS ---
   function switchTab(tab) {
     if (tab === 'admin' && !isAdmin) {
       if (prompt("Admin Password:") !== "admin123") return;
@@ -262,13 +235,11 @@
       snap.forEach(c => { logsArr.push({ key: c.key, data: c.val() }); count++; });
       logsArr.reverse().forEach(item => {
         const l = item.data;
-        h += `<tr>
-          <td><input type="checkbox" name="logCheck" value="${item.key}"></td>
-          <td style="text-align:left;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b><br><small>${l.reason}</small></td>
+        h += `<tr><td style="text-align:left;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b><br><small>${l.reason}</small></td>
           <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td></tr>`;
       });
-      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='3'>No History</td></tr>";
-      document.getElementById('countDisplay').innerText = `DISPLAYING: ${count} RECORDS`;
+      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='2'>No History</td></tr>";
+      document.getElementById('countDisplay').innerText = `${count} RECORDS`;
     });
   }
 
@@ -276,9 +247,8 @@
     db.ref('users').on('value', snap => {
       let h = "";
       snap.forEach(c => {
-        const u = c.val(); const id = c.key;
-        h += `<tr><td style="text-align:left;"><img src="${u.photo}" class="admin-thumb">${u.name}</td>
-          <td><button class="btn-delete" onclick="deleteUser('${id}')">Del</button></td></tr>`;
+        h += `<tr><td style="text-align:left;"><img src="${c.val().photo}" class="admin-thumb">${c.val().name}</td>
+          <td><button style="padding:4px; background:#dc3545;" onclick="deleteUser('${c.key}')">Del</button></td></tr>`;
       });
       document.getElementById('userListBody').innerHTML = h;
     });
@@ -308,8 +278,8 @@
       const ctx = document.getElementById('trafficChart').getContext('2d');
       if(trafficChart) trafficChart.destroy();
       trafficChart = new Chart(ctx, {
-        type: 'line',
-        data: { labels: Object.keys(counts), datasets: [{ label: 'Logs', data: Object.values(counts), borderColor: '#006400', tension: 0.3, fill: true, backgroundColor: 'rgba(0,100,0,0.1)' }] },
+        type: 'bar', // Changed to BAR for better "Traffic" feel
+        data: { labels: Object.keys(counts), datasets: [{ label: 'Logs', data: Object.values(counts), backgroundColor: '#006400' }] },
         options: { maintainAspectRatio: false }
       });
     });
