@@ -25,15 +25,19 @@
     .logo-text { font-weight: 900; font-size: 1.2rem; }
     .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; }
     .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
-    .container { max-width: 800px; margin: 40px auto; background: var(--surface); padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .container { max-width: 900px; margin: 40px auto; background: var(--surface); padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
+    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; border-bottom: 3px solid var(--neu-green-dark); }
     button:hover { background: var(--neu-green-dark); }
-    #userProfile { display: none; margin-top: 20px; padding: 20px; border: 2px solid var(--neu-gold); border-radius: 12px; text-align: center; }
-    .profile-pic { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--neu-green); object-fit: cover; }
+    
+    /* Profile Card */
+    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
+    .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; margin-bottom: 10px; }
+    
     table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
-    th { background: #f8f8f8; }
+    th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
+    th { background: #f8f8f8; color: var(--neu-green); }
+    .admin-thumb { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; border: 1px solid #ddd; }
     .hidden { display: none; }
   </style>
 </head>
@@ -53,16 +57,16 @@
 
 <div class="container">
   <div id="section-timein">
-    <h2>Library Attendance</h2>
-    <input type="text" id="idInput" placeholder="Enter Student/Faculty ID">
-    <button onclick="handleTimeIn()">SUBMIT TIME LOG</button>
+    <h2>Library Attendance Portal</h2>
+    <input type="text" id="idInput" placeholder="Enter Student/Faculty ID" onkeydown="if(event.key==='Enter') handleTimeIn()">
+    <button onclick="handleTimeIn()">SUBMIT ATTENDANCE →</button>
 
     <div id="userProfile">
       <img id="dispPic" src="" class="profile-pic">
-      <h2 id="dispName" style="margin:10px 0 0; color: var(--neu-green);"></h2>
-      <p id="dispDetails" style="color: #666; margin-bottom: 20px;"></p>
-      <div style="text-align: left;">
-        <strong>Recent Logs:</strong>
+      <h2 id="dispName" style="margin:0; color: var(--neu-green);"></h2>
+      <p id="dispDetails" style="color: #666; font-style: italic;"></p>
+      <div style="text-align: left; margin-top: 20px;">
+        <strong style="border-bottom: 2px solid var(--neu-gold);">Your Recent Logs:</strong>
         <table>
           <thead><tr><th>Date</th><th>Time</th></tr></thead>
           <tbody id="logBody"></tbody>
@@ -72,46 +76,49 @@
   </div>
 
   <div id="section-signup" class="hidden">
-    <h2>Register New User</h2>
+    <h2>Register New Member</h2>
     <input type="text" id="regID" placeholder="ID Number (e.g. 24-1234)">
     <input type="text" id="regName" placeholder="Full Name">
     <select id="regType">
       <option value="Student">Student</option>
-      <option value="Faculty">Faculty</option>
+      <option value="Faculty">Faculty / Staff</option>
     </select>
-    <input type="text" id="regCourse" placeholder="Course/Department">
-    <input type="text" id="regPhoto" placeholder="Photo URL (Optional)">
-    <button onclick="handleSignUp()">SAVE TO DATABASE</button>
+    <input type="text" id="regCourse" placeholder="Course & Year / Department">
+    <input type="text" id="regPhoto" placeholder="Profile Picture URL (Optional)">
+    <button onclick="handleSignUp()">CREATE ACCOUNT →</button>
   </div>
 
   <div id="section-admin" class="hidden">
-    <h2>Realtime Admin Logs</h2>
+    <h2>Realtime Monitoring Dashboard</h2>
     <table>
-      <thead><tr><th>Name</th><th>ID</th><th>Date</th><th>Time</th></tr></thead>
+      <thead>
+        <tr>
+          <th style="text-align: left; padding-left: 20px;">Member</th>
+          <th>ID Number</th>
+          <th>Date</th>
+          <th>Time</th>
+        </tr>
+      </thead>
       <tbody id="adminBody"></tbody>
     </table>
   </div>
 </div>
 
 <script>
-  // ==========================================
-  // 1. FIREBASE CONFIGURATION (PAKI-UPDATE ITO)
-  // ==========================================
- const firebaseConfig = {
-  apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
-  authDomain: "sfdasdafd.firebaseapp.com",
-  databaseURL: "https://sfdasdafd-default-rtdb.firebaseio.com",
-  projectId: "sfdasdafd",
-  storageBucket: "sfdasdafd.firebasestorage.app",
-  messagingSenderId: "701386389930",
-  appId: "1:701386389930:web:d1d08e0f520dd7770993d3"
-};
+  // 1. DATABASE CONFIGURATION
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
+    authDomain: "sfdasdafd.firebaseapp.com",
+    databaseURL: "https://sfdasdafd-default-rtdb.firebaseio.com",
+    projectId: "sfdasdafd",
+    storageBucket: "sfdasdafd.firebasestorage.app",
+    messagingSenderId: "701386389930",
+    appId: "1:701386389930:web:d1d08e0f520dd7770993d3"
+  };
 
-  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Helper para sa ID (bawal ang "." sa Firebase Keys)
   const safeId = (id) => id.trim().replace(/\./g, '_');
 
   function switchTab(tab) {
@@ -121,11 +128,10 @@
     });
     document.getElementById('section-' + tab).classList.remove('hidden');
     document.getElementById('link-' + tab).classList.add('active');
-    
     if(tab === 'admin') listenToLogs();
   }
 
-  // REGISTER USER
+  // REGISTER
   function handleSignUp() {
     const id = document.getElementById('regID').value;
     const sId = safeId(id);
@@ -139,7 +145,7 @@
     };
 
     db.ref('users/' + sId).set(data).then(() => {
-      alert("Registered Successfully!");
+      alert("Registration Successful!");
       switchTab('timein');
     });
   }
@@ -148,7 +154,7 @@
   function handleTimeIn() {
     const id = document.getElementById('idInput').value;
     const sId = safeId(id);
-    if(!id) return alert("Enter ID!");
+    if(!id) return alert("Please enter your ID.");
 
     db.ref('users/' + sId).once('value', (snap) => {
       if(!snap.exists()) {
@@ -158,46 +164,60 @@
       
       const user = snap.val();
       const now = new Date();
+      
       const log = {
         id: id,
         name: user.name,
+        photo: user.photo, 
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString()
       };
 
-      // Push to 'logs' node
       db.ref('logs').push(log).then(() => {
         showProfile(user, id);
+        document.getElementById('idInput').value = "";
       });
     });
   }
 
+  // SHOW PROFILE & HISTORY
   function showProfile(user, rawId) {
     document.getElementById('userProfile').style.display = 'block';
     document.getElementById('dispPic').src = user.photo;
     document.getElementById('dispName').innerText = user.name;
     document.getElementById('dispDetails').innerText = `${user.type} | ${user.course}`;
 
-    // Get personal history
+    // Realtime history for the student
     db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', snap => {
       let html = "";
-      snap.forEach(child => {
-        const l = child.val();
-        html = `<tr><td>${l.date}</td><td>${l.time}</td></tr>` + html;
+      let logsArr = [];
+      snap.forEach(child => logsArr.push(child.val()));
+      logsArr.reverse().forEach(l => {
+        html += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`;
       });
       document.getElementById('logBody').innerHTML = html;
     });
   }
 
-  // ADMIN LISTENER
+  // ADMIN LISTENER WITH PICTURES
   function listenToLogs() {
     db.ref('logs').limitToLast(50).on('value', snap => {
       let html = "";
-      snap.forEach(child => {
-        const l = child.val();
-        html = `<tr><td>${l.name}</td><td>${l.id}</td><td>${l.date}</td><td>${l.time}</td></tr>` + html;
+      let logsArr = [];
+      snap.forEach(child => logsArr.push(child.val()));
+      
+      logsArr.reverse().forEach(l => {
+        html += `<tr>
+                  <td style="text-align:left; padding-left:20px;">
+                    <img src="${l.photo}" class="admin-thumb">
+                    <strong>${l.name}</strong>
+                  </td>
+                  <td>${l.id}</td>
+                  <td>${l.date}</td>
+                  <td>${l.time}</td>
+                </tr>`;
       });
-      document.getElementById('adminBody').innerHTML = html;
+      document.getElementById('adminBody').innerHTML = html || "<tr><td colspan='4'>No logs found.</td></tr>";
     });
   }
 </script>
