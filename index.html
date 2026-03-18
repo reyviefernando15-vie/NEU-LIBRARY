@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEU Library - Firebase System</title>
+  <title>NEU Library - Admin Control System</title>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -26,24 +26,27 @@
     .logo-text { font-weight: 900; font-size: 1.2rem; }
     .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; }
     .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
-    .container { max-width: 900px; margin: 40px auto; background: var(--surface); padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    
+    .container { max-width: 1000px; margin: 40px auto; background: var(--surface); padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
     button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; border-bottom: 3px solid var(--neu-green-dark); }
     button:hover { background: var(--neu-green-dark); }
     
+    /* Profile Card */
     #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
     .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; margin-bottom: 10px; }
     
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+    th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
     th { background: #f8f8f8; color: var(--neu-green); }
-    .admin-thumb { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; border: 1px solid #ddd; }
+    
+    .admin-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
+    .btn-edit { background: #ffc107; color: black; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; font-size: 0.8rem; margin-right: 5px; }
+    .btn-delete { background: #dc3545; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; font-size: 0.8rem; }
+    .btn-logout { background: #6c757d; margin-top: 20px; }
+    
     .hidden { display: none; }
-
-    /* Admin Grid Layout */
-    .admin-flex { display: flex; flex-direction: column; gap: 20px; }
-    @media (min-width: 768px) { .admin-flex { flex-direction: row; } }
-    .admin-box { flex: 1; min-width: 0; }
+    .admin-section-box { margin-bottom: 40px; border-bottom: 2px solid #f0f2f5; padding-bottom: 20px; }
   </style>
 </head>
 <body>
@@ -63,7 +66,7 @@
 <div class="container">
   <div id="section-timein">
     <h2>Library Attendance Portal</h2>
-    <input type="text" id="idInput" placeholder="Enter Student/Faculty ID" onkeydown="if(event.key==='Enter') handleTimeIn()">
+    <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
     <button onclick="handleTimeIn()">SUBMIT ATTENDANCE →</button>
 
     <div id="userProfile">
@@ -71,7 +74,7 @@
       <h2 id="dispName" style="margin:0; color: var(--neu-green);"></h2>
       <p id="dispDetails" style="color: #666; font-style: italic;"></p>
       <div style="text-align: left; margin-top: 20px;">
-        <strong style="border-bottom: 2px solid var(--neu-gold);">Your Recent Logs:</strong>
+        <strong>Your Recent Logs:</strong>
         <table>
           <thead><tr><th>Date</th><th>Time</th></tr></thead>
           <tbody id="logBody"></tbody>
@@ -81,7 +84,7 @@
   </div>
 
   <div id="section-signup" class="hidden">
-    <h2>Register New Member</h2>
+    <h2 id="regTitle">Register New Member</h2>
     <input type="text" id="regID" placeholder="ID Number (e.g. 24-1234)">
     <input type="text" id="regName" placeholder="Full Name">
     <select id="regType">
@@ -90,34 +93,57 @@
     </select>
     <input type="text" id="regCourse" placeholder="Course & Year / Department">
     
-    <label style="display:block; margin-bottom:5px; font-weight:bold;">Upload Profile Picture:</label>
-    <input type="file" id="regFile" accept="image/*" style="margin-bottom: 15px;">
+    <label style="display:block; margin-bottom:5px; font-weight:bold;">Profile Photo:</label>
+    <input type="file" id="regFile" accept="image/*">
     <input type="hidden" id="regBase64">
 
-    <button onclick="handleSignUp()">CREATE ACCOUNT →</button>
+    <button id="btnSave" onclick="handleSignUp()">CREATE ACCOUNT →</button>
+    <button id="btnCancel" class="hidden" onclick="cancelEdit()" style="background:#6c757d; margin-top:10px;">CANCEL EDIT</button>
   </div>
 
   <div id="section-admin" class="hidden">
-    <h2>Admin Management Dashboard</h2>
-    <div class="admin-flex">
-      <div class="admin-box">
-        <h3>Traffic Analytics</h3>
-        <canvas id="trafficChart" height="250"></canvas>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2>Admin Control Panel</h2>
+      <button onclick="adminLogout()" style="width:auto; padding: 10px 20px; background:#dc3545;">LOGOUT ADMIN</button>
+    </div>
+
+    <div class="admin-section-box">
+      <h3>Traffic Analytics</h3>
+      <div style="height: 200px;"><canvas id="trafficChart"></canvas></div>
+    </div>
+
+    <div class="admin-section-box">
+      <h3>Student Database Management</h3>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Photo</th>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Course</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="userListBody"></tbody>
+        </table>
       </div>
-      <div class="admin-box">
-        <h3>Live Activity Logs</h3>
-        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #eee;">
-          <table>
-            <thead><tr><th>Member</th><th>Date/Time</th></tr></thead>
-            <tbody id="adminBody"></tbody>
-          </table>
-        </div>
+    </div>
+
+    <div class="admin-section-box">
+      <h3>Live Activity Logs</h3>
+      <div style="max-height: 300px; overflow-y:auto;">
+        <table>
+          <thead><tr><th>User</th><th>Date</th><th>Time</th></tr></thead>
+          <tbody id="adminBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+  // CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
     authDomain: "sfdasdafd.firebaseapp.com",
@@ -131,118 +157,179 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   let trafficChart = null;
+  let isAdminLoggedIn = false;
 
-  // Image to Base64
+  // Image Converter
   document.getElementById('regFile').addEventListener('change', function(e) {
     const reader = new FileReader();
     reader.onload = () => document.getElementById('regBase64').value = reader.result;
     if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
   });
 
+  // TAB SWITCHING
   function switchTab(tab) {
-    if (tab === 'admin') {
+    if (tab === 'admin' && !isAdminLoggedIn) {
       const p = prompt("Enter Admin Password:");
-      if (p !== "admin123") return alert("Access Denied");
+      if (p === "admin123") {
+        isAdminLoggedIn = true;
+      } else {
+        alert("Incorrect Password!");
+        return;
+      }
     }
-    ['timein', 'signup', 'admin'].forEach(t => {
-      document.getElementById('section-' + t).classList.add('hidden');
-      document.getElementById('link-' + t).classList.remove('active');
-    });
+
+    document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    
     document.getElementById('section-' + tab).classList.remove('hidden');
     document.getElementById('link-' + tab).classList.add('active');
-    
-    if(tab === 'admin') { renderChart(); listenAdmin(); }
+
+    if(tab === 'admin') {
+      loadAnalytics();
+      loadUserDatabase();
+      listenLiveLogs();
+    }
   }
 
+  function adminLogout() {
+    isAdminLoggedIn = false;
+    alert("Logged out from Admin");
+    switchTab('timein');
+  }
+
+  // REGISTER / EDIT USER
   function handleSignUp() {
     const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
+    const name = document.getElementById('regName').value;
     const photo = document.getElementById('regBase64').value;
-    if(!id || !photo) return alert("ID and Photo are required!");
+    if(!id || !name) return alert("Please fill up the fields!");
 
     const data = {
-      name: document.getElementById('regName').value,
+      name: name,
       type: document.getElementById('regType').value,
       course: document.getElementById('regCourse').value,
-      photo: photo
+      photo: photo || "https://via.placeholder.com/150"
     };
 
     db.ref('users/' + id).set(data).then(() => {
-      alert("Registration Successful!");
+      alert("Database Updated!");
+      cancelEdit();
       switchTab('timein');
     });
   }
 
-  function handleTimeIn() {
-    const idInput = document.getElementById('idInput').value.trim();
-    const sId = idInput.replace(/\./g, '_');
-    if(!idInput) return alert("Enter ID!");
-
-    db.ref('users/' + sId).once('value', snap => {
-      if(!snap.exists()) return alert("User not registered!");
+  // EDIT FUNCTION
+  function editUser(id) {
+    db.ref('users/' + id).once('value', snap => {
+      const u = snap.val();
+      document.getElementById('regID').value = id.replace(/_/g, '.');
+      document.getElementById('regID').disabled = true; // Bawal palitan ID habang edit
+      document.getElementById('regName').value = u.name;
+      document.getElementById('regCourse').value = u.course;
+      document.getElementById('regType').value = u.type;
+      document.getElementById('regBase64').value = u.photo;
       
+      document.getElementById('regTitle').innerText = "Edit Member Info";
+      document.getElementById('btnSave').innerText = "UPDATE ACCOUNT →";
+      document.getElementById('btnCancel').classList.remove('hidden');
+      switchTab('signup');
+    });
+  }
+
+  function cancelEdit() {
+    document.getElementById('regID').value = "";
+    document.getElementById('regID').disabled = false;
+    document.getElementById('regName').value = "";
+    document.getElementById('regCourse').value = "";
+    document.getElementById('regBase64').value = "";
+    document.getElementById('regTitle').innerText = "Register New Member";
+    document.getElementById('btnSave').innerText = "CREATE ACCOUNT →";
+    document.getElementById('btnCancel').classList.add('hidden');
+  }
+
+  // DELETE FUNCTION
+  function deleteUser(id) {
+    if(confirm("Are you sure you want to delete this user? All their logs will remain but their profile will be gone.")) {
+      db.ref('users/' + id).remove().then(() => alert("User Deleted"));
+    }
+  }
+
+  // TIME IN
+  function handleTimeIn() {
+    const rawId = document.getElementById('idInput').value.trim();
+    const sId = rawId.replace(/\./g, '_');
+    db.ref('users/' + sId).once('value', snap => {
+      if(!snap.exists()) return alert("ID not found!");
       const u = snap.val();
       const now = new Date();
       const log = {
-        id: idInput, name: u.name, photo: u.photo, course: u.course,
+        id: rawId, name: u.name, photo: u.photo,
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
         day: now.toLocaleDateString('en-US', {weekday:'short'})
       };
-
       db.ref('logs').push(log).then(() => {
-        showProfile(u, idInput);
+        showProfile(u, rawId);
         document.getElementById('idInput').value = "";
       });
     });
   }
 
-  function showProfile(u, rawId) {
+  function showProfile(u, id) {
     document.getElementById('userProfile').style.display = 'block';
     document.getElementById('dispPic').src = u.photo;
     document.getElementById('dispName').innerText = u.name;
-    document.getElementById('dispDetails').innerText = `${u.type} | ${u.course}`;
-
-    db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', snap => {
-      let h = "";
-      let arr = [];
-      snap.forEach(c => arr.push(c.val()));
-      arr.reverse().forEach(l => {
-        h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`;
-      });
+    document.getElementById('dispDetails').innerText = u.course;
+    db.ref('logs').orderByChild('id').equalTo(id).limitToLast(5).on('value', s => {
+      let h = ""; let a = []; s.forEach(c => a.push(c.val()));
+      a.reverse().forEach(l => { h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`; });
       document.getElementById('logBody').innerHTML = h;
     });
   }
 
-  function renderChart() {
-    db.ref('logs').on('value', snap => {
-      const counts = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
-      snap.forEach(c => { if(counts[c.val().day] !== undefined) counts[c.val().day]++; });
-
-      const ctx = document.getElementById('trafficChart').getContext('2d');
-      if(trafficChart) trafficChart.destroy();
-      trafficChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(counts),
-          datasets: [{ label: 'Visitors', data: Object.values(counts), backgroundColor: '#006400' }]
-        },
-        options: { maintainAspectRatio: false }
+  // ADMIN DATABASE VIEW
+  function loadUserDatabase() {
+    db.ref('users').on('value', snap => {
+      let html = "";
+      snap.forEach(child => {
+        const u = child.val();
+        const id = child.key;
+        html += `<tr>
+          <td><img src="${u.photo}" class="admin-thumb"></td>
+          <td><b>${u.name}</b></td>
+          <td>${id}</td>
+          <td>${u.course}</td>
+          <td>
+            <button class="btn-edit" onclick="editUser('${id}')">Edit</button>
+            <button class="btn-delete" onclick="deleteUser('${id}')">Delete</button>
+          </td>
+        </tr>`;
       });
+      document.getElementById('userListBody').innerHTML = html || "<tr><td colspan='5'>No users found.</td></tr>";
     });
   }
 
-  function listenAdmin() {
-    db.ref('logs').limitToLast(20).on('value', snap => {
-      let h = "";
-      let arr = [];
-      snap.forEach(c => arr.push(c.val()));
-      arr.reverse().forEach(l => {
-        h += `<tr>
-                <td style="text-align:left;"><img src="${l.photo}" class="admin-thumb"> <b>${l.name}</b></td>
-                <td>${l.date} <br> <small>${l.time}</small></td>
-              </tr>`;
+  function listenLiveLogs() {
+    db.ref('logs').limitToLast(10).on('value', snap => {
+      let h = ""; let a = []; snap.forEach(c => a.push(c.val()));
+      a.reverse().forEach(l => {
+        h += `<tr><td><img src="${l.photo}" class="admin-thumb"> ${l.name}</td><td>${l.date}</td><td>${l.time}</td></tr>`;
       });
       document.getElementById('adminBody').innerHTML = h;
+    });
+  }
+
+  function loadAnalytics() {
+    db.ref('logs').on('value', snap => {
+      const counts = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
+      snap.forEach(c => { if(counts[c.val().day] !== undefined) counts[c.val().day]++; });
+      const ctx = document.getElementById('trafficChart').getContext('2d');
+      if(trafficChart) trafficChart.destroy();
+      trafficChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: Object.keys(counts), datasets: [{ label: 'Visitors', data: Object.values(counts), borderColor: '#006400', tension:0.3, fill:true, backgroundColor:'rgba(0,100,0,0.1)' }] },
+        options: { maintainAspectRatio: false }
+      });
     });
   }
 </script>
