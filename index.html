@@ -29,29 +29,27 @@
     .nav-links { display: flex; align-items: center; }
     .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; cursor: pointer; }
     .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
-    .nav-links a.logout-btn { color: #dc3545; border: 1px solid #dc3545; margin-left: 15px; }
-    .nav-links a.logout-btn:hover { background: #dc3545; color: white; }
+    
+    /* Logout Button Style sa Navbar */
+    .logout-btn { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 10px; transition: 0.3s; }
+    .logout-btn:hover { background: #dc3545; color: white !important; }
 
     .container { max-width: 1000px; margin: 40px auto; background: var(--surface); padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
     button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; border-bottom: 3px solid var(--neu-green-dark); }
     button:hover { background: var(--neu-green-dark); }
     
-    /* Profile Card */
     #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
     .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; margin-bottom: 10px; }
     
-    /* Tables */
     table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
     th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
     th { background: #f8f8f8; color: var(--neu-green); }
-    .admin-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
+    .admin-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 10px; }
 
     /* EDIT & DELETE BUTTONS */
-    .btn-edit { background: #007bff; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; margin-right: 5px; transition: 0.2s; }
-    .btn-edit:hover { background: #0056b3; }
-    .btn-delete { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; transition: 0.2s; }
-    .btn-delete:hover { background: #a71d2a; }
+    .btn-edit { background: #007bff; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; margin-right: 5px; }
+    .btn-delete { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
     
     .hidden { display: none; }
     .admin-section-box { margin-bottom: 40px; border-bottom: 2px solid #f0f2f5; padding-bottom: 20px; }
@@ -75,7 +73,7 @@
 <div class="container">
   <div id="section-timein">
     <h2>Library Attendance Portal</h2>
-    <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
+    <input type="text" id="idInput" placeholder="Enter ID Number (e.g. 24-1234)" onkeydown="if(event.key==='Enter') handleTimeIn()">
     <button onclick="handleTimeIn()">SUBMIT ATTENDANCE →</button>
 
     <div id="userProfile">
@@ -102,12 +100,12 @@
     </select>
     <input type="text" id="regCourse" placeholder="Course & Year / Department">
     
-    <label style="display:block; margin-bottom:5px; font-weight:bold;">Profile Photo:</label>
+    <label style="display:block; margin-bottom:5px; font-weight:bold;">Upload Profile Picture:</label>
     <input type="file" id="regFile" accept="image/*">
     <input type="hidden" id="regBase64">
 
     <button id="btnSave" onclick="handleSignUp()">CREATE ACCOUNT →</button>
-    <button id="btnCancel" class="hidden" onclick="cancelEdit()" style="background:#6c757d; margin-top:10px;">CANCEL EDIT</button>
+    <button id="btnCancel" class="hidden" onclick="cancelEdit()" style="background:#6c757d; margin-top:10px; border:none;">CANCEL EDIT</button>
   </div>
 
   <div id="section-admin" class="hidden">
@@ -119,7 +117,7 @@
     </div>
 
     <div class="admin-section-box">
-      <h3>Student Database</h3>
+      <h3>Student Database Management</h3>
       <div style="overflow-x:auto;">
         <table>
           <thead>
@@ -137,11 +135,17 @@
     </div>
 
     <div class="admin-section-box">
-      <h3>Recent Logs</h3>
-      <div style="max-height: 300px; overflow-y:auto;">
+      <h3>Live Activity Logs (Recent Logins)</h3>
+      <div style="max-height: 400px; overflow-y:auto; border: 1px solid #eee; border-radius: 8px;">
         <table>
-          <thead><tr><th>User</th><th>Date</th><th>Time</th></tr></thead>
-          <tbody id="adminBody"></tbody>
+          <thead>
+            <tr>
+              <th style="text-align:left; padding-left:20px;">Member</th>
+              <th>Date</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="adminLogsBody"></tbody>
         </table>
       </div>
     </div>
@@ -149,7 +153,7 @@
 </div>
 
 <script>
-  // CONFIGURATION
+  // FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
     authDomain: "sfdasdafd.firebaseapp.com",
@@ -175,17 +179,19 @@
   // TAB SWITCHING
   function switchTab(tab) {
     if (tab === 'admin' && !isAdminLoggedIn) {
-      const p = prompt("Admin Login Required:");
+      const p = prompt("Admin Security: Enter Password");
       if (p === "admin123") {
         isAdminLoggedIn = true;
         document.getElementById('logout-nav').classList.remove('hidden');
       } else {
-        alert("Incorrect Password!");
+        alert("Access Denied!");
         return;
       }
     }
 
-    document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+    document.querySelectorAll('.container > div').forEach(d => {
+       if(!d.id.startsWith('userProfile')) d.classList.add('hidden');
+    });
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     
     document.getElementById('section-' + tab).classList.remove('hidden');
@@ -194,24 +200,23 @@
     if(tab === 'admin') {
       loadAnalytics();
       loadUserDatabase();
-      listenLiveLogs();
+      listenLiveLogs(); 
     }
   }
 
-  // ADMIN LOGOUT
   function adminLogout() {
     isAdminLoggedIn = false;
     document.getElementById('logout-nav').classList.add('hidden');
-    alert("Admin Session Ended.");
+    alert("Admin Logged Out");
     switchTab('timein');
   }
 
-  // LOGIC: SIGNUP / UPDATE
+  // SIGNUP / UPDATE LOGIC
   function handleSignUp() {
     const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
     const name = document.getElementById('regName').value;
     const photo = document.getElementById('regBase64').value;
-    if(!id || !name) return alert("Missing required fields!");
+    if(!id || !name) return alert("Please fill up the ID and Name!");
 
     const data = {
       name: name,
@@ -227,7 +232,7 @@
     });
   }
 
-  // LOGIC: EDIT & DELETE
+  // EDIT & DELETE
   function editUser(id) {
     db.ref('users/' + id).once('value', snap => {
       const u = snap.val();
@@ -238,16 +243,16 @@
       document.getElementById('regType').value = u.type;
       document.getElementById('regBase64').value = u.photo;
       
-      document.getElementById('regTitle').innerText = "Edit User Details";
-      document.getElementById('btnSave').innerText = "UPDATE RECORD";
+      document.getElementById('regTitle').innerText = "Update Member Info";
+      document.getElementById('btnSave').innerText = "SAVE CHANGES";
       document.getElementById('btnCancel').classList.remove('hidden');
       switchTab('signup');
     });
   }
 
   function deleteUser(id) {
-    if(confirm("Permanent Action: Delete this user profile?")) {
-      db.ref('users/' + id).remove().then(() => alert("Profile Removed."));
+    if(confirm("Confirm Delete: This will remove the member from the database.")) {
+      db.ref('users/' + id).remove().then(() => alert("Member Deleted."));
     }
   }
 
@@ -267,16 +272,20 @@
     const rawId = document.getElementById('idInput').value.trim();
     const sId = rawId.replace(/\./g, '_');
     db.ref('users/' + sId).once('value', snap => {
-      if(!snap.exists()) return alert("User not found in database.");
+      if(!snap.exists()) return alert("ID not found. Register first.");
+      
       const u = snap.val();
       const now = new Date();
-      const log = {
-        id: rawId, name: u.name, photo: u.photo,
+      const logEntry = {
+        id: rawId,
+        name: u.name,
+        photo: u.photo,
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
         day: now.toLocaleDateString('en-US', {weekday:'short'})
       };
-      db.ref('logs').push(log).then(() => {
+
+      db.ref('logs').push(logEntry).then(() => {
         showProfile(u, rawId);
         document.getElementById('idInput').value = "";
       });
@@ -288,6 +297,7 @@
     document.getElementById('dispPic').src = u.photo;
     document.getElementById('dispName').innerText = u.name;
     document.getElementById('dispDetails').innerText = u.course;
+    
     db.ref('logs').orderByChild('id').equalTo(id).limitToLast(5).on('value', s => {
       let h = ""; let a = []; s.forEach(c => a.push(c.val()));
       a.reverse().forEach(l => { h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`; });
@@ -313,29 +323,49 @@
           </td>
         </tr>`;
       });
-      document.getElementById('userListBody').innerHTML = html || "<tr><td colspan='5'>Empty Database</td></tr>";
+      document.getElementById('userListBody').innerHTML = html || "<tr><td colspan='5'>Database is empty.</td></tr>";
     });
   }
 
+  // FIXED LOGS LISTENER
   function listenLiveLogs() {
-    db.ref('logs').limitToLast(10).on('value', snap => {
-      let h = ""; let a = []; snap.forEach(c => a.push(c.val()));
-      a.reverse().forEach(l => {
-        h += `<tr><td style="text-align:left;"><img src="${l.photo}" class="admin-thumb"> ${l.name}</td><td>${l.date}</td><td>${l.time}</td></tr>`;
+    db.ref('logs').limitToLast(20).on('value', snap => {
+      let html = "";
+      let logsArr = [];
+      snap.forEach(child => {
+        logsArr.push(child.val());
       });
-      document.getElementById('adminBody').innerHTML = h;
+      
+      // I-reverse para pinakabago ang nasa itaas
+      logsArr.reverse().forEach(l => {
+        html += `<tr>
+          <td style="text-align:left; padding-left:20px;">
+            <img src="${l.photo}" class="admin-thumb">
+            <strong>${l.name}</strong>
+          </td>
+          <td>${l.date}</td>
+          <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td>
+        </tr>`;
+      });
+      document.getElementById('adminLogsBody').innerHTML = html || "<tr><td colspan='3'>No recent logs.</td></tr>";
     });
   }
 
   function loadAnalytics() {
     db.ref('logs').on('value', snap => {
       const counts = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
-      snap.forEach(c => { if(counts[c.val().day] !== undefined) counts[c.val().day]++; });
+      snap.forEach(c => {
+        const d = c.val().day;
+        if(counts[d] !== undefined) counts[d]++;
+      });
       const ctx = document.getElementById('trafficChart').getContext('2d');
       if(trafficChart) trafficChart.destroy();
       trafficChart = new Chart(ctx, {
         type: 'line',
-        data: { labels: Object.keys(counts), datasets: [{ label: 'Total Logs', data: Object.values(counts), borderColor: '#006400', tension:0.3, fill:true, backgroundColor:'rgba(0,100,0,0.1)' }] },
+        data: {
+          labels: Object.keys(counts),
+          datasets: [{ label: 'Library Visitors', data: Object.values(counts), borderColor: '#006400', tension: 0.3, fill: true, backgroundColor: 'rgba(0,100,0,0.1)' }]
+        },
         options: { maintainAspectRatio: false }
       });
     });
