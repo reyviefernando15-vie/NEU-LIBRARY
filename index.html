@@ -32,10 +32,13 @@
     .logout-nav:hover { background: #dc3545; color: white !important; }
 
     .container { max-width: 1000px; margin: 40px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-    input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+    input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 1rem; }
     button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
     
-    /* NEW FILTER BAR STYLE */
+    /* LABEL FOR REASON */
+    .field-label { font-size: 0.75rem; font-weight: 800; color: #8e949a; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* FILTER BAR */
     .filter-bar { 
         background: #f8f9fa; padding: 15px 20px; border-radius: 50px; 
         display: flex; align-items: center; gap: 10px; margin-bottom: 25px;
@@ -44,7 +47,6 @@
     .filter-bar select { width: auto; margin-bottom: 0; padding: 8px 12px; font-size: 0.85rem; border-radius: 20px; }
     .record-count { margin-left: auto; font-weight: bold; color: var(--neu-green); font-size: 0.8rem; background: #e6f0e6; padding: 5px 15px; border-radius: 15px; }
 
-    /* GRID FOR ADMIN */
     .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
     .reg-link-container { text-align: center; margin-top: 20px; }
@@ -56,11 +58,9 @@
     th { background: #f8f8f8; color: var(--neu-green); }
     .admin-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 10px; }
 
-    .btn-edit { background: #007bff; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
     .btn-delete { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
     .btn-clear { background: #6c757d; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; }
-    .btn-bulk-delete { background: #dc3545; color: white; padding: 10px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; display: none; }
-
+    
     .hidden { display: none; }
     .admin-box { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 12px; }
     
@@ -87,8 +87,18 @@
 <div class="container">
   <div id="section-timein">
     <h2>Attendance Portal</h2>
+    
+    <span class="field-label">REASON FOR VISITING</span>
+    <select id="visitReason">
+      <option value="Study / Reading">Study / Reading</option>
+      <option value="Research">Research</option>
+      <option value="Borrow / Return Books">Borrow / Return Books</option>
+      <option value="Computer Use">Computer Use</option>
+    </select>
+
     <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
     <button onclick="handleTimeIn()">TIME IN →</button>
+    
     <div class="reg-link-container">
       <span class="reg-link" onclick="switchTab('signup')">Don't have an account? <b>Register here</b></span>
     </div>
@@ -108,7 +118,6 @@
   </div>
 
   <div id="section-admin" class="hidden">
-    
     <div class="filter-bar">
         <span style="font-size: 0.7rem; font-weight: bold; color: #888;">FILTERS:</span>
         <select><option>All Reasons</option><option>Study</option><option>Research</option></select>
@@ -123,7 +132,6 @@
                 <h3>Traffic Chart</h3>
                 <div style="height: 180px;"><canvas id="trafficChart"></canvas></div>
             </div>
-
             <div class="admin-box">
                 <h3>Student Database</h3>
                 <div style="overflow-x:auto;">
@@ -141,7 +149,6 @@
                   <h3>Live Activity Logs</h3>
                   <button class="btn-clear" onclick="clearLogs()">Clear</button>
                 </div>
-                <button id="btnBulkDelete" class="btn-bulk-delete" onclick="deleteSelectedLogs()">Delete Selected</button>
                 <div style="max-height: 500px; overflow-y:auto; border: 1px solid #eee;">
                   <table>
                     <thead>
@@ -168,12 +175,11 @@
     <input type="file" id="regFile" accept="image/*">
     <input type="hidden" id="regBase64">
     <button id="btnSave" onclick="handleSignUp()">Create New Account</button>
-    <button id="btnCancel" onclick="switchTab('timein')" style="background:#6c757d; margin-top:10px;">BACK TO LOGIN</button>
+    <button onclick="switchTab('timein')" style="background:#6c757d; margin-top:10px;">BACK TO LOGIN</button>
   </div>
 </div>
 
 <script>
-  // FIREBASE CONFIG (STAYED THE SAME)
   const firebaseConfig = {
     apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
     authDomain: "sfdasdafd.firebaseapp.com",
@@ -188,72 +194,82 @@
   const db = firebase.database();
   let trafficChart = null;
   let isAdmin = false;
+  let hideTimeout = null; // Timer variable
 
-  // Lahat ng functions mo (handleTimeIn, loadLiveLogs, etc.) ay nandoon pa rin
-  // In-update lang natin ang rendering para sa bagong layout
+  function handleTimeIn() {
+    const rawId = document.getElementById('idInput').value.trim();
+    const reason = document.getElementById('visitReason').value;
+    const sId = rawId.replace(/\./g, '_');
 
-  document.getElementById('regFile').addEventListener('change', function(e) {
-    const reader = new FileReader();
-    reader.onload = () => document.getElementById('regBase64').value = reader.result;
-    if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
-  });
+    db.ref('users/' + sId).once('value', snap => {
+      if(!snap.exists()) return alert("Not Registered!");
+      
+      const u = snap.val();
+      const now = new Date();
+      const log = {
+        id: rawId, 
+        name: u.name, 
+        photo: u.photo, 
+        reason: reason, // Isasama sa database
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        day: now.toLocaleDateString('en-US', {weekday:'short'})
+      };
 
+      db.ref('logs').push(log).then(() => {
+        // Show Profile
+        const profileDiv = document.getElementById('userProfile');
+        profileDiv.style.display = 'block';
+        document.getElementById('dispPic').src = u.photo;
+        document.getElementById('dispName').innerText = u.name;
+        document.getElementById('dispDetails').innerText = u.course;
+        document.getElementById('idInput').value = "";
+
+        // Auto-Hide Logic (5 Seconds)
+        if(hideTimeout) clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+            profileDiv.style.display = 'none';
+        }, 5000);
+
+        // Update history table
+        db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', s => {
+          let h = ""; let a = []; s.forEach(c => a.push(c.val()));
+          a.reverse().forEach(l => { h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`; });
+          document.getElementById('logBody').innerHTML = h;
+        });
+      });
+    });
+  }
+
+  // --- EXISTING FUNCTIONS ---
   function switchTab(tab) {
     if (tab === 'admin' && !isAdmin) {
-      const pass = prompt("Admin Password:");
-      if (pass !== "admin123") return;
+      if (prompt("Admin Password:") !== "admin123") return;
       isAdmin = true;
       document.getElementById('logout-btn').classList.remove('hidden');
     }
     document.querySelectorAll('.container > div').forEach(d => { if(!d.id.includes('userProfile')) d.classList.add('hidden'); });
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     document.getElementById('section-' + tab).classList.remove('hidden');
-    const navLink = document.getElementById('link-' + tab);
-    if(navLink) navLink.classList.add('active');
+    if(document.getElementById('link-' + tab)) document.getElementById('link-' + tab).classList.add('active');
     if(tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
   }
 
-  function adminLogout() {
-    isAdmin = false;
-    document.getElementById('logout-btn').classList.add('hidden');
-    switchTab('timein');
-  }
-
-  function toggleSelectAll(source) {
-    const checkboxes = document.getElementsByName('logCheck');
-    for (let i = 0; i < checkboxes.length; i++) checkboxes[i].checked = source.checked;
-    updateBulkBtn();
-  }
-
-  function updateBulkBtn() {
-    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
-    const btn = document.getElementById('btnBulkDelete');
-    btn.style.display = checkboxes.length > 0 ? 'block' : 'none';
-    btn.innerText = `Delete Selected (${checkboxes.length})`;
-  }
-
-  function deleteSelectedLogs() {
-    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
-    if (confirm(`Delete ${checkboxes.length} logs?`)) {
-      checkboxes.forEach(cb => db.ref('logs/' + cb.value).remove());
-      document.getElementById('selectAll').checked = false;
-      updateBulkBtn();
-    }
-  }
-
-  function clearLogs() {
-    if(confirm("Clear all history?")) db.ref('logs').remove();
-  }
-
-  function handleSignUp() {
-    const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
-    const data = {
-      name: document.getElementById('regName').value,
-      type: document.getElementById('regType').value,
-      course: document.getElementById('regCourse').value,
-      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
-    };
-    db.ref('users/' + id).set(data).then(() => { alert("Saved!"); cancelEdit(); switchTab('timein'); });
+  function loadLiveLogs() {
+    db.ref('logs').limitToLast(50).on('value', snap => {
+      let h = ""; let count = 0;
+      let logsArr = [];
+      snap.forEach(c => { logsArr.push({ key: c.key, data: c.val() }); count++; });
+      logsArr.reverse().forEach(item => {
+        const l = item.data;
+        h += `<tr>
+          <td><input type="checkbox" name="logCheck" value="${item.key}"></td>
+          <td style="text-align:left;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b><br><small>${l.reason}</small></td>
+          <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td></tr>`;
+      });
+      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='3'>No History</td></tr>";
+      document.getElementById('countDisplay').innerText = `DISPLAYING: ${count} RECORDS`;
+    });
   }
 
   function loadUserDB() {
@@ -268,51 +284,22 @@
     });
   }
 
-  function deleteUser(id) { if(confirm("Delete user?")) db.ref('users/' + id).remove(); }
-
-  function loadLiveLogs() {
-    db.ref('logs').limitToLast(50).on('value', snap => {
-      let h = ""; let count = 0;
-      let logsArr = [];
-      snap.forEach(c => { logsArr.push({ key: c.key, data: c.val() }); count++; });
-      logsArr.reverse().forEach(item => {
-        const l = item.data; const key = item.key;
-        h += `<tr>
-          <td><input type="checkbox" name="logCheck" value="${key}" onclick="updateBulkBtn()"></td>
-          <td style="text-align:left;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b></td>
-          <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td></tr>`;
-      });
-      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='3'>No History</td></tr>";
-      document.getElementById('countDisplay').innerText = `DISPLAYING: ${count} RECORDS`;
-    });
+  function handleSignUp() {
+    const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
+    const data = {
+      name: document.getElementById('regName').value,
+      type: document.getElementById('regType').value,
+      course: document.getElementById('regCourse').value,
+      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
+    };
+    db.ref('users/' + id).set(data).then(() => { alert("Saved!"); switchTab('timein'); });
   }
 
-  function handleTimeIn() {
-    const rawId = document.getElementById('idInput').value.trim();
-    const sId = rawId.replace(/\./g, '_');
-    db.ref('users/' + sId).once('value', snap => {
-      if(!snap.exists()) return alert("Not Registered!");
-      const u = snap.val();
-      const now = new Date();
-      const log = {
-        id: rawId, name: u.name, photo: u.photo, date: now.toLocaleDateString(),
-        time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-        day: now.toLocaleDateString('en-US', {weekday:'short'})
-      };
-      db.ref('logs').push(log).then(() => {
-        document.getElementById('userProfile').style.display = 'block';
-        document.getElementById('dispPic').src = u.photo;
-        document.getElementById('dispName').innerText = u.name;
-        document.getElementById('dispDetails').innerText = u.course;
-        document.getElementById('idInput').value = "";
-        db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', s => {
-          let h = ""; let a = []; s.forEach(c => a.push(c.val()));
-          a.reverse().forEach(l => { h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`; });
-          document.getElementById('logBody').innerHTML = h;
-        });
-      });
-    });
-  }
+  document.getElementById('regFile').addEventListener('change', function(e) {
+    const reader = new FileReader();
+    reader.onload = () => document.getElementById('regBase64').value = reader.result;
+    if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+  });
 
   function loadAnalytics() {
     db.ref('logs').on('value', snap => {
@@ -327,10 +314,10 @@
       });
     });
   }
-  
-  function cancelEdit() {
-    document.getElementById('regID').value = ""; document.getElementById('regName').value = "";
-  }
+
+  function deleteUser(id) { if(confirm("Delete user?")) db.ref('users/' + id).remove(); }
+  function clearLogs() { if(confirm("Clear all?")) db.ref('logs').remove(); }
+  function adminLogout() { isAdmin = false; document.getElementById('logout-btn').classList.add('hidden'); switchTab('timein'); }
 </script>
 </body>
 </html>
