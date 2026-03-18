@@ -10,7 +10,6 @@
 const firebaseConfig = {
   apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
   authDomain: "sfdasdafd.firebaseapp.com",
-  databaseURL: "https://sfdasdafd-default-rtdb.firebaseio.com",
   projectId: "sfdasdafd",
   storageBucket: "sfdasdafd.firebasestorage.app",
   messagingSenderId: "701386389930",
