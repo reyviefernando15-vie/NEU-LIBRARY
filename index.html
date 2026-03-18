@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEU Library - Admin Control System</title>
+  <title>NEU Library - Admin System</title>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -17,11 +17,10 @@
       --bg: #f0f2f5;
       --nav-bg: #ffffff;
       --text: #1a1a1a;
-      --surface: #ffffff;
     }
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: var(--text); }
     
-    /* NAVBAR */
+    /* NAVIGATION */
     .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; background: var(--nav-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
     .logo-area { display: flex; align-items: center; gap: 10px; }
     .logo-img { height: 45px; }
@@ -29,30 +28,29 @@
     .nav-links { display: flex; align-items: center; }
     .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; cursor: pointer; }
     .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
-    
-    /* Logout Button Style sa Navbar */
-    .logout-btn { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 10px; transition: 0.3s; }
-    .logout-btn:hover { background: #dc3545; color: white !important; }
+    .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 10px; }
+    .logout-nav:hover { background: #dc3545; color: white !important; }
 
-    .container { max-width: 1000px; margin: 40px auto; background: var(--surface); padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .container { max-width: 1000px; margin: 40px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; border-bottom: 3px solid var(--neu-green-dark); }
-    button:hover { background: var(--neu-green-dark); }
+    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
     
-    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
-    .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; margin-bottom: 10px; }
-    
+    /* Admin UI */
     table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
     th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
     th { background: #f8f8f8; color: var(--neu-green); }
     .admin-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 10px; }
 
-    /* EDIT & DELETE BUTTONS */
-    .btn-edit { background: white; color: #f0f2f5; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; margin-right: 5px; }
-    .btn-delete { background: white; color: #f0f2f5; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
-    
+    .btn-edit { background: #007bff; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
+    .btn-delete { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
+    .btn-clear { background: #6c757d; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; float: right; font-size: 0.8rem; margin-bottom: 10px; }
+    .btn-clear:hover { background: #343a40; }
+
     .hidden { display: none; }
-    .admin-section-box { margin-bottom: 40px; border-bottom: 2px solid #f0f2f5; padding-bottom: 20px; }
+    .admin-box { margin-bottom: 40px; border-bottom: 2px solid #f0f2f5; padding-bottom: 20px; position: relative; }
+    
+    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
+    .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
   </style>
 </head>
 <body>
@@ -63,25 +61,25 @@
     <div class="logo-text">NEU LIBRARY</div>
   </div>
   <div class="nav-links">
-    <a href="#" id="link-timein" class="active" onclick="switchTab('timein')">Dashboard</a>
-    <a href="#" id="link-signup" onclick="switchTab('signup')">Register</a>
-    <a href="#" id="link-admin" onclick="switchTab('admin')">Admin</a>
-    <a href="#" id="logout-nav" class="logout-btn hidden" onclick="adminLogout()">Logout</a>
+    <a id="link-timein" class="active" onclick="switchTab('timein')">Dashboard</a>
+    <a id="link-signup" onclick="switchTab('signup')">Register</a>
+    <a id="link-admin" onclick="switchTab('admin')">Admin</a>
+    <a id="logout-btn" class="logout-nav hidden" onclick="adminLogout()">Logout</a>
   </div>
 </nav>
 
 <div class="container">
   <div id="section-timein">
-    <h2>Library Attendance Portal</h2>
-    <input type="text" id="idInput" placeholder="Enter ID Number (e.g. 24-1234)" onkeydown="if(event.key==='Enter') handleTimeIn()">
-    <button onclick="handleTimeIn()">SUBMIT ATTENDANCE →</button>
+    <h2>Attendance Portal</h2>
+    <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
+    <button onclick="handleTimeIn()">TIME IN →</button>
 
     <div id="userProfile">
       <img id="dispPic" src="" class="profile-pic">
-      <h2 id="dispName" style="margin:0; color: var(--neu-green);"></h2>
-      <p id="dispDetails" style="color: #666; font-style: italic;"></p>
+      <h2 id="dispName" style="margin:10px 0 0; color: var(--neu-green);"></h2>
+      <p id="dispDetails" style="color: #666;"></p>
       <div style="text-align: left; margin-top: 20px;">
-        <strong style="border-bottom: 2px solid var(--neu-gold);">Your Recent Logs:</strong>
+        <strong>Your Recent History:</strong>
         <table>
           <thead><tr><th>Date</th><th>Time</th></tr></thead>
           <tbody id="logBody"></tbody>
@@ -91,60 +89,39 @@
   </div>
 
   <div id="section-signup" class="hidden">
-    <h2 id="regTitle">Register New Member</h2>
-    <input type="text" id="regID" placeholder="ID Number (e.g. 24-1234)">
+    <h2 id="regTitle">Register Member</h2>
+    <input type="text" id="regID" placeholder="ID Number">
     <input type="text" id="regName" placeholder="Full Name">
-    <select id="regType">
-      <option value="Student">Student</option>
-      <option value="Faculty">Faculty / Staff</option>
-    </select>
-    <input type="text" id="regCourse" placeholder="Course & Year / Department">
-    
-    <label style="display:block; margin-bottom:5px; font-weight:bold;">Upload Profile Picture:</label>
+    <select id="regType"><option value="Student">Student</option><option value="Faculty">Faculty</option></select>
+    <input type="text" id="regCourse" placeholder="Course/Department">
     <input type="file" id="regFile" accept="image/*">
     <input type="hidden" id="regBase64">
-
-    <button id="btnSave" onclick="handleSignUp()">CREATE ACCOUNT →</button>
-    <button id="btnCancel" class="hidden" onclick="cancelEdit()" style="background:#6c757d; margin-top:10px; border:none;">CANCEL EDIT</button>
+    <button id="btnSave" onclick="handleSignUp()">SAVE RECORD</button>
+    <button id="btnCancel" class="hidden" onclick="cancelEdit()" style="background:#6c757d; margin-top:10px;">CANCEL</button>
   </div>
 
   <div id="section-admin" class="hidden">
-    <h2>Admin Control Panel</h2>
-
-    <div class="admin-section-box">
-      <h3>Traffic Analytics</h3>
-      <div style="height: 200px;"><canvas id="trafficChart"></canvas></div>
+    <div class="admin-box">
+      <h3>Traffic Chart</h3>
+      <div style="height: 180px;"><canvas id="trafficChart"></canvas></div>
     </div>
 
-    <div class="admin-section-box">
-      <h3>Student Database Management</h3>
+    <div class="admin-box">
+      <h3>Student Database</h3>
       <div style="overflow-x:auto;">
         <table>
-          <thead>
-            <tr>
-              <th>Photo</th>
-              <th>Name</th>
-              <th>ID</th>
-              <th>Course</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Photo</th><th>Name</th><th>ID</th><th>Actions</th></tr></thead>
           <tbody id="userListBody"></tbody>
         </table>
       </div>
     </div>
 
-    <div class="admin-section-box">
-      <h3>Live Activity Logs (Recent Logins)</h3>
-      <div style="max-height: 400px; overflow-y:auto; border: 1px solid #eee; border-radius: 8px;">
+    <div class="admin-box">
+      <button class="btn-clear" onclick="clearLogs()">Delete All History</button>
+      <h3>Live Activity Logs</h3>
+      <div style="max-height: 400px; overflow-y:auto; border: 1px solid #eee;">
         <table>
-          <thead>
-            <tr>
-              <th style="text-align:left; padding-left:20px;">Member</th>
-              <th>Date</th>
-              <th>Time</th>
-            </tr>
-          </thead>
+          <thead><tr><th>User</th><th>Date</th><th>Time</th></tr></thead>
           <tbody id="adminLogsBody"></tbody>
         </table>
       </div>
@@ -153,7 +130,6 @@
 </div>
 
 <script>
-  // FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
     authDomain: "sfdasdafd.firebaseapp.com",
@@ -167,72 +143,52 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   let trafficChart = null;
-  let isAdminLoggedIn = false;
+  let isAdmin = false;
 
-  // Image to Base64
+  // File to Base64
   document.getElementById('regFile').addEventListener('change', function(e) {
     const reader = new FileReader();
     reader.onload = () => document.getElementById('regBase64').value = reader.result;
     if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
   });
 
-  // TAB SWITCHING
   function switchTab(tab) {
-    if (tab === 'admin' && !isAdminLoggedIn) {
-      const p = prompt("Admin Security: Enter Password");
-      if (p === "admin123") {
-        isAdminLoggedIn = true;
-        document.getElementById('logout-nav').classList.remove('hidden');
-      } else {
-        alert("Access Denied!");
-        return;
-      }
+    if (tab === 'admin' && !isAdmin) {
+      if (prompt("Admin Password:") !== "admin123") return alert("Wrong Password");
+      isAdmin = true;
+      document.getElementById('logout-btn').classList.remove('hidden');
     }
-
-    document.querySelectorAll('.container > div').forEach(d => {
-       if(!d.id.startsWith('userProfile')) d.classList.add('hidden');
-    });
+    document.querySelectorAll('.container > div').forEach(d => { if(!d.id.includes('userProfile')) d.classList.add('hidden'); });
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    
     document.getElementById('section-' + tab).classList.remove('hidden');
     document.getElementById('link-' + tab).classList.add('active');
-
-    if(tab === 'admin') {
-      loadAnalytics();
-      loadUserDatabase();
-      listenLiveLogs(); 
-    }
+    if(tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
   }
 
   function adminLogout() {
-    isAdminLoggedIn = false;
-    document.getElementById('logout-nav').classList.add('hidden');
-    alert("Admin Logged Out");
+    isAdmin = false;
+    document.getElementById('logout-btn').classList.add('hidden');
+    alert("Logged out");
     switchTab('timein');
   }
 
-  // SIGNUP / UPDATE LOGIC
-  function handleSignUp() {
-    const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
-    const name = document.getElementById('regName').value;
-    const photo = document.getElementById('regBase64').value;
-    if(!id || !name) return alert("Please fill up the ID and Name!");
-
-    const data = {
-      name: name,
-      type: document.getElementById('regType').value,
-      course: document.getElementById('regCourse').value,
-      photo: photo || "https://via.placeholder.com/150"
-    };
-
-    db.ref('users/' + id).set(data).then(() => {
-      alert("Successfully Saved!");
-      cancelEdit();
-      switchTab('timein');
-    });
+  function clearLogs() {
+    if(confirm("DANGER: Sigurado ka bang buburahin lahat ng history? Hindi na ito mababalik.")) {
+      db.ref('logs').remove().then(() => alert("Logs Cleared!"));
+    }
   }
 
-  // EDIT & DELETE
+  function handleSignUp() {
+    const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
+    const data = {
+      name: document.getElementById('regName').value,
+      type: document.getElementById('regType').value,
+      course: document.getElementById('regCourse').value,
+      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
+    };
+    db.ref('users/' + id).set(data).then(() => { alert("Saved!"); cancelEdit(); switchTab('timein'); });
+  }
+
   function editUser(id) {
     db.ref('users/' + id).once('value', snap => {
       const u = snap.val();
@@ -240,132 +196,85 @@
       document.getElementById('regID').disabled = true;
       document.getElementById('regName').value = u.name;
       document.getElementById('regCourse').value = u.course;
-      document.getElementById('regType').value = u.type;
       document.getElementById('regBase64').value = u.photo;
-      
-      document.getElementById('regTitle').innerText = "Update Member Info";
-      document.getElementById('btnSave').innerText = "SAVE CHANGES";
+      document.getElementById('regTitle').innerText = "Update Member";
       document.getElementById('btnCancel').classList.remove('hidden');
       switchTab('signup');
     });
   }
 
   function deleteUser(id) {
-    if(confirm("Confirm Delete: This will remove the member from the database.")) {
-      db.ref('users/' + id).remove().then(() => alert("Member Deleted."));
-    }
+    if(confirm("Delete this user?")) db.ref('users/' + id).remove();
   }
 
   function cancelEdit() {
-    document.getElementById('regID').value = "";
     document.getElementById('regID').disabled = false;
-    document.getElementById('regName').value = "";
-    document.getElementById('regCourse').value = "";
-    document.getElementById('regBase64').value = "";
-    document.getElementById('regTitle').innerText = "Register New Member";
-    document.getElementById('btnSave').innerText = "CREATE ACCOUNT →";
+    document.getElementById('regID').value = ""; document.getElementById('regName').value = "";
+    document.getElementById('regTitle').innerText = "Register Member";
     document.getElementById('btnCancel').classList.add('hidden');
   }
 
-  // TIME IN PORTAL
   function handleTimeIn() {
     const rawId = document.getElementById('idInput').value.trim();
     const sId = rawId.replace(/\./g, '_');
     db.ref('users/' + sId).once('value', snap => {
-      if(!snap.exists()) return alert("ID not found. Register first.");
-      
+      if(!snap.exists()) return alert("Not Registered!");
       const u = snap.val();
       const now = new Date();
-      const logEntry = {
-        id: rawId,
-        name: u.name,
-        photo: u.photo,
-        date: now.toLocaleDateString(),
+      const log = {
+        id: rawId, name: u.name, photo: u.photo, date: now.toLocaleDateString(),
         time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
         day: now.toLocaleDateString('en-US', {weekday:'short'})
       };
-
-      db.ref('logs').push(logEntry).then(() => {
-        showProfile(u, rawId);
+      db.ref('logs').push(log).then(() => {
+        document.getElementById('userProfile').style.display = 'block';
+        document.getElementById('dispPic').src = u.photo;
+        document.getElementById('dispName').innerText = u.name;
+        document.getElementById('dispDetails').innerText = u.course;
         document.getElementById('idInput').value = "";
+        
+        db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', s => {
+          let h = ""; let a = []; s.forEach(c => a.push(c.val()));
+          a.reverse().forEach(l => { h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`; });
+          document.getElementById('logBody').innerHTML = h;
+        });
       });
     });
   }
 
-  function showProfile(u, id) {
-    document.getElementById('userProfile').style.display = 'block';
-    document.getElementById('dispPic').src = u.photo;
-    document.getElementById('dispName').innerText = u.name;
-    document.getElementById('dispDetails').innerText = u.course;
-    
-    db.ref('logs').orderByChild('id').equalTo(id).limitToLast(5).on('value', s => {
-      let h = ""; let a = []; s.forEach(c => a.push(c.val()));
-      a.reverse().forEach(l => { h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`; });
-      document.getElementById('logBody').innerHTML = h;
-    });
-  }
-
-  // ADMIN DATA LOADERS
-  function loadUserDatabase() {
+  function loadUserDB() {
     db.ref('users').on('value', snap => {
-      let html = "";
-      snap.forEach(child => {
-        const u = child.val();
-        const id = child.key;
-        html += `<tr>
-          <td><img src="${u.photo}" class="admin-thumb"></td>
-          <td style="text-align:left;"><b>${u.name}</b></td>
-          <td>${id.replace(/_/g, '.')}</td>
-          <td>${u.course}</td>
-          <td>
-            <button class="btn-edit" onclick="editUser('${id}')">Edit</button>
-            <button class="btn-delete" onclick="deleteUser('${id}')">Delete</button>
-          </td>
-        </tr>`;
+      let h = "";
+      snap.forEach(c => {
+        const u = c.val(); const id = c.key;
+        h += `<tr><td><img src="${u.photo}" class="admin-thumb"></td><td>${u.name}</td><td>${id}</td>
+          <td><button class="btn-edit" onclick="editUser('${id}')">Edit</button>
+          <button class="btn-delete" onclick="deleteUser('${id}')">Del</button></td></tr>`;
       });
-      document.getElementById('userListBody').innerHTML = html || "<tr><td colspan='5'>Database is empty.</td></tr>";
+      document.getElementById('userListBody').innerHTML = h;
     });
   }
 
-  // FIXED LOGS LISTENER
-  function listenLiveLogs() {
+  function loadLiveLogs() {
     db.ref('logs').limitToLast(20).on('value', snap => {
-      let html = "";
-      let logsArr = [];
-      snap.forEach(child => {
-        logsArr.push(child.val());
+      let h = ""; let a = []; snap.forEach(c => a.push(c.val()));
+      a.reverse().forEach(l => {
+        h += `<tr><td style="text-align:left; padding-left:15px;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b></td>
+          <td>${l.date}</td><td style="color:var(--neu-green); font-weight:bold;">${l.time}</td></tr>`;
       });
-      
-      // I-reverse para pinakabago ang nasa itaas
-      logsArr.reverse().forEach(l => {
-        html += `<tr>
-          <td style="text-align:left; padding-left:20px;">
-            <img src="${l.photo}" class="admin-thumb">
-            <strong>${l.name}</strong>
-          </td>
-          <td>${l.date}</td>
-          <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td>
-        </tr>`;
-      });
-      document.getElementById('adminLogsBody').innerHTML = html || "<tr><td colspan='3'>No recent logs.</td></tr>";
+      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='3'>No History</td></tr>";
     });
   }
 
   function loadAnalytics() {
     db.ref('logs').on('value', snap => {
       const counts = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
-      snap.forEach(c => {
-        const d = c.val().day;
-        if(counts[d] !== undefined) counts[d]++;
-      });
+      snap.forEach(c => { const d = c.val().day; if(counts[d] !== undefined) counts[d]++; });
       const ctx = document.getElementById('trafficChart').getContext('2d');
       if(trafficChart) trafficChart.destroy();
       trafficChart = new Chart(ctx, {
         type: 'line',
-        data: {
-          labels: Object.keys(counts),
-          datasets: [{ label: 'Library Visitors', data: Object.values(counts), borderColor: '#006400', tension: 0.3, fill: true, backgroundColor: 'rgba(0,100,0,0.1)' }]
-        },
+        data: { labels: Object.keys(counts), datasets: [{ label: 'Logs', data: Object.values(counts), borderColor: '#006400', tension: 0.3, fill: true, backgroundColor: 'rgba(0,100,0,0.1)' }] },
         options: { maintainAspectRatio: false }
       });
     });
