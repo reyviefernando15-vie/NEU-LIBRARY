@@ -1,4 +1,4 @@
-﻿/*
+/*
   NEU Library - Admin System
   (JavaScript moved out of HTML for separation of concerns)
 */
@@ -201,6 +201,10 @@ function switchTab(tab) {
   document.getElementById('section-login').classList.add('hidden');
   document.getElementById('section-signup').classList.add('hidden');
 
+  // Show auth toggle + panels only on timein view
+  const authPanel = document.getElementById('authPanel');
+  if (authPanel) authPanel.style.display = tab === 'timein' ? 'block' : 'none';
+
   document.getElementById('section-timein').classList.add('hidden');
   document.getElementById('section-admin').classList.add('hidden');
   document.getElementById('section-' + tab).classList.remove('hidden');
@@ -316,6 +320,5 @@ function initEventListeners() {
 window.addEventListener('DOMContentLoaded', () => {
   initEventListeners();
   switchTab('timein');
-  // Start with login hidden; users click LOG IN to show sign-in panel.
-  // If you want to show login by default, use: switchAuthTab('login');
+  switchAuthTab('login');
 });
