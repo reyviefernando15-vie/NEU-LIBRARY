@@ -19,14 +19,50 @@
     }
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: var(--text); overflow-x: hidden; }
     
-    /* RESPONSIVE NAVBAR */
-    .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: var(--nav-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-    .logo-area { display: flex; align-items: center; gap: 8px; }
-    .logo-img { height: 35px; }
-    .logo-text { font-weight: 900; font-size: 1rem; }
-    .nav-links a { color: var(--text); text-decoration: none; padding: 8px 10px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+    /* IMPROVED RESPONSIVE NAVBAR */
+    .topnav { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 10px 12px; 
+      background: var(--nav-bg); 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+      position: sticky; 
+      top: 0; 
+      z-index: 100; 
+    }
+    .logo-area { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .logo-img { height: 30px; }
+    .logo-text { font-weight: 900; font-size: 0.9rem; white-space: nowrap; }
+
+    .nav-links { display: flex; align-items: center; gap: 5px; }
+    .nav-links a { 
+      color: var(--text); 
+      text-decoration: none; 
+      padding: 6px 10px; 
+      border-radius: 8px; 
+      font-weight: 600; 
+      font-size: 0.8rem; 
+      cursor: pointer; 
+      white-space: nowrap;
+    }
     .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
-    .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 5px; }
+    
+    /* FIXED LOGOUT BUTTON FOR MOBILE */
+    .logout-nav { 
+      color: #dc3545 !important; 
+      border: 1.5px solid #dc3545; 
+      padding: 5px 8px !important;
+      font-size: 0.75rem !important;
+      margin-left: 2px;
+    }
+
+    @media (min-width: 992px) {
+        .logo-img { height: 45px; }
+        .logo-text { font-size: 1.2rem; }
+        .nav-links a { font-size: 0.9rem; padding: 8px 15px; }
+        .topnav { padding: 10px 30px; }
+    }
 
     .container { width: 92%; max-width: 600px; margin: 20px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     .container.admin-mode { max-width: 1100px; }
@@ -36,21 +72,16 @@
     
     .field-label { font-size: 0.7rem; font-weight: 800; color: #8e949a; margin-bottom: 5px; display: block; text-transform: uppercase; }
 
-    /* MOBILE FILTER BAR */
     .filter-bar { background: #f8f9fa; padding: 12px; border-radius: 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 20px; border: 1px solid #eee; }
     .filter-bar select { width: auto; flex-grow: 1; margin-bottom: 0; padding: 8px; font-size: 0.75rem; border-radius: 10px; height: 35px; }
     .record-count { width: 100%; text-align: center; font-weight: 900; color: #3b82f6; font-size: 0.7rem; background: #eff6ff; padding: 5px; border-radius: 8px; margin-top: 5px; }
 
-    /* ADMIN GRID */
     .admin-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
     @media (min-width: 992px) {
         .admin-grid { grid-template-columns: 1fr 1fr; }
         .record-count { width: auto; margin-top: 0; margin-left: auto; }
-        .logo-img { height: 45px; }
-        .logo-text { font-size: 1.2rem; }
     }
 
-    /* TABLE SCROLL FIX */
     .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #eee; border-radius: 8px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 450px; }
     th, td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
@@ -63,7 +94,6 @@
     .hidden { display: none; }
     .admin-box { margin-bottom: 15px; border: 1px solid #eee; padding: 12px; border-radius: 12px; background: #fff; }
     
-    /* PROFILE CARD (Yellow Border) */
     #userProfile { display: none; margin-top: 20px; padding: 20px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; }
     .profile-pic { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
     .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -74,7 +104,7 @@
 <nav class="topnav">
   <div class="logo-area">
     <img src="neu.png" alt="NEU Logo" class="logo-img">
-    <div class="logo-text">NEU LIBRARY</div>
+    <div class="logo-text">NEU LIB</div>
   </div>
   <div class="nav-links">
     <a id="link-timein" class="active" onclick="switchTab('timein')">Dash</a>
@@ -164,7 +194,7 @@
                   <h3 style="font-size: 0.9rem;">Activity Logs</h3>
                   <div style="display:flex; gap:5px;">
                     <button id="btnBulkDelete" class="btn-bulk-delete" onclick="deleteSelectedLogs()">Del</button>
-                    <button class="btn-clear" style="padding:5px 10px; width:auto; font-size:0.7rem; background:#6c757d;" onclick="clearLogs()">Clear</button>
+                    <button class="btn-clear" style="padding:5px 10px; width:auto; font-size:0.7rem; background:#6c757d; color:white; border-radius:5px; border:none;" onclick="clearLogs()">Clear</button>
                   </div>
                 </div>
                 <div class="table-wrapper" style="max-height: 400px; overflow-y:auto;">
@@ -227,7 +257,7 @@
 </div>
 
 <script>
-  // PAALALA: Ilagay ang sarili mong Firebase Config dito!
+  // IPALIT ANG IYONG FIREBASE CONFIG DITO
   const firebaseConfig = {
     apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
     authDomain: "sfdasdafd.firebaseapp.com",
@@ -332,7 +362,8 @@
   function switchTab(tab) {
     const container = document.getElementById('mainContainer');
     if (tab === 'admin' && !isAdmin) {
-      if (prompt("Admin Password:") !== "admin123") return;
+      const pass = prompt("Admin Password:");
+      if (pass !== "admin123") return;
       isAdmin = true;
       document.getElementById('logout-btn').classList.remove('hidden');
     }
@@ -345,7 +376,9 @@
     document.getElementById('section-' + tab).classList.remove('hidden');
     
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    if(document.getElementById('link-' + tab)) document.getElementById('link-' + tab).classList.add('active');
+    const activeLink = document.getElementById('link-' + (tab === 'admin' ? 'admin' : 'timein'));
+    if(activeLink) activeLink.classList.add('active');
+
     if(tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
   }
 
@@ -379,9 +412,14 @@
     updateBulkBtn();
   }
 
-  function clearLogs() { if(confirm("Clear all?")) db.ref('logs').remove(); }
-  function deleteUser(id) { if(confirm("Delete user?")) db.ref('users/' + id).remove(); }
-  function adminLogout() { isAdmin = false; document.getElementById('logout-btn').classList.add('hidden'); switchTab('timein'); }
+  function clearLogs() { if(confirm("Clear all logs?")) db.ref('logs').remove(); }
+  function deleteUser(id) { if(confirm("Delete this user permanently?")) db.ref('users/' + id).remove(); }
+  
+  function adminLogout() { 
+    isAdmin = false; 
+    document.getElementById('logout-btn').classList.add('hidden'); 
+    switchTab('timein'); 
+  }
 
   document.getElementById('regFile').addEventListener('change', function(e) {
     const reader = new FileReader();
