@@ -114,10 +114,16 @@ function handleGoogleSignIn() {
     .catch((err) => {
       console.error("FULL ERROR:", err);
 
-      if (err.code === 'auth/unauthorized-domain') {
-        alert("ERROR: Domain not authorized!");
+      if (err.code === 'auth/configuration-not-found') {
+        alert(
+          "Google Sign-in Error: configuration not found.\n" +
+          "Please update firebaseConfig in script.js with your Firebase project settings, " +
+          "and enable Google Sign-In in the Firebase console (Authentication → Sign-in method)."
+        );
+      } else if (err.code === 'auth/unauthorized-domain') {
+        alert("ERROR: Domain not authorized. Add your site to Firebase Auth Authorized Domains.");
       } else if (err.code === 'auth/operation-not-allowed') {
-        alert("Enable Google Sign-In in Firebase!");
+        alert("Enable Google Sign-In in Firebase (Authentication → Sign-in method).");
       } else {
         alert("Google Sign-in Error: " + err.message);
       }
