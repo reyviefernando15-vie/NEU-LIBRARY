@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEU Library - Admin System</title>
-  
+  <title>NEU Library - Staff Portal</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,53 +12,59 @@
     :root {
       --neu-green: #006400; 
       --neu-gold: #FFD700;  
-      --neu-green-dark: #004d00;
-      --bg: #f0f2f5;
+      --bg: #f8fafc;
       --nav-bg: #ffffff;
-      --text: #1a1a1a;
+      --text: #1e293b;
     }
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: var(--text); }
     
     /* NAVIGATION */
-    .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; background: var(--nav-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+    .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; background: var(--nav-bg); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
     .logo-area { display: flex; align-items: center; gap: 10px; }
     .logo-img { height: 45px; }
-    .logo-text { font-weight: 900; font-size: 1.2rem; }
-    .nav-links { display: flex; align-items: center; }
-    .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; cursor: pointer; }
-    .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
-    .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 10px; }
-    .logout-nav:hover { background: #dc3545; color: white !important; }
-
-    .container { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-    input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
+    .logo-text { font-weight: 900; font-size: 1.2rem; color: var(--neu-green); }
     
-    /* REGISTER TEXT LINK STYLE */
-    .reg-link-container { text-align: center; margin-top: 20px; }
-    .reg-link { color: #555; text-decoration: none; font-size: 0.9rem; transition: 0.3s; cursor: pointer; }
-    .reg-link b { color: var(--neu-green); }
-    .reg-link:hover { text-decoration: underline; color: var(--text); }
+    .logout-btn { background: #cc0000; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.8rem; }
 
-    /* Admin UI */
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
-    th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
-    th { background: #f8f8f8; color: var(--neu-green); }
-    .admin-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 10px; }
+    .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
 
-    .btn-edit { background: #007bff; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
-    .btn-delete { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
-    .btn-clear { background: #6c757d; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; }
-    .btn-clear:hover { background: #343a40; }
-    .btn-bulk-delete { background: #dc3545; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; margin-right: 10px; display: none; }
+    /* FILTER SECTION */
+    .filter-bar { 
+        background: white; padding: 20px; border-radius: 50px; 
+        display: flex; align-items: center; gap: 15px; 
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05); margin-bottom: 30px;
+    }
+    .filter-label { font-weight: bold; color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; margin-right: 10px; }
+    .filter-bar select { 
+        width: auto; margin-bottom: 0; padding: 10px 15px; 
+        border-radius: 12px; border: 1px solid #e2e8f0; background: #f1f5f9;
+        font-size: 0.9rem; font-weight: 600;
+    }
+    .record-count { 
+        margin-left: auto; background: #f0fdf4; color: #166534; 
+        padding: 8px 15px; border-radius: 10px; font-weight: 800; font-size: 0.8rem;
+        border: 1px solid #bbf7d0;
+    }
+
+    /* GRID LAYOUT FOR ANALYTICS */
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px; }
+    .card { background: white; padding: 25px; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .card h3 { margin-top: 0; font-size: 0.9rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* LOG STYLING */
+    .log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f1f5f9; }
+    .log-info b { display: block; font-size: 1rem; }
+    .log-info span { color: #94a3b8; font-size: 0.8rem; }
+    .log-time { color: var(--neu-green); font-weight: 800; font-size: 0.9rem; }
 
     .hidden { display: none; }
-    .admin-box { margin-bottom: 40px; border-bottom: 2px solid #f0f2f5; padding-bottom: 20px; position: relative; }
+    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; }
     
-    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
-    .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
-    
-    .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .reg-link-container { text-align: center; margin-top: 20px; cursor: pointer; }
+    .reg-link b { color: var(--neu-green); }
+
+    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 20px; text-align: center; background: white; }
+    .profile-pic { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
   </style>
 </head>
 <body>
@@ -67,173 +72,180 @@
 <nav class="topnav">
   <div class="logo-area">
     <img src="neu.png" alt="NEU Logo" class="logo-img">
-    <div class="logo-text">NEU LIBRARY</div>
+    <div class="logo-text">STAFF PORTAL</div>
   </div>
   <div class="nav-links">
-    <a id="link-timein" class="active" onclick="switchTab('timein')">Dashboard</a>
-    <a id="link-admin" onclick="switchTab('admin')">Admin</a>
-    <a id="logout-btn" class="logout-nav hidden" onclick="adminLogout()">Logout</a>
+    <a href="#" class="logout-btn" id="logout-ui" style="display:none" onclick="location.reload()">LOGOUT</a>
   </div>
 </nav>
 
 <div class="container">
+  
   <div id="section-timein">
-    <h2>Attendance Portal</h2>
-    <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
-    <button onclick="handleTimeIn()">TIME IN →</button>
-    
-    <div class="reg-link-container">
-      <span class="reg-link" onclick="switchTab('signup')">Don't have an account? <b>Register here</b></span>
+    <div class="card" style="max-width: 500px; margin: 0 auto;">
+        <h2 style="text-align: center; color: var(--neu-green);">Library Time-In</h2>
+        <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
+        <button onclick="handleTimeIn()">SUBMIT ENTRY →</button>
+        <div class="reg-link-container" onclick="switchTab('signup')">
+            <span class="reg-link">New user? <b>Register here</b></span>
+        </div>
     </div>
 
     <div id="userProfile">
       <img id="dispPic" src="" class="profile-pic">
-      <h2 id="dispName" style="margin:10px 0 0; color: var(--neu-green);"></h2>
-      <p id="dispDetails" style="color: #666;"></p>
-      <div style="text-align: left; margin-top: 20px;">
-        <strong>Your Recent History:</strong>
-        <table>
-          <thead><tr><th>Date</th><th>Time</th></tr></thead>
-          <tbody id="logBody"></tbody>
-        </table>
+      <h2 id="dispName" style="margin:10px 0 0;"></h2>
+      <p id="dispDetails"></p>
+      <hr>
+      <div style="text-align: left;">
+        <strong>Recent Logs:</strong>
+        <div id="logBody"></div>
       </div>
     </div>
-  </div>
-
-  <div id="section-signup" class="hidden">
-    <h2 id="regTitle">Register Member</h2>
-    <input type="text" id="regID" placeholder="ID Number">
-    <input type="text" id="regName" placeholder="Full Name">
-    <select id="regType"><option value="Student">Student</option><option value="Faculty">Faculty</option></select>
-    <input type="text" id="regCourse" placeholder="Course/Department">
-    <input type="file" id="regFile" accept="image/*">
-    <input type="hidden" id="regBase64">
-    <button id="btnSave" onclick="handleSignUp()">Create New Account</button>
-    <button id="btnCancel" onclick="switchTab('timein')" style="background:#6c757d; margin-top:10px;">BACK TO LOGIN</button>
+    
+    <div style="text-align:center; margin-top:20px;">
+        <a href="#" onclick="switchTab('admin')" style="color:#94a3b8; font-size:0.8rem; text-decoration:none;">Admin Access</a>
+    </div>
   </div>
 
   <div id="section-admin" class="hidden">
-    <div class="admin-box">
-      <h3>Traffic Chart</h3>
-      <div style="height: 180px;"><canvas id="trafficChart"></canvas></div>
+    
+    <div class="filter-bar">
+        <span class="filter-label">Filters:</span>
+        <select><option>All Reasons</option><option>Study</option><option>Research</option></select>
+        <select><option>All Colleges</option><option>BSIT</option><option>BSCS</option><option>BSA</option></select>
+        <select><option>All Users</option><option>Student</option><option>Faculty</option></select>
+        <div class="record-count" id="countDisplay">DISPLAYING: 0 RECORDS</div>
     </div>
 
-    <div class="admin-box">
-      <h3>Student Database</h3>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead><tr><th>Photo</th><th>Name</th><th>ID</th><th>Actions</th></tr></thead>
-          <tbody id="userListBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="admin-box">
-      <div class="flex-header">
-        <h3>Live Activity Logs</h3>
-        <div>
-          <button id="btnBulkDelete" class="btn-bulk-delete" onclick="deleteSelectedLogs()">Delete Selected</button>
-          <button class="btn-clear" onclick="clearLogs()">Clear All History</button>
+    <div class="dashboard-grid">
+        <div class="card">
+            <h3>Traffic Analytics</h3>
+            <div style="height: 250px;"><canvas id="trafficChart"></canvas></div>
         </div>
-      </div>
-      <div style="max-height: 400px; overflow-y:auto; border: 1px solid #eee;">
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 40px;"><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
-              <th>User</th>
-              <th>Date</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody id="adminLogsBody"></tbody>
-        </table>
-      </div>
+
+        <div class="card">
+            <h3>Live Activity Log</h3>
+            <div id="adminLogsBody" style="max-height: 300px; overflow-y: auto;">
+                </div>
+        </div>
+    </div>
+
+    <button style="background:#64748b;" onclick="switchTab('timein')">← BACK TO ATTENDANCE</button>
+  </div>
+
+  <div id="section-signup" class="hidden">
+    <div class="card" style="max-width: 500px; margin: 0 auto;">
+        <h2>Register Member</h2>
+        <input type="text" id="regID" placeholder="ID Number">
+        <input type="text" id="regName" placeholder="Full Name">
+        <select id="regType"><option value="Student">Student</option><option value="Faculty">Faculty</option></select>
+        <input type="text" id="regCourse" placeholder="College / Course">
+        <input type="text" id="regPhoto" placeholder="Photo URL (Optional)">
+        <button onclick="handleSignUp()">CREATE ACCOUNT</button>
+        <button style="background:none; color:#64748b; margin-top:10px;" onclick="switchTab('timein')">CANCEL</button>
     </div>
   </div>
+
 </div>
 
 <script>
+  // FIREBASE CONFIG (Gamitin ang dati mong config dito)
   const firebaseConfig = {
-    apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
-    authDomain: "sfdasdafd.firebaseapp.com",
-    databaseURL: "https://sfdasdafd-default-rtdb.firebaseio.com",
-    projectId: "sfdasdafd",
-    storageBucket: "sfdasdafd.firebasestorage.app",
-    messagingSenderId: "701386389930",
-    appId: "1:701386389930:web:d1d08e0f520dd7770993d3"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID"
   };
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   let trafficChart = null;
-  let isAdmin = false;
-
-  document.getElementById('regFile').addEventListener('change', function(e) {
-    const reader = new FileReader();
-    reader.onload = () => document.getElementById('regBase64').value = reader.result;
-    if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
-  });
 
   function switchTab(tab) {
-    if (tab === 'admin' && !isAdmin) {
-      const pass = prompt("Admin Password:");
-      if (pass !== "admin123") return;
-      isAdmin = true;
-      document.getElementById('logout-btn').classList.remove('hidden');
+    if(tab === 'admin') {
+        const p = prompt("Enter Admin Password:");
+        if(p !== "admin123") return;
+        document.getElementById('logout-ui').style.display = 'block';
+        loadAnalytics();
+        loadLiveLogs();
     }
-    document.querySelectorAll('.container > div').forEach(d => { if(!d.id.includes('userProfile')) d.classList.add('hidden'); });
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    
+    document.getElementById('section-timein').classList.add('hidden');
+    document.getElementById('section-signup').classList.add('hidden');
+    document.getElementById('section-admin').classList.add('hidden');
     document.getElementById('section-' + tab).classList.remove('hidden');
-    const navLink = document.getElementById('link-' + tab);
-    if(navLink) navLink.classList.add('active');
+  }
+
+  function handleTimeIn() {
+    const rawId = document.getElementById('idInput').value.trim();
+    const sId = rawId.replace(/\./g, '_');
     
-    if(tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
-  }
+    db.ref('users/' + sId).once('value', snap => {
+      if(!snap.exists()) return alert("ID Not Found!");
+      
+      const u = snap.val();
+      const now = new Date();
+      const log = {
+        id: rawId, name: u.name, course: u.course,
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+        day: now.toLocaleDateString('en-US', {weekday:'short'})
+      };
 
-  function adminLogout() {
-    isAdmin = false;
-    document.getElementById('logout-btn').classList.add('hidden');
-    alert("Logged out");
-    switchTab('timein');
-  }
-
-  // LOG SELECTION LOGIC
-  function toggleSelectAll(source) {
-    const checkboxes = document.getElementsByName('logCheck');
-    for (let i = 0; i < checkboxes.length; i++) {
-      checkboxes[i].checked = source.checked;
-    }
-    updateBulkBtn();
-  }
-
-  function updateBulkBtn() {
-    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
-    const btn = document.getElementById('btnBulkDelete');
-    btn.style.display = checkboxes.length > 0 ? 'inline-block' : 'none';
-    btn.innerText = `Delete Selected (${checkboxes.length})`;
-  }
-
-  function deleteSelectedLogs() {
-    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
-    if (confirm(`Burahin ang ${checkboxes.length} na napiling logs?`)) {
-      const promises = [];
-      checkboxes.forEach(cb => {
-        promises.push(db.ref('logs/' + cb.value).remove());
+      db.ref('logs').push(log).then(() => {
+        document.getElementById('userProfile').style.display = 'block';
+        document.getElementById('dispPic').src = u.photo || "https://via.placeholder.com/150";
+        document.getElementById('dispName').innerText = u.name;
+        document.getElementById('dispDetails').innerText = u.course;
+        document.getElementById('idInput').value = "";
       });
-      Promise.all(promises).then(() => {
-        alert("Selected logs deleted!");
-        document.getElementById('selectAll').checked = false;
-        updateBulkBtn();
-      });
-    }
+    });
   }
 
-  function clearLogs() {
-    if(confirm("DANGER: Sigurado ka bang buburahin lahat ng history? Hindi na ito mababalik.")) {
-      db.ref('logs').remove().then(() => alert("Logs Cleared!"));
-    }
+  function loadLiveLogs() {
+    db.ref('logs').limitToLast(30).on('value', snap => {
+      let h = "";
+      let count = 0;
+      let arr = [];
+      snap.forEach(c => { arr.push(c.val()); count++; });
+      
+      arr.reverse().forEach(l => {
+        h += `<div class="log-item">
+                <div class="log-info">
+                    <b>${l.name}</b>
+                    <span>${l.course}</span>
+                </div>
+                <div class="log-time">${l.time}</div>
+              </div>`;
+      });
+      document.getElementById('adminLogsBody').innerHTML = h;
+      document.getElementById('countDisplay').innerText = `DISPLAYING: ${count} RECORDS`;
+    });
+  }
+
+  function loadAnalytics() {
+    db.ref('logs').on('value', snap => {
+      const counts = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0 };
+      snap.forEach(c => { if(counts[c.val().day] !== undefined) counts[c.val().day]++; });
+      
+      const ctx = document.getElementById('trafficChart').getContext('2d');
+      if(trafficChart) trafficChart.destroy();
+      trafficChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(counts),
+          datasets: [{
+            label: 'Visitors',
+            data: Object.values(counts),
+            backgroundColor: '#006400',
+            borderRadius: 8
+          }]
+        },
+        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      });
+    });
   }
 
   function handleSignUp() {
@@ -242,107 +254,11 @@
       name: document.getElementById('regName').value,
       type: document.getElementById('regType').value,
       course: document.getElementById('regCourse').value,
-      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
+      photo: document.getElementById('regPhoto').value
     };
-    db.ref('users/' + id).set(data).then(() => { alert("Saved!"); cancelEdit(); switchTab('timein'); });
-  }
-
-  function editUser(id) {
-    db.ref('users/' + id).once('value', snap => {
-      const u = snap.val();
-      document.getElementById('regID').value = id.replace(/_/g, '.');
-      document.getElementById('regID').disabled = true;
-      document.getElementById('regName').value = u.name;
-      document.getElementById('regCourse').value = u.course;
-      document.getElementById('regBase64').value = u.photo;
-      document.getElementById('regTitle').innerText = "Update Member";
-      switchTab('signup');
-    });
-  }
-
-  function deleteUser(id) {
-    if(confirm("Delete this user?")) db.ref('users/' + id).remove();
-  }
-
-  function cancelEdit() {
-    document.getElementById('regID').disabled = false;
-    document.getElementById('regID').value = ""; 
-    document.getElementById('regName').value = "";
-    document.getElementById('regTitle').innerText = "Register Member";
-  }
-
-  function handleTimeIn() {
-    const rawId = document.getElementById('idInput').value.trim();
-    const sId = rawId.replace(/\./g, '_');
-    db.ref('users/' + sId).once('value', snap => {
-      if(!snap.exists()) return alert("Not Registered!");
-      const u = snap.val();
-      const now = new Date();
-      const log = {
-        id: rawId, name: u.name, photo: u.photo, date: now.toLocaleDateString(),
-        time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-        day: now.toLocaleDateString('en-US', {weekday:'short'})
-      };
-      db.ref('logs').push(log).then(() => {
-        document.getElementById('userProfile').style.display = 'block';
-        document.getElementById('dispPic').src = u.photo;
-        document.getElementById('dispName').innerText = u.name;
-        document.getElementById('dispDetails').innerText = u.course;
-        document.getElementById('idInput').value = "";
-        
-        db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', s => {
-          let h = ""; let a = []; s.forEach(c => a.push(c.val()));
-          a.reverse().forEach(l => { h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`; });
-          document.getElementById('logBody').innerHTML = h;
-        });
-      });
-    });
-  }
-
-  function loadUserDB() {
-    db.ref('users').on('value', snap => {
-      let h = "";
-      snap.forEach(c => {
-        const u = c.val(); const id = c.key;
-        h += `<tr><td><img src="${u.photo}" class="admin-thumb"></td><td>${u.name}</td><td>${id.replace(/_/g,'.')}</td>
-          <td><button class="btn-edit" onclick="editUser('${id}')">Edit</button>
-          <button class="btn-delete" onclick="deleteUser('${id}')">Del</button></td></tr>`;
-      });
-      document.getElementById('userListBody').innerHTML = h;
-    });
-  }
-
-  function loadLiveLogs() {
-    db.ref('logs').limitToLast(50).on('value', snap => {
-      let h = "";
-      let logsArr = [];
-      snap.forEach(c => {
-        logsArr.push({ key: c.key, data: c.val() });
-      });
-      logsArr.reverse().forEach(item => {
-        const l = item.data;
-        const key = item.key;
-        h += `<tr>
-          <td><input type="checkbox" name="logCheck" value="${key}" onclick="updateBulkBtn()"></td>
-          <td style="text-align:left; padding-left:15px;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b></td>
-          <td>${l.date}</td><td style="color:var(--neu-green); font-weight:bold;">${l.time}</td></tr>`;
-      });
-      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='4'>No History</td></tr>";
-      updateBulkBtn();
-    });
-  }
-
-  function loadAnalytics() {
-    db.ref('logs').on('value', snap => {
-      const counts = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
-      snap.forEach(c => { const d = c.val().day; if(counts[d] !== undefined) counts[d]++; });
-      const ctx = document.getElementById('trafficChart').getContext('2d');
-      if(trafficChart) trafficChart.destroy();
-      trafficChart = new Chart(ctx, {
-        type: 'line',
-        data: { labels: Object.keys(counts), datasets: [{ label: 'Logs', data: Object.values(counts), borderColor: '#006400', tension: 0.3, fill: true, backgroundColor: 'rgba(0,100,0,0.1)' }] },
-        options: { maintainAspectRatio: false }
-      });
+    db.ref('users/' + id).set(data).then(() => { 
+        alert("Registered!"); 
+        switchTab('timein'); 
     });
   }
 </script>
