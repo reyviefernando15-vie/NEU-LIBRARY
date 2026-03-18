@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>NEU Library - Mobile Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEU Library - Firebase System</title>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -13,106 +13,44 @@
     :root {
       --neu-green: #006400; 
       --neu-gold: #FFD700;  
-      --bg: #f4f6f9;
+      --neu-green-dark: #004d00;
+      --bg: #f0f2f5;
+      --nav-bg: #ffffff;
+      --text: #1a1a1a;
+      --surface: #ffffff;
     }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: var(--text); }
+    .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; background: var(--nav-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+    .logo-area { display: flex; align-items: center; gap: 10px; }
+    .logo-img { height: 45px; }
+    .logo-text { font-weight: 900; font-size: 1.2rem; }
+    .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; }
+    .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
+    .container { max-width: 900px; margin: 40px auto; background: var(--surface); padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; border-bottom: 3px solid var(--neu-green-dark); }
+    button:hover { background: var(--neu-green-dark); }
     
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-      background: var(--bg); 
-      margin: 0; 
-      padding-bottom: 50px; /* Space para sa mobile keyboard */
-    }
-
-    /* NAVIGATION - Mobile Optimized */
-    .topnav { 
-      display: flex; 
-      flex-direction: column; /* Stack sa mobile */
-      align-items: center; 
-      padding: 15px; 
-      background: white; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      gap: 10px;
-    }
+    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
+    .profile-pic { width: 130px; height: 130px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; margin-bottom: 10px; }
     
-    @media (min-width: 600px) {
-      .topnav { flex-direction: row; justify-content: space-between; padding: 10px 30px; }
-    }
-
-    .logo-area { display: flex; align-items: center; gap: 8px; }
-    .logo-img { height: 40px; }
-    .logo-text { font-weight: 800; font-size: 1.1rem; color: var(--neu-green); }
-
-    .nav-links { display: flex; gap: 5px; width: 100%; justify-content: center; }
-    .nav-links a { 
-      font-size: 0.85rem; 
-      color: #555; 
-      text-decoration: none; 
-      padding: 8px 12px; 
-      border-radius: 20px; 
-      font-weight: 600; 
-    }
-    .nav-links a.active { background: var(--neu-green); color: white; }
-
-    .container { width: 95%; max-width: 1000px; margin: 15px auto; }
-    
-    .card { 
-      background: white; 
-      padding: 20px; 
-      border-radius: 12px; 
-      box-shadow: 0 2px 12px rgba(0,0,0,0.05); 
-      margin-bottom: 15px; 
-    }
-
-    input, select { 
-      width: 100%; 
-      padding: 14px; 
-      margin-bottom: 12px; 
-      border-radius: 8px; 
-      border: 1px solid #ddd; 
-      font-size: 16px; /* Maiwasan ang auto-zoom sa iPhone */
-      box-sizing: border-box;
-    }
-
-    button { 
-      background: var(--neu-green); 
-      color: white; 
-      border: none; 
-      padding: 16px; 
-      border-radius: 8px; 
-      font-weight: bold; 
-      width: 100%; 
-      font-size: 1rem; 
-    }
-
-    /* Admin Grid - Responsive */
-    .admin-grid { display: flex; flex-direction: column; gap: 15px; }
-    @media (min-width: 800px) {
-      .admin-grid { display: grid; grid-template-columns: 1fr 1fr; }
-    }
-
-    /* Live Logs Mobile Style */
-    .log-item { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      padding: 10px; 
-      border-bottom: 1px solid #eee; 
-    }
-    .log-info { display: flex; align-items: center; gap: 10px; }
-    .log-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-    .log-details b { font-size: 0.9rem; display: block; }
-    .log-details span { font-size: 0.75rem; color: #777; }
-    .log-time { font-size: 0.8rem; color: var(--neu-green); font-weight: bold; }
-
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
+    th { background: #f8f8f8; color: var(--neu-green); }
+    .admin-thumb { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; border: 1px solid #ddd; }
     .hidden { display: none; }
-    .profile-pic { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--neu-green); object-fit: cover; }
+
+    /* Admin Grid Layout */
+    .admin-flex { display: flex; flex-direction: column; gap: 20px; }
+    @media (min-width: 768px) { .admin-flex { flex-direction: row; } }
+    .admin-box { flex: 1; min-width: 0; }
   </style>
 </head>
 <body>
 
 <nav class="topnav">
   <div class="logo-area">
-    <img src="neu.png" alt="Logo" class="logo-img">
+    <img src="neu.png" alt="NEU Logo" class="logo-img">
     <div class="logo-text">NEU LIBRARY</div>
   </div>
   <div class="nav-links">
@@ -123,48 +61,57 @@
 </nav>
 
 <div class="container">
-  <div id="section-timein" class="card">
-    <h3 style="margin-top:0">Attendance Log</h3>
-    <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
-    <button onclick="handleTimeIn()">TIME IN</button>
+  <div id="section-timein">
+    <h2>Library Attendance Portal</h2>
+    <input type="text" id="idInput" placeholder="Enter Student/Faculty ID" onkeydown="if(event.key==='Enter') handleTimeIn()">
+    <button onclick="handleTimeIn()">SUBMIT ATTENDANCE →</button>
 
-    <div id="userProfile" class="card" style="margin-top:20px; text-align:center; display:none; border: 2px solid var(--neu-gold);">
+    <div id="userProfile">
       <img id="dispPic" src="" class="profile-pic">
-      <h3 id="dispName" style="margin:10px 0 5px; color: var(--neu-green);"></h3>
-      <p id="dispDetails" style="margin:0 0 15px; font-size:0.9rem; color:#666;"></p>
-      <div style="text-align: left;">
-        <small><b>Recent History:</b></small>
-        <div id="personalLogs" style="font-size: 0.85rem; margin-top:5px;"></div>
+      <h2 id="dispName" style="margin:0; color: var(--neu-green);"></h2>
+      <p id="dispDetails" style="color: #666; font-style: italic;"></p>
+      <div style="text-align: left; margin-top: 20px;">
+        <strong style="border-bottom: 2px solid var(--neu-gold);">Your Recent Logs:</strong>
+        <table>
+          <thead><tr><th>Date</th><th>Time</th></tr></thead>
+          <tbody id="logBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <div id="section-signup" class="card hidden">
-    <h3>Register Member</h3>
-    <input type="text" id="regID" placeholder="ID (e.g. 24-0001)">
+  <div id="section-signup" class="hidden">
+    <h2>Register New Member</h2>
+    <input type="text" id="regID" placeholder="ID Number (e.g. 24-1234)">
     <input type="text" id="regName" placeholder="Full Name">
-    <input type="text" id="regCourse" placeholder="Course & Year">
     <select id="regType">
       <option value="Student">Student</option>
-      <option value="Faculty">Faculty</option>
+      <option value="Faculty">Faculty / Staff</option>
     </select>
+    <input type="text" id="regCourse" placeholder="Course & Year / Department">
     
-    <label style="font-size:0.8rem; font-weight:bold;">Upload Photo:</label>
-    <input type="file" id="regFile" accept="image/*">
+    <label style="display:block; margin-bottom:5px; font-weight:bold;">Upload Profile Picture:</label>
+    <input type="file" id="regFile" accept="image/*" style="margin-bottom: 15px;">
     <input type="hidden" id="regBase64">
-    
-    <button onclick="handleSignUp()" style="margin-top:10px;">SAVE DATA</button>
+
+    <button onclick="handleSignUp()">CREATE ACCOUNT →</button>
   </div>
 
   <div id="section-admin" class="hidden">
-    <div class="admin-grid">
-      <div class="card">
-        <h4>Weekly Traffic</h4>
-        <div style="height:200px;"><canvas id="myChart"></canvas></div>
+    <h2>Admin Management Dashboard</h2>
+    <div class="admin-flex">
+      <div class="admin-box">
+        <h3>Traffic Analytics</h3>
+        <canvas id="trafficChart" height="250"></canvas>
       </div>
-      <div class="card">
-        <h4>Live Activity</h4>
-        <div id="adminLogs" style="max-height: 300px; overflow-y: auto;"></div>
+      <div class="admin-box">
+        <h3>Live Activity Logs</h3>
+        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #eee;">
+          <table>
+            <thead><tr><th>Member</th><th>Date/Time</th></tr></thead>
+            <tbody id="adminBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -183,120 +130,121 @@
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-  let chartObj = null;
+  let trafficChart = null;
 
-  // IMAGE TO BASE64
+  // Image to Base64
   document.getElementById('regFile').addEventListener('change', function(e) {
     const reader = new FileReader();
     reader.onload = () => document.getElementById('regBase64').value = reader.result;
-    reader.readAsDataURL(e.target.files[0]);
+    if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
   });
 
-  // SECURE TAB SWITCH
   function switchTab(tab) {
     if (tab === 'admin') {
-      const p = prompt("Admin Password:");
-      if (p !== "admin123") return alert("Wrong Password");
+      const p = prompt("Enter Admin Password:");
+      if (p !== "admin123") return alert("Access Denied");
     }
-
-    document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    
+    ['timein', 'signup', 'admin'].forEach(t => {
+      document.getElementById('section-' + t).classList.add('hidden');
+      document.getElementById('link-' + t).classList.remove('active');
+    });
     document.getElementById('section-' + tab).classList.remove('hidden');
     document.getElementById('link-' + tab).classList.add('active');
-
-    if (tab === 'admin') { loadAnalytics(); loadLiveLogs(); }
+    
+    if(tab === 'admin') { renderChart(); listenAdmin(); }
   }
 
   function handleSignUp() {
     const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
     const photo = document.getElementById('regBase64').value;
-    if (!id || !photo) return alert("Complete all info and photo!");
+    if(!id || !photo) return alert("ID and Photo are required!");
 
     const data = {
       name: document.getElementById('regName').value,
-      course: document.getElementById('regCourse').value,
       type: document.getElementById('regType').value,
+      course: document.getElementById('regCourse').value,
       photo: photo
     };
 
     db.ref('users/' + id).set(data).then(() => {
-      alert("Registered!");
-      location.reload();
+      alert("Registration Successful!");
+      switchTab('timein');
     });
   }
 
   function handleTimeIn() {
-    const id = document.getElementById('idInput').value.trim().replace(/\./g, '_');
-    db.ref('users/' + id).once('value', snap => {
-      if (!snap.exists()) return alert("Not Registered!");
+    const idInput = document.getElementById('idInput').value.trim();
+    const sId = idInput.replace(/\./g, '_');
+    if(!idInput) return alert("Enter ID!");
 
+    db.ref('users/' + sId).once('value', snap => {
+      if(!snap.exists()) return alert("User not registered!");
+      
       const u = snap.val();
       const now = new Date();
       const log = {
-        id: id, name: u.name, photo: u.photo, course: u.course,
+        id: idInput, name: u.name, photo: u.photo, course: u.course,
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
         day: now.toLocaleDateString('en-US', {weekday:'short'})
       };
 
       db.ref('logs').push(log).then(() => {
-        document.getElementById('userProfile').style.display = 'block';
-        document.getElementById('dispPic').src = u.photo;
-        document.getElementById('dispName').innerText = u.name;
-        document.getElementById('dispDetails').innerText = u.course;
+        showProfile(u, idInput);
         document.getElementById('idInput').value = "";
-        
-        // Show Personal History
-        db.ref('logs').orderByChild('id').equalTo(id).limitToLast(3).on('value', s => {
-          let h = "";
-          s.forEach(c => { h = `<div>• ${c.val().date} | ${c.val().time}</div>` + h; });
-          document.getElementById('personalLogs').innerHTML = h;
-        });
       });
     });
   }
 
-  function loadAnalytics() {
-    db.ref('logs').on('value', snap => {
-      const data = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
-      snap.forEach(c => { if(data[c.val().day] !== undefined) data[c.val().day]++; });
+  function showProfile(u, rawId) {
+    document.getElementById('userProfile').style.display = 'block';
+    document.getElementById('dispPic').src = u.photo;
+    document.getElementById('dispName').innerText = u.name;
+    document.getElementById('dispDetails').innerText = `${u.type} | ${u.course}`;
 
-      const ctx = document.getElementById('myChart').getContext('2d');
-      if(chartObj) chartObj.destroy();
-      chartObj = new Chart(ctx, {
-        type: 'line',
+    db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', snap => {
+      let h = "";
+      let arr = [];
+      snap.forEach(c => arr.push(c.val()));
+      arr.reverse().forEach(l => {
+        h += `<tr><td>${l.date}</td><td>${l.time}</td></tr>`;
+      });
+      document.getElementById('logBody').innerHTML = h;
+    });
+  }
+
+  function renderChart() {
+    db.ref('logs').on('value', snap => {
+      const counts = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
+      snap.forEach(c => { if(counts[c.val().day] !== undefined) counts[c.val().day]++; });
+
+      const ctx = document.getElementById('trafficChart').getContext('2d');
+      if(trafficChart) trafficChart.destroy();
+      trafficChart = new Chart(ctx, {
+        type: 'bar',
         data: {
-          labels: Object.keys(data),
-          datasets: [{ label: 'Visitors', data: Object.values(data), borderColor: '#006400', tension: 0.3, fill: true, backgroundColor: 'rgba(0,100,0,0.1)' }]
+          labels: Object.keys(counts),
+          datasets: [{ label: 'Visitors', data: Object.values(counts), backgroundColor: '#006400' }]
         },
         options: { maintainAspectRatio: false }
       });
     });
   }
 
-  function loadLiveLogs() {
-    db.ref('logs').limitToLast(15).on('value', snap => {
-      let html = "";
+  function listenAdmin() {
+    db.ref('logs').limitToLast(20).on('value', snap => {
+      let h = "";
       let arr = [];
       snap.forEach(c => arr.push(c.val()));
       arr.reverse().forEach(l => {
-        html += `
-          <div class="log-item">
-            <div class="log-info">
-              <img src="${l.photo}" class="log-thumb">
-              <div class="log-details">
-                <b>${l.name}</b>
-                <span>${l.course}</span>
-              </div>
-            </div>
-            <div class="log-time">${l.time}</div>
-          </div>`;
+        h += `<tr>
+                <td style="text-align:left;"><img src="${l.photo}" class="admin-thumb"> <b>${l.name}</b></td>
+                <td>${l.date} <br> <small>${l.time}</small></td>
+              </tr>`;
       });
-      document.getElementById('adminLogs').innerHTML = html;
+      document.getElementById('adminBody').innerHTML = h;
     });
   }
 </script>
-
 </body>
 </html>
