@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEU Library - Staff Portal</title>
+  <title>NEU Library - Admin System</title>
+  
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,52 +20,55 @@
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: var(--text); }
     
     /* NAVIGATION */
-    .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; background: var(--nav-bg); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+    .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; background: var(--nav-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
     .logo-area { display: flex; align-items: center; gap: 10px; }
     .logo-img { height: 45px; }
     .logo-text { font-weight: 900; font-size: 1.2rem; color: var(--neu-green); }
-    
-    .logout-btn { background: #cc0000; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.8rem; }
+    .nav-links { display: flex; align-items: center; }
+    .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; cursor: pointer; }
+    .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
+    .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 10px; }
+    .logout-nav:hover { background: #dc3545; color: white !important; }
 
     .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-
-    /* FILTER SECTION */
+    
+    /* DASHBOARD ELEMENTS */
+    .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 25px; }
+    .flex-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; }
+    
+    /* FILTER BAR STYLE FROM IMAGE */
     .filter-bar { 
-        background: white; padding: 20px; border-radius: 50px; 
+        background: white; padding: 15px 25px; border-radius: 50px; 
         display: flex; align-items: center; gap: 15px; 
-        box-shadow: 0 2px 15px rgba(0,0,0,0.05); margin-bottom: 30px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05); margin-bottom: 25px;
     }
-    .filter-label { font-weight: bold; color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; margin-right: 10px; }
     .filter-bar select { 
-        width: auto; margin-bottom: 0; padding: 10px 15px; 
-        border-radius: 12px; border: 1px solid #e2e8f0; background: #f1f5f9;
-        font-size: 0.9rem; font-weight: 600;
+        width: auto; margin-bottom: 0; padding: 8px 15px; border-radius: 10px; 
+        border: 1px solid #e2e8f0; background: #f1f5f9; font-size: 0.85rem;
     }
     .record-count { 
         margin-left: auto; background: #f0fdf4; color: #166534; 
-        padding: 8px 15px; border-radius: 10px; font-weight: 800; font-size: 0.8rem;
+        padding: 6px 15px; border-radius: 10px; font-weight: 800; font-size: 0.75rem;
         border: 1px solid #bbf7d0;
     }
 
-    /* GRID LAYOUT FOR ANALYTICS */
-    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px; }
-    .card { background: white; padding: 25px; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-    .card h3 { margin-top: 0; font-size: 0.9rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+    /* INPUTS & BUTTONS */
+    input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
+    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
 
-    /* LOG STYLING */
-    .log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f1f5f9; }
-    .log-info b { display: block; font-size: 1rem; }
-    .log-info span { color: #94a3b8; font-size: 0.8rem; }
-    .log-time { color: var(--neu-green); font-weight: 800; font-size: 0.9rem; }
+    /* LOGS STYLING */
+    .log-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .log-user { display: flex; align-items: center; gap: 10px; }
+    .admin-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+    .log-time { color: var(--neu-green); font-weight: bold; font-size: 0.9rem; }
 
     .hidden { display: none; }
-    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; }
-    
-    .reg-link-container { text-align: center; margin-top: 20px; cursor: pointer; }
-    .reg-link b { color: var(--neu-green); }
-
-    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 20px; text-align: center; background: white; }
+    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
     .profile-pic { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
+    
+    .reg-link-container { text-align: center; margin-top: 15px; }
+    .reg-link { cursor: pointer; font-size: 0.9rem; color: #64748b; }
+    .reg-link b { color: var(--neu-green); }
   </style>
 </head>
 <body>
@@ -72,10 +76,12 @@
 <nav class="topnav">
   <div class="logo-area">
     <img src="neu.png" alt="NEU Logo" class="logo-img">
-    <div class="logo-text">STAFF PORTAL</div>
+    <div class="logo-text">NEU LIBRARY</div>
   </div>
   <div class="nav-links">
-    <a href="#" class="logout-btn" id="logout-ui" style="display:none" onclick="location.reload()">LOGOUT</a>
+    <a id="link-timein" class="active" onclick="switchTab('timein')">Dashboard</a>
+    <a id="link-admin" onclick="switchTab('admin')">Admin</a>
+    <a id="logout-btn" class="logout-nav hidden" onclick="adminLogout()">Logout</a>
   </div>
 </nav>
 
@@ -83,166 +89,189 @@
   
   <div id="section-timein">
     <div class="card" style="max-width: 500px; margin: 0 auto;">
-        <h2 style="text-align: center; color: var(--neu-green);">Library Time-In</h2>
-        <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
-        <button onclick="handleTimeIn()">SUBMIT ENTRY →</button>
-        <div class="reg-link-container" onclick="switchTab('signup')">
-            <span class="reg-link">New user? <b>Register here</b></span>
-        </div>
+      <h2 style="text-align: center; margin-top: 0;">Attendance Portal</h2>
+      <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
+      <button onclick="handleTimeIn()">TIME IN →</button>
+      <div class="reg-link-container">
+        <span class="reg-link" onclick="switchTab('signup')">Don't have an account? <b>Register here</b></span>
+      </div>
     </div>
 
     <div id="userProfile">
       <img id="dispPic" src="" class="profile-pic">
-      <h2 id="dispName" style="margin:10px 0 0;"></h2>
-      <p id="dispDetails"></p>
-      <hr>
-      <div style="text-align: left;">
-        <strong>Recent Logs:</strong>
-        <div id="logBody"></div>
+      <h2 id="dispName" style="margin:10px 0 0; color: var(--neu-green);"></h2>
+      <p id="dispDetails" style="color: #666;"></p>
+      <div style="text-align: left; margin-top: 20px;">
+        <strong>Your Recent History:</strong>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+          <thead><tr style="border-bottom: 2px solid #eee;"><th style="text-align:left; padding:8px;">Date</th><th style="text-align:right; padding:8px;">Time</th></tr></thead>
+          <tbody id="logBody"></tbody>
+        </table>
       </div>
-    </div>
-    
-    <div style="text-align:center; margin-top:20px;">
-        <a href="#" onclick="switchTab('admin')" style="color:#94a3b8; font-size:0.8rem; text-decoration:none;">Admin Access</a>
     </div>
   </div>
 
   <div id="section-admin" class="hidden">
     
     <div class="filter-bar">
-        <span class="filter-label">Filters:</span>
+        <span style="font-weight: bold; color: #94a3b8; font-size: 0.8rem;">FILTERS:</span>
         <select><option>All Reasons</option><option>Study</option><option>Research</option></select>
-        <select><option>All Colleges</option><option>BSIT</option><option>BSCS</option><option>BSA</option></select>
+        <select><option>All Colleges</option><option>CAS</option><option>CEA</option><option>COED</option></select>
         <select><option>All Users</option><option>Student</option><option>Faculty</option></select>
         <div class="record-count" id="countDisplay">DISPLAYING: 0 RECORDS</div>
     </div>
 
-    <div class="dashboard-grid">
+    <div class="flex-grid">
         <div class="card">
-            <h3>Traffic Analytics</h3>
+            <h3 style="margin-top:0; font-size: 0.9rem; color: #64748b;">TRAFFIC ANALYTICS</h3>
             <div style="height: 250px;"><canvas id="trafficChart"></canvas></div>
+            
+            <h3 style="margin-top:25px; font-size: 0.9rem; color: #64748b;">USER DATABASE</h3>
+            <div style="overflow-x:auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                    <thead><tr style="text-align: left; color: var(--neu-green);"><th>User</th><th>ID</th><th>Action</th></tr></thead>
+                    <tbody id="userListBody"></tbody>
+                </table>
+            </div>
         </div>
 
         <div class="card">
-            <h3>Live Activity Log</h3>
-            <div id="adminLogsBody" style="max-height: 300px; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin:0; font-size: 0.9rem; color: #64748b;">LIVE ACTIVITY</h3>
+                <button onclick="clearLogs()" style="width:auto; padding: 5px 10px; font-size: 0.7rem; background: #64748b;">Clear</button>
+            </div>
+            <div id="adminLogsBody" style="max-height: 500px; overflow-y: auto;">
                 </div>
         </div>
     </div>
-
-    <button style="background:#64748b;" onclick="switchTab('timein')">← BACK TO ATTENDANCE</button>
   </div>
 
   <div id="section-signup" class="hidden">
     <div class="card" style="max-width: 500px; margin: 0 auto;">
-        <h2>Register Member</h2>
-        <input type="text" id="regID" placeholder="ID Number">
-        <input type="text" id="regName" placeholder="Full Name">
-        <select id="regType"><option value="Student">Student</option><option value="Faculty">Faculty</option></select>
-        <input type="text" id="regCourse" placeholder="College / Course">
-        <input type="text" id="regPhoto" placeholder="Photo URL (Optional)">
-        <button onclick="handleSignUp()">CREATE ACCOUNT</button>
-        <button style="background:none; color:#64748b; margin-top:10px;" onclick="switchTab('timein')">CANCEL</button>
+      <h2 id="regTitle">Register Member</h2>
+      <input type="text" id="regID" placeholder="ID Number">
+      <input type="text" id="regName" placeholder="Full Name">
+      <select id="regType"><option value="Student">Student</option><option value="Faculty">Faculty</option></select>
+      <input type="text" id="regCourse" placeholder="Course/Department">
+      <input type="file" id="regFile" accept="image/*">
+      <input type="hidden" id="regBase64">
+      <button id="btnSave" onclick="handleSignUp()">CREATE ACCOUNT</button>
+      <button onclick="switchTab('timein')" style="background:#6c757d; margin-top:10px;">CANCEL</button>
     </div>
   </div>
 
 </div>
 
 <script>
-  // FIREBASE CONFIG (Gamitin ang dati mong config dito)
+  // FIREBASE CONFIG
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "SENDER_ID",
-    appId: "APP_ID"
+    apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
+    authDomain: "sfdasdafd.firebaseapp.com",
+    databaseURL: "https://sfdasdafd-default-rtdb.firebaseio.com",
+    projectId: "sfdasdafd",
+    storageBucket: "sfdasdafd.firebasestorage.app",
+    messagingSenderId: "701386389930",
+    appId: "1:701386389930:web:d1d08e0f520dd7770993d3"
   };
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   let trafficChart = null;
+  let isAdmin = false;
+
+  // Photo Handler
+  document.getElementById('regFile').addEventListener('change', function(e) {
+    const reader = new FileReader();
+    reader.onload = () => document.getElementById('regBase64').value = reader.result;
+    if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+  });
 
   function switchTab(tab) {
-    if(tab === 'admin') {
-        const p = prompt("Enter Admin Password:");
-        if(p !== "admin123") return;
-        document.getElementById('logout-ui').style.display = 'block';
-        loadAnalytics();
-        loadLiveLogs();
+    if (tab === 'admin' && !isAdmin) {
+      if (prompt("Admin Password:") !== "admin123") return;
+      isAdmin = true;
+      document.getElementById('logout-btn').classList.remove('hidden');
     }
-    document.getElementById('section-timein').classList.add('hidden');
-    document.getElementById('section-signup').classList.add('hidden');
-    document.getElementById('section-admin').classList.add('hidden');
+    document.querySelectorAll('.container > div').forEach(d => { if(!d.id.includes('userProfile')) d.classList.add('hidden'); });
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    
     document.getElementById('section-' + tab).classList.remove('hidden');
+    if(document.getElementById('link-' + tab)) document.getElementById('link-' + tab).classList.add('active');
+    
+    if(tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
   }
 
   function handleTimeIn() {
     const rawId = document.getElementById('idInput').value.trim();
     const sId = rawId.replace(/\./g, '_');
-    
     db.ref('users/' + sId).once('value', snap => {
-      if(!snap.exists()) return alert("ID Not Found!");
-      
+      if(!snap.exists()) return alert("Not Registered!");
       const u = snap.val();
       const now = new Date();
       const log = {
-        id: rawId, name: u.name, course: u.course,
-        date: now.toLocaleDateString(),
-        time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+        id: rawId, name: u.name, photo: u.photo, date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
         day: now.toLocaleDateString('en-US', {weekday:'short'})
       };
-
       db.ref('logs').push(log).then(() => {
         document.getElementById('userProfile').style.display = 'block';
-        document.getElementById('dispPic').src = u.photo || "https://via.placeholder.com/150";
+        document.getElementById('dispPic').src = u.photo;
         document.getElementById('dispName').innerText = u.name;
         document.getElementById('dispDetails').innerText = u.course;
         document.getElementById('idInput').value = "";
+        
+        db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', s => {
+          let h = ""; let a = []; s.forEach(c => a.push(c.val()));
+          a.reverse().forEach(l => { h += `<tr><td style="padding:8px;">${l.date}</td><td style="text-align:right; padding:8px;">${l.time}</td></tr>`; });
+          document.getElementById('logBody').innerHTML = h;
+        });
       });
     });
   }
 
   function loadLiveLogs() {
-    db.ref('logs').limitToLast(30).on('value', snap => {
-      let h = "";
-      let count = 0;
-      let arr = [];
-      snap.forEach(c => { arr.push(c.val()); count++; });
-      
-      arr.reverse().forEach(l => {
-        h += `<div class="log-item">
-                <div class="log-info">
-                    <b>${l.name}</b>
-                    <span>${l.course}</span>
+    db.ref('logs').limitToLast(20).on('value', snap => {
+      let h = ""; let count = 0;
+      let logsArr = [];
+      snap.forEach(c => { logsArr.push(c.val()); count++; });
+      logsArr.reverse().forEach(l => {
+        h += `<div class="log-row">
+                <div class="log-user">
+                    <img src="${l.photo}" class="admin-thumb">
+                    <div><b>${l.name}</b><br><small style="color:#94a3b8">${l.id}</small></div>
                 </div>
                 <div class="log-time">${l.time}</div>
               </div>`;
       });
-      document.getElementById('adminLogsBody').innerHTML = h;
+      document.getElementById('adminLogsBody').innerHTML = h || "No recent activity";
       document.getElementById('countDisplay').innerText = `DISPLAYING: ${count} RECORDS`;
+    });
+  }
+
+  function loadUserDB() {
+    db.ref('users').on('value', snap => {
+      let h = "";
+      snap.forEach(c => {
+        const u = c.val(); const id = c.key;
+        h += `<tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding:10px 0;"><img src="${u.photo}" class="admin-thumb" style="width:30px; height:30px;"> ${u.name}</td>
+                <td>${id.replace(/_/g,'.')}</td>
+                <td><button onclick="deleteUser('${id}')" style="background:#fee2e2; color:#dc2626; padding:5px 10px; width:auto; font-size:0.7rem;">Del</button></td>
+              </tr>`;
+      });
+      document.getElementById('userListBody').innerHTML = h;
     });
   }
 
   function loadAnalytics() {
     db.ref('logs').on('value', snap => {
-      const counts = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0 };
-      snap.forEach(c => { if(counts[c.val().day] !== undefined) counts[c.val().day]++; });
-      
+      const counts = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
+      snap.forEach(c => { const d = c.val().day; if(counts[d] !== undefined) counts[d]++; });
       const ctx = document.getElementById('trafficChart').getContext('2d');
       if(trafficChart) trafficChart.destroy();
       trafficChart = new Chart(ctx, {
         type: 'bar',
-        data: {
-          labels: Object.keys(counts),
-          datasets: [{
-            label: 'Visitors',
-            data: Object.values(counts),
-            backgroundColor: '#006400',
-            borderRadius: 8
-          }]
-        },
+        data: { labels: Object.keys(counts), datasets: [{ label: 'Visitors', data: Object.values(counts), backgroundColor: '#006400', borderRadius: 5 }] },
         options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
       });
     });
@@ -254,13 +283,14 @@
       name: document.getElementById('regName').value,
       type: document.getElementById('regType').value,
       course: document.getElementById('regCourse').value,
-      photo: document.getElementById('regPhoto').value
+      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
     };
-    db.ref('users/' + id).set(data).then(() => { 
-        alert("Registered!"); 
-        switchTab('timein'); 
-    });
+    db.ref('users/' + id).set(data).then(() => { alert("User Saved!"); switchTab('timein'); });
   }
+
+  function deleteUser(id) { if(confirm("Delete user?")) db.ref('users/' + id).remove(); }
+  function clearLogs() { if(confirm("Clear all logs?")) db.ref('logs').remove(); }
+  function adminLogout() { isAdmin = false; document.getElementById('logout-btn').classList.add('hidden'); switchTab('timein'); }
 </script>
 </body>
 </html>
