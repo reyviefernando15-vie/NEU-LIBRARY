@@ -17,43 +17,56 @@
       --nav-bg: #ffffff;
       --text: #1a1a1a;
     }
-    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: var(--text); }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: var(--text); overflow-x: hidden; }
     
-    .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; background: var(--nav-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-    .logo-area { display: flex; align-items: center; gap: 10px; }
-    .logo-img { height: 45px; }
-    .logo-text { font-weight: 900; font-size: 1.2rem; }
-    .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; cursor: pointer; }
+    /* NAV RESPONSIVE */
+    .topnav { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: var(--nav-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+    .logo-area { display: flex; align-items: center; gap: 8px; }
+    .logo-img { height: 35px; }
+    .logo-text { font-weight: 900; font-size: 1rem; }
+    .nav-links a { color: var(--text); text-decoration: none; padding: 8px 10px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
     .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
-    .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 10px; }
+    .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 5px; }
 
-    .container { max-width: 600px; margin: 40px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); transition: 0.3s; }
+    .container { width: 92%; max-width: 600px; margin: 20px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     .container.admin-mode { max-width: 1100px; }
 
-    input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 1rem; }
-    button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
+    input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem; outline: none; }
+    button { background: var(--neu-green); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
     
-    .field-label { font-size: 0.75rem; font-weight: 800; color: #8e949a; margin-bottom: 5px; display: block; text-transform: uppercase; }
+    .field-label { font-size: 0.7rem; font-weight: 800; color: #8e949a; margin-bottom: 5px; display: block; text-transform: uppercase; }
 
-    .filter-bar { background: #f8f9fa; padding: 15px 20px; border-radius: 50px; display: flex; align-items: center; gap: 10px; margin-bottom: 25px; border: 1px solid #eee; }
-    .filter-bar select { width: auto; margin-bottom: 0; padding: 8px 12px; font-size: 0.85rem; border-radius: 20px; font-weight: bold; }
-    .record-count { margin-left: auto; font-weight: 900; color: #3b82f6; font-size: 0.8rem; background: #eff6ff; padding: 5px 15px; border-radius: 15px; }
+    /* RESPONSIVE FILTER BAR */
+    .filter-bar { background: #f8f9fa; padding: 12px; border-radius: 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 20px; border: 1px solid #eee; }
+    .filter-bar select { width: auto; flex-grow: 1; margin-bottom: 0; padding: 8px; font-size: 0.8rem; border-radius: 10px; }
+    .record-count { width: 100%; text-align: center; font-weight: 900; color: #3b82f6; font-size: 0.75rem; background: #eff6ff; padding: 5px; border-radius: 8px; margin-top: 5px; }
 
-    .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+    /* ADMIN GRID MOBILE FIX */
+    .admin-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 992px) {
+        .admin-grid { grid-template-columns: 1fr 1fr; }
+        .record-count { width: auto; margin-top: 0; margin-left: auto; }
+        .logo-img { height: 45px; }
+        .logo-text { font-size: 1.2rem; }
+    }
+
+    /* TABLE SCROLL FOR MOBILE */
+    .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; min-width: 400px; }
     th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
     th { background: #f8f8f8; color: var(--neu-green); }
-    .admin-thumb { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 8px; }
+    .admin-thumb { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 5px; }
 
-    .btn-delete { background: #dc3545; color: white; padding: 5px 10px; border-radius: 6px; border: none; cursor: pointer; }
-    .btn-bulk-delete { background: #dc3545; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; display: none; }
+    .btn-delete { background: #dc3545; color: white; padding: 5px 8px; border-radius: 6px; border: none; font-size: 0.75rem; }
+    .btn-bulk-delete { background: #dc3545; color: white; padding: 8px 12px; border-radius: 6px; border: none; font-size: 0.8rem; display: none; }
     
     .hidden { display: none; }
-    .admin-box { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 12px; }
+    .admin-box { margin-bottom: 15px; border: 1px solid #eee; padding: 12px; border-radius: 12px; background: #fff; }
     
-    #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
-    .profile-pic { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
-    .flex-header { display: flex; justify-content: space-between; align-items: center; }
+    #userProfile { display: none; margin-top: 20px; padding: 15px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; }
+    .profile-pic { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
+    .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .flex-header h3 { margin: 0; font-size: 1rem; }
   </style>
 </head>
 <body>
@@ -64,7 +77,7 @@
     <div class="logo-text">NEU LIBRARY</div>
   </div>
   <div class="nav-links">
-    <a id="link-timein" class="active" onclick="switchTab('timein')">Dashboard</a>
+    <a id="link-timein" class="active" onclick="switchTab('timein')">Dash</a>
     <a id="link-admin" onclick="switchTab('admin')">Admin</a>
     <a id="logout-btn" class="logout-nav hidden" onclick="adminLogout()">Logout</a>
   </div>
@@ -72,7 +85,7 @@
 
 <div class="container" id="mainContainer">
   <div id="section-timein">
-    <h2 style="text-align: center;">Attendance Portal</h2>
+    <h2 style="text-align: center; font-size: 1.4rem;">Attendance Portal</h2>
     <span class="field-label">REASON FOR VISITING</span>
     <select id="visitReason">
       <option value="Study / Reading">Study / Reading</option>
@@ -83,64 +96,63 @@
     <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
     <button onclick="handleTimeIn()">TIME IN →</button>
     <div style="text-align:center; margin-top:15px;">
-      <span style="cursor:pointer;" onclick="switchTab('signup')">Don't have an account? <b style="color:var(--neu-green)">Register here</b></span>
+      <span style="cursor:pointer; font-size: 0.9rem;" onclick="switchTab('signup')">Don't have an account? <b style="color:var(--neu-green)">Register</b></span>
     </div>
 
     <div id="userProfile">
       <img id="dispPic" src="" class="profile-pic">
-      <h2 id="dispName" style="color: var(--neu-green);"></h2>
-      <p id="dispDetails" style="color: #666; font-weight: bold; margin-bottom: 2px;"></p>
-      <p id="dispYear" style="color: #888; font-size: 0.85rem; margin-top: 0;"></p>
-      <div style="text-align: left; margin-top: 20px;">
-        <strong>Your Recent History:</strong>
-        <table>
-          <thead><tr style="color: var(--neu-green);"><th>Date</th><th>Time</th></tr></thead>
-          <tbody id="logBody"></tbody>
-        </table>
+      <h2 id="dispName" style="color: var(--neu-green); font-size: 1.2rem; margin: 10px 0 5px;"></h2>
+      <p id="dispDetails" style="color: #666; font-weight: bold; margin: 0; font-size: 0.9rem;"></p>
+      <p id="dispYear" style="color: #888; font-size: 0.8rem; margin: 2px 0 15px;"></p>
+      <div style="text-align: left;">
+        <strong style="font-size: 0.85rem;">Recent History:</strong>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr style="color: var(--neu-green);"><th>Date</th><th>Time</th></tr></thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 
   <div id="section-admin" class="hidden">
     <div class="filter-bar">
-        <span style="font-size: 0.7rem; font-weight: bold; color: #888;">FILTERS:</span>
         <select id="filterReason" onchange="loadLiveLogs()">
             <option value="All">All Reasons</option>
-            <option value="Study / Reading">Study / Reading</option>
+            <option value="Study / Reading">Study</option>
             <option value="Research">Research</option>
-            <option value="Borrow / Return Books">Borrow / Return Books</option>
-            <option value="Computer Use">Computer Use</option>
+            <option value="Borrow / Return Books">Books</option>
+            <option value="Computer Use">Computer</option>
         </select>
         <select id="filterDept" onchange="loadLiveLogs()">
             <option value="All">All Colleges</option>
-            <option value="CICS">College of Informatics & Computing Sciences (CICS)</option>
-            <option value="COE">College of Engineering (COE)</option>
-            <option value="CAS">College of Arts and Sciences (CAS)</option>
-            <option value="CBA">College of Business Administration (CBA)</option>
-            <option value="CED">College of Education (CED)</option>
-            <option value="CON">College of Nursing (CON)</option>
-            <option value="COL">College of Law (COL)</option>
-            <option value="COM">College of Medicine (COM)</option>
+            <option value="CICS">CICS</option>
+            <option value="COE">COE</option>
+            <option value="CAS">CAS</option>
+            <option value="CBA">CBA</option>
+            <option value="CED">CED</option>
+            <option value="CON">CON</option>
         </select>
         <select id="filterType" onchange="loadLiveLogs()">
             <option value="All">All Users</option>
             <option value="Student">Student</option>
             <option value="Faculty">Faculty</option>
         </select>
-        <div class="record-count" id="countDisplay">DISPLAYING: 0 RECORDS</div>
+        <div class="record-count" id="countDisplay">0 RECORDS</div>
     </div>
 
     <div class="admin-grid">
         <div>
             <div class="admin-box">
-                <h3>Traffic Chart</h3>
-                <div style="height: 180px;"><canvas id="trafficChart"></canvas></div>
+                <h3 style="font-size: 1rem; margin-bottom: 10px;">Traffic Chart</h3>
+                <div style="height: 150px;"><canvas id="trafficChart"></canvas></div>
             </div>
             <div class="admin-box">
-                <h3>Student Database</h3>
-                <div style="max-height: 300px; overflow-y:auto;">
+                <h3 style="font-size: 1rem; margin-bottom: 10px;">Database</h3>
+                <div class="table-wrapper" style="max-height: 250px; overflow-y:auto;">
                   <table>
-                    <thead><tr><th>Name</th><th>College</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Name</th><th>Dept</th><th>Action</th></tr></thead>
                     <tbody id="userListBody"></tbody>
                   </table>
                 </div>
@@ -149,13 +161,13 @@
         <div>
             <div class="admin-box">
                 <div class="flex-header">
-                  <h3>Live Activity Logs</h3>
-                  <div>
-                    <button id="btnBulkDelete" class="btn-bulk-delete" onclick="deleteSelectedLogs()">Delete Selected</button>
-                    <button class="btn-clear" onclick="clearLogs()">Clear</button>
+                  <h3>Activity Logs</h3>
+                  <div style="display:flex; gap:5px;">
+                    <button id="btnBulkDelete" class="btn-bulk-delete" onclick="deleteSelectedLogs()">Del</button>
+                    <button class="btn-clear" style="padding:5px 10px; width:auto; font-size:0.75rem; background:#6c757d;" onclick="clearLogs()">Clear</button>
                   </div>
                 </div>
-                <div style="max-height: 500px; overflow-y:auto; border: 1px solid #eee;">
+                <div class="table-wrapper" style="max-height: 400px; overflow-y:auto;">
                   <table>
                     <thead>
                       <tr>
@@ -173,8 +185,8 @@
   </div>
 
   <div id="section-signup" class="hidden">
-    <h2 style="text-align: center;">Register Member</h2>
-    <input type="text" id="regID" placeholder="ID Number (e.g. 24-12787-308)">
+    <h2 style="text-align: center; font-size: 1.3rem;">Register Member</h2>
+    <input type="text" id="regID" placeholder="ID Number">
     <input type="text" id="regName" placeholder="Full Name">
     
     <span class="field-label">User Type</span>
@@ -185,14 +197,12 @@
 
     <span class="field-label">College</span>
     <select id="regDept">
-        <option value="CICS">College of Informatics & Computing Sciences (CICS)</option>
-        <option value="COE">College of Engineering (COE)</option>
-        <option value="CAS">College of Arts and Sciences (CAS)</option>
-        <option value="CBA">College of Business Administration (CBA)</option>
-        <option value="CED">College of Education (CED)</option>
-        <option value="CON">College of Nursing (CON)</option>
-        <option value="COL">College of Law (COL)</option>
-        <option value="COM">College of Medicine (COM)</option>
+        <option value="CICS">CICS</option>
+        <option value="COE">COE</option>
+        <option value="CAS">CAS</option>
+        <option value="CBA">CBA</option>
+        <option value="CED">CED</option>
+        <option value="CON">CON</option>
     </select>
 
     <span class="field-label">Year Level</span>
@@ -202,22 +212,22 @@
         <option value="3rd Year">3rd Year</option>
         <option value="4th Year">4th Year</option>
         <option value="5th Year">5th Year</option>
-        <option value="N/A">N/A (for Faculty)</option>
+        <option value="N/A">N/A</option>
     </select>
 
     <input type="text" id="regCourse" placeholder="Course (e.g. BSIT)">
     
     <span class="field-label">Profile Photo</span>
-    <input type="file" id="regFile" accept="image/*">
+    <input type="file" id="regFile" accept="image/*" style="font-size: 0.8rem;">
     <input type="hidden" id="regBase64">
     
-    <button onclick="handleSignUp()">Create New Account</button>
-    <button onclick="switchTab('timein')" style="background:#6c757d; margin-top:10px;">BACK TO LOGIN</button>
+    <button onclick="handleSignUp()">CREATE ACCOUNT</button>
+    <button onclick="switchTab('timein')" style="background:#6c757d; margin-top:10px;">CANCEL</button>
   </div>
 </div>
 
 <script>
-  // Insert your specific Firebase Config here
+  // -- FIREBASE CONFIG --
   const firebaseConfig = {
     apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
     authDomain: "sfdasdafd.firebaseapp.com",
@@ -257,7 +267,7 @@
         document.getElementById('dispPic').src = u.photo;
         document.getElementById('dispName').innerText = u.name;
         document.getElementById('dispDetails').innerText = u.course;
-        document.getElementById('dispYear').innerText = u.year ? u.year : "";
+        document.getElementById('dispYear').innerText = u.year || "";
         document.getElementById('idInput').value = "";
 
         if(hideTimeout) clearTimeout(hideTimeout);
@@ -272,20 +282,6 @@
     });
   }
 
-  function handleSignUp() {
-    const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
-    if(!id) return alert("Please enter ID Number");
-    const data = {
-      name: document.getElementById('regName').value,
-      type: document.getElementById('regType').value,
-      dept: document.getElementById('regDept').value,
-      year: document.getElementById('regYear').value,
-      course: document.getElementById('regCourse').value,
-      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
-    };
-    db.ref('users/' + id).set(data).then(() => { alert("Registration Saved!"); switchTab('timein'); });
-  }
-
   function loadLiveLogs() {
     const rFilt = document.getElementById('filterReason').value;
     const dFilt = document.getElementById('filterDept').value;
@@ -296,7 +292,7 @@
       let logsArr = [];
       snap.forEach(c => { 
         const l = c.val();
-        if((rFilt === "All" || l.reason === rFilt) && (dFilt === "All" || l.dept === dFilt) && (tFilt === "All" || l.type === tFilt)) {
+        if((rFilt === "All" || l.reason.includes(rFilt)) && (dFilt === "All" || l.dept === dFilt) && (tFilt === "All" || l.type === tFilt)) {
             logsArr.push({ key: c.key, data: l });
             count++;
         }
@@ -308,7 +304,7 @@
           <td><input type="checkbox" name="logCheck" value="${item.key}" onclick="updateBulkBtn()"></td>
           <td style="text-align:left;">
             <img src="${l.photo}" class="admin-thumb">
-            <b>${l.name}</b> <small>(${l.course})</small><br><small>${l.reason} | ${l.dept}</small>
+            <b>${l.name}</b> <br><small>${l.course} | ${l.dept}</small>
           </td>
           <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td>
         </tr>`;
@@ -319,38 +315,39 @@
     });
   }
 
-  function toggleSelectAll(source) {
-    const checkboxes = document.getElementsByName('logCheck');
-    for (let i = 0; i < checkboxes.length; i++) checkboxes[i].checked = source.checked;
-    updateBulkBtn();
-  }
-
-  function updateBulkBtn() {
-    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
-    const btn = document.getElementById('btnBulkDelete');
-    btn.style.display = checkboxes.length > 0 ? 'inline-block' : 'none';
-  }
-
-  function deleteSelectedLogs() {
-    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
-    if (confirm(`Delete ${checkboxes.length} selected logs?`)) {
-      checkboxes.forEach(cb => db.ref('logs/' + cb.value).remove());
-    }
+  function handleSignUp() {
+    const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
+    if(!id) return alert("Enter ID!");
+    const data = {
+      name: document.getElementById('regName').value,
+      type: document.getElementById('regType').value,
+      dept: document.getElementById('regDept').value,
+      year: document.getElementById('regYear').value,
+      course: document.getElementById('regCourse').value,
+      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
+    };
+    db.ref('users/' + id).set(data).then(() => { alert("Saved!"); switchTab('timein'); });
   }
 
   function switchTab(tab) {
     const container = document.getElementById('mainContainer');
     if (tab === 'admin' && !isAdmin) {
-      if (prompt("Admin Password:") !== "admin123") return;
+      const p = prompt("Admin Password:");
+      if (p !== "admin123") return;
       isAdmin = true;
       document.getElementById('logout-btn').classList.remove('hidden');
     }
     if(tab === 'admin') container.classList.add('admin-mode');
     else container.classList.remove('admin-mode');
-    document.querySelectorAll('.container > div').forEach(d => { if(!d.id.includes('userProfile')) d.classList.add('hidden'); });
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    
+    document.getElementById('section-timein').classList.add('hidden');
+    document.getElementById('section-admin').classList.add('hidden');
+    document.getElementById('section-signup').classList.add('hidden');
+    
     document.getElementById('section-' + tab).classList.remove('hidden');
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     if(document.getElementById('link-' + tab)) document.getElementById('link-' + tab).classList.add('active');
+    
     if(tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
   }
 
@@ -364,6 +361,24 @@
       });
       document.getElementById('userListBody').innerHTML = h;
     });
+  }
+
+  function updateBulkBtn() {
+    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
+    document.getElementById('btnBulkDelete').style.display = checkboxes.length > 0 ? 'inline-block' : 'none';
+  }
+
+  function deleteSelectedLogs() {
+    const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
+    if (confirm(`Delete ${checkboxes.length} selected?`)) {
+      checkboxes.forEach(cb => db.ref('logs/' + cb.value).remove());
+    }
+  }
+
+  function toggleSelectAll(source) {
+    const checkboxes = document.getElementsByName('logCheck');
+    for (let i = 0; i < checkboxes.length; i++) checkboxes[i].checked = source.checked;
+    updateBulkBtn();
   }
 
   function clearLogs() { if(confirm("Clear all logs?")) db.ref('logs').remove(); }
@@ -385,7 +400,7 @@
       trafficChart = new Chart(ctx, {
         type: 'line',
         data: { labels: Object.keys(counts), datasets: [{ label: 'Logs', data: Object.values(counts), borderColor: '#006400', tension: 0.3, fill: true, backgroundColor: 'rgba(0,100,0,0.1)' }] },
-        options: { maintainAspectRatio: false }
+        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
       });
     });
   }
