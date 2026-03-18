@@ -13,7 +13,6 @@
     :root {
       --neu-green: #006400; 
       --neu-gold: #FFD700;  
-      --neu-green-dark: #004d00;
       --bg: #f0f2f5;
       --nav-bg: #ffffff;
       --text: #1a1a1a;
@@ -24,7 +23,6 @@
     .logo-area { display: flex; align-items: center; gap: 10px; }
     .logo-img { height: 45px; }
     .logo-text { font-weight: 900; font-size: 1.2rem; }
-    .nav-links { display: flex; align-items: center; }
     .nav-links a { color: var(--text); text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; margin-left: 5px; cursor: pointer; }
     .nav-links a.active { background: rgba(0,100,0,0.1); color: var(--neu-green); }
     .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 10px; }
@@ -37,29 +35,25 @@
     
     .field-label { font-size: 0.75rem; font-weight: 800; color: #8e949a; margin-bottom: 5px; display: block; text-transform: uppercase; }
 
-    /* FILTER BAR STYLE (Base sa Image 1) */
     .filter-bar { background: #f8f9fa; padding: 15px 20px; border-radius: 50px; display: flex; align-items: center; gap: 10px; margin-bottom: 25px; border: 1px solid #eee; }
-    .filter-bar select { width: auto; margin-bottom: 0; padding: 8px 12px; font-size: 0.85rem; border-radius: 20px; }
-    .record-count { margin-left: auto; font-weight: bold; color: #3b82f6; font-size: 0.8rem; background: #eff6ff; padding: 5px 15px; border-radius: 15px; text-transform: uppercase; }
+    .filter-bar select { width: auto; margin-bottom: 0; padding: 8px 12px; font-size: 0.85rem; border-radius: 20px; font-weight: bold; }
+    .record-count { margin-left: auto; font-weight: 900; color: #3b82f6; font-size: 0.8rem; background: #eff6ff; padding: 5px 15px; border-radius: 15px; }
 
     .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
-    th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+    th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
     th { background: #f8f8f8; color: var(--neu-green); }
-    .admin-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 10px; }
+    .admin-thumb { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; vertical-align: middle; margin-right: 8px; }
 
-    .btn-delete { background: #dc3545; color: white; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
-    .btn-clear { background: #6c757d; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; }
+    .btn-delete { background: #dc3545; color: white; padding: 5px 10px; border-radius: 6px; border: none; cursor: pointer; }
     .btn-bulk-delete { background: #dc3545; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; display: none; }
     
     .hidden { display: none; }
     .admin-box { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 12px; }
     
-    /* PROFILE CARD (Base sa Image 3) */
     #userProfile { display: none; margin-top: 20px; padding: 25px; border: 2px solid var(--neu-gold); border-radius: 15px; text-align: center; background: #fff; }
-    .profile-pic { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
-    
-    .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .profile-pic { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--neu-green); object-fit: cover; }
+    .flex-header { display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
 <body>
@@ -88,17 +82,19 @@
     </select>
     <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
     <button onclick="handleTimeIn()">TIME IN →</button>
-    <div class="reg-link-container">
-      <span class="reg-link" onclick="switchTab('signup')">Don't have an account? <b>Register here</b></span>
+    <div style="text-align:center; margin-top:15px;">
+      <span style="cursor:pointer;" onclick="switchTab('signup')">Don't have an account? <b style="color:var(--neu-green)">Register here</b></span>
     </div>
+
     <div id="userProfile">
       <img id="dispPic" src="" class="profile-pic">
-      <h2 id="dispName" style="margin:10px 0 0; color: var(--neu-green);"></h2>
-      <p id="dispDetails" style="color: #666; font-weight: bold;"></p>
-      <div style="text-align: left; margin-top: 15px;">
-        <strong style="color: #1a1a1a;">Your Recent History:</strong>
+      <h2 id="dispName" style="color: var(--neu-green);"></h2>
+      <p id="dispDetails" style="color: #666; font-weight: bold; margin-bottom: 2px;"></p>
+      <p id="dispYear" style="color: #888; font-size: 0.85rem; margin-top: 0;"></p>
+      <div style="text-align: left; margin-top: 20px;">
+        <strong>Your Recent History:</strong>
         <table>
-          <thead><tr><th>Date</th><th>Time</th></tr></thead>
+          <thead><tr style="color: var(--neu-green);"><th>Date</th><th>Time</th></tr></thead>
           <tbody id="logBody"></tbody>
         </table>
       </div>
@@ -108,9 +104,29 @@
   <div id="section-admin" class="hidden">
     <div class="filter-bar">
         <span style="font-size: 0.7rem; font-weight: bold; color: #888;">FILTERS:</span>
-        <select><option>All Reasons</option></select>
-        <select><option>All Colleges</option></select>
-        <select><option>All Users</option></select>
+        <select id="filterReason" onchange="loadLiveLogs()">
+            <option value="All">All Reasons</option>
+            <option value="Study / Reading">Study / Reading</option>
+            <option value="Research">Research</option>
+            <option value="Borrow / Return Books">Borrow / Return Books</option>
+            <option value="Computer Use">Computer Use</option>
+        </select>
+        <select id="filterDept" onchange="loadLiveLogs()">
+            <option value="All">All Colleges</option>
+            <option value="CICS">College of Informatics & Computing Sciences (CICS)</option>
+            <option value="COE">College of Engineering (COE)</option>
+            <option value="CAS">College of Arts and Sciences (CAS)</option>
+            <option value="CBA">College of Business Administration (CBA)</option>
+            <option value="CED">College of Education (CED)</option>
+            <option value="CON">College of Nursing (CON)</option>
+            <option value="COL">College of Law (COL)</option>
+            <option value="COM">College of Medicine (COM)</option>
+        </select>
+        <select id="filterType" onchange="loadLiveLogs()">
+            <option value="All">All Users</option>
+            <option value="Student">Student</option>
+            <option value="Faculty">Faculty</option>
+        </select>
         <div class="record-count" id="countDisplay">DISPLAYING: 0 RECORDS</div>
     </div>
 
@@ -124,7 +140,7 @@
                 <h3>Student Database</h3>
                 <div style="max-height: 300px; overflow-y:auto;">
                   <table>
-                    <thead><tr><th>Name</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Name</th><th>College</th><th>Action</th></tr></thead>
                     <tbody id="userListBody"></tbody>
                   </table>
                 </div>
@@ -144,8 +160,8 @@
                     <thead>
                       <tr>
                         <th style="width: 20px;"><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
-                        <th style="text-align: left;">User</th>
-                        <th>Time</th>
+                        <th style="text-align: left; color: var(--neu-green);">User</th>
+                        <th style="color: var(--neu-green);">Time</th>
                       </tr>
                     </thead>
                     <tbody id="adminLogsBody"></tbody>
@@ -157,19 +173,51 @@
   </div>
 
   <div id="section-signup" class="hidden">
-    <h2>Register Member</h2>
-    <input type="text" id="regID" placeholder="ID Number">
+    <h2 style="text-align: center;">Register Member</h2>
+    <input type="text" id="regID" placeholder="ID Number (e.g. 24-12787-308)">
     <input type="text" id="regName" placeholder="Full Name">
-    <select id="regType"><option value="Student">Student</option><option value="Faculty">Faculty</option></select>
-    <input type="text" id="regCourse" placeholder="Course/Department">
+    
+    <span class="field-label">User Type</span>
+    <select id="regType">
+        <option value="Student">Student</option>
+        <option value="Faculty">Faculty</option>
+    </select>
+
+    <span class="field-label">College</span>
+    <select id="regDept">
+        <option value="CICS">College of Informatics & Computing Sciences (CICS)</option>
+        <option value="COE">College of Engineering (COE)</option>
+        <option value="CAS">College of Arts and Sciences (CAS)</option>
+        <option value="CBA">College of Business Administration (CBA)</option>
+        <option value="CED">College of Education (CED)</option>
+        <option value="CON">College of Nursing (CON)</option>
+        <option value="COL">College of Law (COL)</option>
+        <option value="COM">College of Medicine (COM)</option>
+    </select>
+
+    <span class="field-label">Year Level</span>
+    <select id="regYear">
+        <option value="1st Year">1st Year</option>
+        <option value="2nd Year">2nd Year</option>
+        <option value="3rd Year">3rd Year</option>
+        <option value="4th Year">4th Year</option>
+        <option value="5th Year">5th Year</option>
+        <option value="N/A">N/A (for Faculty)</option>
+    </select>
+
+    <input type="text" id="regCourse" placeholder="Course (e.g. BSIT)">
+    
+    <span class="field-label">Profile Photo</span>
     <input type="file" id="regFile" accept="image/*">
     <input type="hidden" id="regBase64">
+    
     <button onclick="handleSignUp()">Create New Account</button>
     <button onclick="switchTab('timein')" style="background:#6c757d; margin-top:10px;">BACK TO LOGIN</button>
   </div>
 </div>
 
 <script>
+  // Insert your specific Firebase Config here
   const firebaseConfig = {
     apiKey: "AIzaSyB0xwF6fFbPD_zD6458t_19VWMwocQiV3I",
     authDomain: "sfdasdafd.firebaseapp.com",
@@ -197,6 +245,7 @@
       const now = new Date();
       const log = {
         id: rawId, name: u.name, photo: u.photo, reason: reason,
+        dept: u.dept, type: u.type, course: u.course, year: u.year || "",
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
         day: now.toLocaleDateString('en-US', {weekday:'short'})
@@ -208,10 +257,11 @@
         document.getElementById('dispPic').src = u.photo;
         document.getElementById('dispName').innerText = u.name;
         document.getElementById('dispDetails').innerText = u.course;
+        document.getElementById('dispYear').innerText = u.year ? u.year : "";
         document.getElementById('idInput').value = "";
 
         if(hideTimeout) clearTimeout(hideTimeout);
-        hideTimeout = setTimeout(() => { profileDiv.style.display = 'none'; }, 3000);
+        hideTimeout = setTimeout(() => { profileDiv.style.display = 'none'; }, 5000);
 
         db.ref('logs').orderByChild('id').equalTo(rawId).limitToLast(5).on('value', s => {
           let h = ""; let a = []; s.forEach(c => a.push(c.val()));
@@ -219,6 +269,53 @@
           document.getElementById('logBody').innerHTML = h;
         });
       });
+    });
+  }
+
+  function handleSignUp() {
+    const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
+    if(!id) return alert("Please enter ID Number");
+    const data = {
+      name: document.getElementById('regName').value,
+      type: document.getElementById('regType').value,
+      dept: document.getElementById('regDept').value,
+      year: document.getElementById('regYear').value,
+      course: document.getElementById('regCourse').value,
+      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
+    };
+    db.ref('users/' + id).set(data).then(() => { alert("Registration Saved!"); switchTab('timein'); });
+  }
+
+  function loadLiveLogs() {
+    const rFilt = document.getElementById('filterReason').value;
+    const dFilt = document.getElementById('filterDept').value;
+    const tFilt = document.getElementById('filterType').value;
+
+    db.ref('logs').on('value', snap => {
+      let h = ""; let count = 0;
+      let logsArr = [];
+      snap.forEach(c => { 
+        const l = c.val();
+        if((rFilt === "All" || l.reason === rFilt) && (dFilt === "All" || l.dept === dFilt) && (tFilt === "All" || l.type === tFilt)) {
+            logsArr.push({ key: c.key, data: l });
+            count++;
+        }
+      });
+      
+      logsArr.reverse().forEach(item => {
+        const l = item.data;
+        h += `<tr>
+          <td><input type="checkbox" name="logCheck" value="${item.key}" onclick="updateBulkBtn()"></td>
+          <td style="text-align:left;">
+            <img src="${l.photo}" class="admin-thumb">
+            <b>${l.name}</b> <small>(${l.course})</small><br><small>${l.reason} | ${l.dept}</small>
+          </td>
+          <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td>
+        </tr>`;
+      });
+      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='3'>No History</td></tr>";
+      document.getElementById('countDisplay').innerText = `DISPLAYING: ${count} RECORDS`;
+      updateBulkBtn();
     });
   }
 
@@ -232,37 +329,13 @@
     const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
     const btn = document.getElementById('btnBulkDelete');
     btn.style.display = checkboxes.length > 0 ? 'inline-block' : 'none';
-    btn.innerText = `Delete Selected (${checkboxes.length})`;
   }
 
   function deleteSelectedLogs() {
     const checkboxes = document.querySelectorAll('input[name="logCheck"]:checked');
-    if (confirm(`Burahin ang ${checkboxes.length} na napiling logs?`)) {
-      const promises = [];
-      checkboxes.forEach(cb => promises.push(db.ref('logs/' + cb.value).remove()));
-      Promise.all(promises).then(() => {
-        document.getElementById('selectAll').checked = false;
-        updateBulkBtn();
-      });
+    if (confirm(`Delete ${checkboxes.length} selected logs?`)) {
+      checkboxes.forEach(cb => db.ref('logs/' + cb.value).remove());
     }
-  }
-
-  function loadLiveLogs() {
-    db.ref('logs').limitToLast(50).on('value', snap => {
-      let h = ""; let count = 0;
-      let logsArr = [];
-      snap.forEach(c => { logsArr.push({ key: c.key, data: c.val() }); count++; });
-      logsArr.reverse().forEach(item => {
-        const l = item.data;
-        h += `<tr>
-          <td><input type="checkbox" name="logCheck" value="${item.key}" onclick="updateBulkBtn()"></td>
-          <td style="text-align:left;"><img src="${l.photo}" class="admin-thumb"><b>${l.name}</b><br><small>${l.reason}</small></td>
-          <td style="color:var(--neu-green); font-weight:bold;">${l.time}</td></tr>`;
-      });
-      document.getElementById('adminLogsBody').innerHTML = h || "<tr><td colspan='3'>No History</td></tr>";
-      document.getElementById('countDisplay').innerText = `DISPLAYING: ${count} RECORDS`;
-      updateBulkBtn();
-    });
   }
 
   function switchTab(tab) {
@@ -286,22 +359,16 @@
       let h = "";
       snap.forEach(c => {
         h += `<tr><td style="text-align:left;"><img src="${c.val().photo}" class="admin-thumb">${c.val().name}</td>
+          <td>${c.val().dept}</td>
           <td><button class="btn-delete" onclick="deleteUser('${c.key}')">Del</button></td></tr>`;
       });
       document.getElementById('userListBody').innerHTML = h;
     });
   }
 
-  function handleSignUp() {
-    const id = document.getElementById('regID').value.trim().replace(/\./g, '_');
-    const data = {
-      name: document.getElementById('regName').value,
-      type: document.getElementById('regType').value,
-      course: document.getElementById('regCourse').value,
-      photo: document.getElementById('regBase64').value || "https://via.placeholder.com/150"
-    };
-    db.ref('users/' + id).set(data).then(() => { alert("Saved!"); switchTab('timein'); });
-  }
+  function clearLogs() { if(confirm("Clear all logs?")) db.ref('logs').remove(); }
+  function deleteUser(id) { if(confirm("Delete user?")) db.ref('users/' + id).remove(); }
+  function adminLogout() { isAdmin = false; document.getElementById('logout-btn').classList.add('hidden'); switchTab('timein'); }
 
   document.getElementById('regFile').addEventListener('change', function(e) {
     const reader = new FileReader();
@@ -322,10 +389,6 @@
       });
     });
   }
-
-  function deleteUser(id) { if(confirm("Delete user?")) db.ref('users/' + id).remove(); }
-  function clearLogs() { if(confirm("Clear all history?")) db.ref('logs').remove(); }
-  function adminLogout() { isAdmin = false; document.getElementById('logout-btn').classList.add('hidden'); switchTab('timein'); }
 </script>
 </body>
 </html>
