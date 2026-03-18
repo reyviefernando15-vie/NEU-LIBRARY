@@ -31,10 +31,16 @@
     .logout-nav { color: #dc3545 !important; border: 1.5px solid #dc3545; margin-left: 10px; }
     .logout-nav:hover { background: #dc3545; color: white !important; }
 
-    .container { max-width: 1000px; margin: 40px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .container { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
     button { background: var(--neu-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
     
+    /* REGISTER TEXT LINK STYLE */
+    .reg-link-container { text-align: center; margin-top: 20px; }
+    .reg-link { color: #555; text-decoration: none; font-size: 0.9rem; transition: 0.3s; cursor: pointer; }
+    .reg-link b { color: var(--neu-green); }
+    .reg-link:hover { text-decoration: underline; color: var(--text); }
+
     /* Admin UI */
     table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
     th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
@@ -65,7 +71,6 @@
   </div>
   <div class="nav-links">
     <a id="link-timein" class="active" onclick="switchTab('timein')">Dashboard</a>
-    <a id="link-signup" onclick="switchTab('signup')">Register</a>
     <a id="link-admin" onclick="switchTab('admin')">Admin</a>
     <a id="logout-btn" class="logout-nav hidden" onclick="adminLogout()">Logout</a>
   </div>
@@ -76,6 +81,10 @@
     <h2>Attendance Portal</h2>
     <input type="text" id="idInput" placeholder="Enter ID Number" onkeydown="if(event.key==='Enter') handleTimeIn()">
     <button onclick="handleTimeIn()">TIME IN →</button>
+    
+    <div class="reg-link-container">
+      <span class="reg-link" onclick="switchTab('signup')">Don't have an account? <b>Register here</b></span>
+    </div>
 
     <div id="userProfile">
       <img id="dispPic" src="" class="profile-pic">
@@ -99,8 +108,8 @@
     <input type="text" id="regCourse" placeholder="Course/Department">
     <input type="file" id="regFile" accept="image/*">
     <input type="hidden" id="regBase64">
-    <button id="btnSave" onclick="handleSignUp()">SAVE RECORD</button>
-    <button id="btnCancel" class="hidden" onclick="cancelEdit()" style="background:#6c757d; margin-top:10px;">CANCEL</button>
+    <button id="btnSave" onclick="handleSignUp()">Create New Account</button>
+    <button id="btnCancel" onclick="switchTab('timein')" style="background:#6c757d; margin-top:10px;">BACK TO LOGIN</button>
   </div>
 
   <div id="section-admin" class="hidden">
@@ -168,14 +177,18 @@
 
   function switchTab(tab) {
     if (tab === 'admin' && !isAdmin) {
-      if (prompt("Admin Password:") !== "admin123") return alert("Wrong Password");
+      const pass = prompt("Admin Password:");
+      if (pass !== "admin123") return;
       isAdmin = true;
       document.getElementById('logout-btn').classList.remove('hidden');
     }
     document.querySelectorAll('.container > div').forEach(d => { if(!d.id.includes('userProfile')) d.classList.add('hidden'); });
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    
     document.getElementById('section-' + tab).classList.remove('hidden');
-    document.getElementById('link-' + tab).classList.add('active');
+    const navLink = document.getElementById('link-' + tab);
+    if(navLink) navLink.classList.add('active');
+    
     if(tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
   }
 
@@ -243,7 +256,6 @@
       document.getElementById('regCourse').value = u.course;
       document.getElementById('regBase64').value = u.photo;
       document.getElementById('regTitle').innerText = "Update Member";
-      document.getElementById('btnCancel').classList.remove('hidden');
       switchTab('signup');
     });
   }
@@ -254,9 +266,9 @@
 
   function cancelEdit() {
     document.getElementById('regID').disabled = false;
-    document.getElementById('regID').value = ""; document.getElementById('regName').value = "";
+    document.getElementById('regID').value = ""; 
+    document.getElementById('regName').value = "";
     document.getElementById('regTitle').innerText = "Register Member";
-    document.getElementById('btnCancel').classList.add('hidden');
   }
 
   function handleTimeIn() {
@@ -292,7 +304,7 @@
       let h = "";
       snap.forEach(c => {
         const u = c.val(); const id = c.key;
-        h += `<tr><td><img src="${u.photo}" class="admin-thumb"></td><td>${u.name}</td><td>${id}</td>
+        h += `<tr><td><img src="${u.photo}" class="admin-thumb"></td><td>${u.name}</td><td>${id.replace(/_/g,'.')}</td>
           <td><button class="btn-edit" onclick="editUser('${id}')">Edit</button>
           <button class="btn-delete" onclick="deleteUser('${id}')">Del</button></td></tr>`;
       });
