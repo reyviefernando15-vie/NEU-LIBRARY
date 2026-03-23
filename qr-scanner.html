@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner - NEU Library</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="neu.png" alt="NEU Logo" class="sidebar-logo">
+                <h3>NEU Library<br>Management System</h3>
+                <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="icon">📊</span>
+                    <span class="label">Dashboard</span>
+                </a>
+                <a href="book-catalog.html" class="nav-link">
+                    <span class="icon">📚</span>
+                    <span class="label">Book Catalog</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="icon">📤</span>
+                    <span class="label">Borrowing</span>
+                </a>
+                <a href="library-logger.html" class="nav-link">
+                    <span class="icon">📝</span>
+                    <span class="label">Library Logger</span>
+                </a>
+                <a href="student-records.html" class="nav-link">
+                    <span class="icon">👥</span>
+                    <span class="label">Student Records</span>
+                </a>
+                <a href="qr-scanner.html" class="nav-link active">
+                    <span class="icon">📱</span>
+                    <span class="label">QR Scanner</span>
+                </a>
+                <a href="user-management.html" class="nav-link">
+                    <span class="icon">👤</span>
+                    <span class="label">User Management</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="icon">📈</span>
+                    <span class="label">Reports</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-info">
+                    <p><strong>Administrator</strong></p>
+                    <p>ESPERANZA, JEREMIAS</p>
+                    <p class="admin-id">12-31231-231</p>
+                </div>
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h2>CHECK-IN STATION</h2>
+                <h1>QR Scanner</h1>
+                <p>Scan student IDs for quick library access check-in.</p>
+            </header>
+
+            <div class="scanner-section">
+                <div class="scanner-container">
+                    <div class="scanner-box">
+                        <div class="scanner-placeholder">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+                                <rect x="10" y="10" width="30" height="30" stroke-width="2"/>
+                                <rect x="60" y="10" width="30" height="30" stroke-width="2"/>
+                                <rect x="10" y="60" width="30" height="30" stroke-width="2"/>
+                                <circle cx="50" cy="50" r="15" stroke-width="2"/>
+                            </svg>
+                            <p>QR Scanner Ready</p>
+                            <p class="hint">Point camera at QR code</p>
+                        </div>
+                    </div>
+
+                    <div class="input-section">
+                        <label>Manual Entry (Optional)</label>
+                        <input type="text" id="studentIdInput" placeholder="Or enter Student ID manually..." onkeypress="handleManualEntry(event)">
+                        <button class="btn-primary" onclick="processStudentId()">Process</button>
+                    </div>
+                </div>
+
+                <div class="recent-scans">
+                    <h2>Recent Check-ins</h2>
+                    <div class="scans-list">
+                        <div class="scan-item">
+                            <div class="scan-info">
+                                <p class="scan-time">10:45 AM</p>
+                                <p class="scan-name">ADLAWAN, CHRISTIAN P.</p>
+                                <p class="scan-id">24-13161-781</p>
+                            </div>
+                            <span class="scan-status success">✓ Checked In</span>
+                        </div>
+                        <div class="scan-item">
+                            <div class="scan-info">
+                                <p class="scan-time">10:30 AM</p>
+                                <p class="scan-name">ANTONINO, GABRIEL B.</p>
+                                <p class="scan-id">24-12897-584</p>
+                            </div>
+                            <span class="scan-status success">✓ Checked In</span>
+                        </div>
+                        <div class="scan-item">
+                            <div class="scan-info">
+                                <p class="scan-time">09:15 AM</p>
+                                <p class="scan-name">AUDITOR, JOMAR A.</p>
+                                <p class="scan-id">24-13005-502</p>
+                            </div>
+                            <span class="scan-status success">✓ Checked In</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>

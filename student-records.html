@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Records - NEU Library</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="neu.png" alt="NEU Logo" class="sidebar-logo">
+                <h3>NEU Library<br>Management System</h3>
+                <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="icon">📊</span>
+                    <span class="label">Dashboard</span>
+                </a>
+                <a href="book-catalog.html" class="nav-link">
+                    <span class="icon">📚</span>
+                    <span class="label">Book Catalog</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="icon">📤</span>
+                    <span class="label">Borrowing</span>
+                </a>
+                <a href="library-logger.html" class="nav-link">
+                    <span class="icon">📝</span>
+                    <span class="label">Library Logger</span>
+                </a>
+                <a href="student-records.html" class="nav-link active">
+                    <span class="icon">👥</span>
+                    <span class="label">Student Records</span>
+                </a>
+                <a href="qr-scanner.html" class="nav-link">
+                    <span class="icon">📱</span>
+                    <span class="label">QR Scanner</span>
+                </a>
+                <a href="user-management.html" class="nav-link">
+                    <span class="icon">👤</span>
+                    <span class="label">User Management</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="icon">📈</span>
+                    <span class="label">Reports</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-info">
+                    <p><strong>Administrator</strong></p>
+                    <p>ESPERANZA, JEREMIAS</p>
+                    <p class="admin-id">12-31231-231</p>
+                </div>
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h2>STUDENT MANAGEMENT</h2>
+                <h1>Student Records</h1>
+                <p>View and manage individual student borrowing records and history.</p>
+            </header>
+
+            <div class="content-controls">
+                <div class="search-box">
+                    <input type="text" placeholder="Search student by ID, name, or email...">
+                </div>
+                <button class="btn-primary" onclick="openModal('addStudent')">+ Add Student Record</button>
+            </div>
+
+            <div class="table-container">
+                <table class="students-table">
+                    <thead>
+                        <tr>
+                            <th>NAME</th>
+                            <th>ID NUMBER</th>
+                            <th>EMAIL</th>
+                            <th>COURSE</th>
+                            <th>BOOKS BORROWED</th>
+                            <th>ACTIVE LOANS</th>
+                            <th>OVERDUE</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ADLAWAN, CHRISTIAN P.</strong></td>
+                            <td>24-13161-781</td>
+                            <td>christian.adlawan@neu.edu.ph</td>
+                            <td>BS in Information Technology (BSIT)</td>
+                            <td>12</td>
+                            <td>2</td>
+                            <td><span class="status success">0</span></td>
+                            <td class="action-buttons">
+                                <button class="btn-action view">View</button>
+                                <button class="btn-action edit">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>ANTONINO, GABRIEL B.</strong></td>
+                            <td>24-12897-584</td>
+                            <td>gabriel.antonino@neu.edu.ph</td>
+                            <td>BS IN INFORMATION TECHNOLOGY (BSIT)</td>
+                            <td>8</td>
+                            <td>1</td>
+                            <td><span class="status success">0</span></td>
+                            <td class="action-buttons">
+                                <button class="btn-action view">View</button>
+                                <button class="btn-action edit">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>AUDITOR, JOMAR A.</strong></td>
+                            <td>24-13005-502</td>
+                            <td>jomar.auditor@neu.edu.ph</td>
+                            <td>ECONOMICS</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td><span class="status success">0</span></td>
+                            <td class="action-buttons">
+                                <button class="btn-action view">View</button>
+                                <button class="btn-action edit">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>BALIGNASAY, JACOB DREW V.</strong></td>
+                            <td>23-12413-463</td>
+                            <td>jacobdrew.balignasay@neu.edu.ph</td>
+                            <td>BACHELOR OF EARLY CHILDHOOD EDUCATION (BECED)</td>
+                            <td>15</td>
+                            <td>3</td>
+                            <td><span class="status success">0</span></td>
+                            <td class="action-buttons">
+                                <button class="btn-action view">View</button>
+                                <button class="btn-action edit">Edit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addStudent')">&times;</span>
+            <h2>Add Student Record</h2>
+            <form>
+                <input type="text" placeholder="Full Name" required>
+                <input type="text" placeholder="Student ID" required>
+                <input type="email" placeholder="Email" required>
+                <input type="text" placeholder="Course" required>
+                <textarea placeholder="Notes"></textarea>
+                <button type="submit">Add Record</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>

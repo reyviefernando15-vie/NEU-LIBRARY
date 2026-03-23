@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Catalog - NEU Library</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="neu.png" alt="NEU Logo" class="sidebar-logo">
+                <h3>NEU Library<br>Management System</h3>
+                <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="icon">📊</span>
+                    <span class="label">Dashboard</span>
+                </a>
+                <a href="book-catalog.html" class="nav-link active">
+                    <span class="icon">📚</span>
+                    <span class="label">Book Catalog</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="icon">📤</span>
+                    <span class="label">Borrowing</span>
+                </a>
+                <a href="library-logger.html" class="nav-link">
+                    <span class="icon">📝</span>
+                    <span class="label">Library Logger</span>
+                </a>
+                <a href="student-records.html" class="nav-link">
+                    <span class="icon">👥</span>
+                    <span class="label">Student Records</span>
+                </a>
+                <a href="qr-scanner.html" class="nav-link">
+                    <span class="icon">📱</span>
+                    <span class="label">QR Scanner</span>
+                </a>
+                <a href="user-management.html" class="nav-link">
+                    <span class="icon">👤</span>
+                    <span class="label">User Management</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="icon">📈</span>
+                    <span class="label">Reports</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-info">
+                    <p><strong>Administrator</strong></p>
+                    <p>ESPERANZA, JEREMIAS</p>
+                    <p class="admin-id">12-31231-231</p>
+                </div>
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h2>COLLECTION MANAGEMENT</h2>
+                <h1>Book Catalog</h1>
+                <p>Add, edit, and manage all books in the library collection.</p>
+            </header>
+
+            <div class="content-controls">
+                <button class="btn-primary" onclick="openModal('addBook')">+ Add New Book</button>
+                <div class="search-box">
+                    <input type="text" placeholder="Search books by title, ISBN, author...">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="books-table">
+                    <thead>
+                        <tr>
+                            <th>TITLE</th>
+                            <th>AUTHOR</th>
+                            <th>ISBN</th>
+                            <th>QUANTITY</th>
+                            <th>AVAILABLE</th>
+                            <th>CATEGORY</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Introduction to Algorithms</strong></td>
+                            <td>Thomas H. Cormen</td>
+                            <td>978-0262033848</td>
+                            <td>5</td>
+                            <td>3</td>
+                            <td>Computer Science</td>
+                            <td class="action-buttons">
+                                <button class="btn-action edit">Edit</button>
+                                <button class="btn-action delete">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>The C Programming Language</strong></td>
+                            <td>Brian W. Kernighan</td>
+                            <td>978-0131103627</td>
+                            <td>8</td>
+                            <td>6</td>
+                            <td>Programming</td>
+                            <td class="action-buttons">
+                                <button class="btn-action edit">Edit</button>
+                                <button class="btn-action delete">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database Management Systems</strong></td>
+                            <td>Raghu Ramakrishnan</td>
+                            <td>978-0072465631</td>
+                            <td>4</td>
+                            <td>2</td>
+                            <td>Databases</td>
+                            <td class="action-buttons">
+                                <button class="btn-action edit">Edit</button>
+                                <button class="btn-action delete">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Book Modal -->
+    <div id="addBookModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addBook')">&times;</span>
+            <h2>Add New Book</h2>
+            <form>
+                <input type="text" placeholder="Book Title" required>
+                <input type="text" placeholder="Author Name" required>
+                <input type="text" placeholder="ISBN" required>
+                <input type="number" placeholder="Quantity" required>
+                <input type="text" placeholder="Category" required>
+                <textarea placeholder="Description"></textarea>
+                <button type="submit">Add Book</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
