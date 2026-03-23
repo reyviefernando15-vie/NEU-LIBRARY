@@ -3,295 +3,488 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEU Library - Admin System</title>
+  <title>NEU Library Management System</title>
 
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js for Analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- QR Code Libraries -->
+  <script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 <body>
 
+<!-- NAVBAR -->
 <nav class="topnav">
   <div class="logo-area">
     <img src="neu.png" alt="NEU Logo" class="logo-img">
     <div class="logo-text">NEU LIBRARY</div>
   </div>
   <div class="nav-links">
-    <a id="link-dashboard" class="active">Dashboard</a>
-    <a id="link-bookcatalog">Book Catalog</a>
-    <a id="link-librarylogger">Library Logger</a>
-    <a id="link-studentrecords">Student Records</a>
-    <a id="link-qrscanner">QR Scanner</a>
-    <a id="link-usermanagement">User Management</a>
-    <a id="logout-btn" class="logout-nav hidden">Sign Out</a>
+    <!-- Student Links -->
+    <a id="link-attendance" class="nav-link active">Attendance</a>
+    
+    <!-- Admin Links -->
+    <a id="link-dashboard" class="nav-link admin-only hidden">Dashboard</a>
+    <a id="link-logger" class="nav-link admin-only hidden">Logger</a>
+    <a id="link-books" class="nav-link admin-only hidden">Books</a>
+    <a id="link-students" class="nav-link admin-only hidden">Students</a>
+    <a id="link-users" class="nav-link admin-only hidden">Users</a>
+    <a id="logout-btn" class="nav-link admin-only hidden logout-nav">Logout</a>
+    <a href="LogIn.html" id="admin-login-btn" class="nav-link">Admin Login</a>
   </div>
 </nav>
 
-<div id="authPanel" style="display:none;">
-  <div class="auth-tabs">
-    <button id="tab-login" class="auth-tab active">Login</button>
-    <button id="tab-signup" class="auth-tab">Sign Up</button>
-  </div>
+<!-- MAIN CONTAINER -->
+<div class="container" id="mainContainer">
 
-  <div id="section-login" class="auth-section">
-    <h2>Login</h2>
-    <input type="text" id="loginID" placeholder="Student ID">
-    <input type="password" id="loginPassword" placeholder="Password">
-    <button id="btnLocalLogin">Login</button>
-    <button id="btnGoogleLogin">Login with Google</button>
-  </div>
+  <!-- ===== 1. ATTENDANCE PORTAL (Student Entry Point) ===== -->
+  <section id="section-attendance" class="page-section active">
+    <h2 class="section-title">📍 Library Attendance Portal</h2>
+    <p class="section-subtitle">Welcome to NEU Library. Please scan your QR code or enter your ID to check in.</p>
 
-  <div id="section-signup" class="auth-section hidden">
-    <h2>Sign Up</h2>
-    <div id="googleUserInfo" class="hidden">
-      <p>Welcome, <span id="googleUserName"></span>!</p>
-    </div>
-    <input type="text" id="regID" placeholder="Student ID">
-    <input type="text" id="regName" placeholder="Full Name">
-    <input type="email" id="regEmail" placeholder="Email" readonly>
-    <select id="regType">
-      <option value="Student">Student</option>
-      <option value="Faculty">Faculty</option>
-      <option value="Staff">Staff</option>
-    </select>
-    <input type="text" id="regDept" placeholder="Department">
-    <input type="text" id="regCourse" placeholder="Course">
-    <input type="text" id="regYear" placeholder="Year">
-    <input type="text" id="regPhoto" placeholder="Photo URL">
-    <button id="btnSignUp">Sign Up</button>
-  </div>
-</div>
-
-  <div class="container" id="mainContainer" style="display:none;">
-  <div id="section-timein">
-    <h2 class="section-title">Dashboard</h2>
-
-    <span class="field-label">REASON FOR VISITING</span>
-    <select id="visitReason">
-      <option value="Study / Reading">Study / Reading</option>
-      <option value="Research">Research</option>
-      <option value="Borrow / Return Books">Borrow / Return Books</option>
-      <option value="Computer Use">Computer Use</option>
-    </select>
-
-    <input type="text" id="idInput" placeholder="Enter ID Number">
-    <button id="btnTimeIn" type="button">TIME IN →</button>
-
-    <div class="text-center mt-15">
-      <span class="link-text" id="link-signup">Don't have an account? <b class="text-highlight">Register</b></span>
+    <div class="input-method-toggle">
+      <button id="btnManualInput" class="toggle-btn active">📝 Manual Input</button>
+      <button id="btnQRScan" class="toggle-btn">📱 QR Scan</button>
     </div>
 
-    <div id="userProfile">
-      <img id="dispPic" src="" class="profile-pic">
-      <h2 id="dispName" class="profile-name"></h2>
-      <p id="dispDetails" class="profile-details"></p>
-      <p id="dispYear" class="profile-year"></p>
+    <!-- Manual Input Section -->
+    <div id="manualInputSection" class="input-section active">
+      <div class="form-group">
+        <label for="idInput" class="field-label">Student ID</label>
+        <input type="text" id="idInput" placeholder="Enter your 8-digit ID" class="input-field">
+      </div>
 
-      <div class="text-left">
-        <strong class="box-title">Recent History:</strong>
-        <div class="table-wrapper">
-          <table>
-            <thead><tr class="text-highlight"><th>Date</th><th>Time</th></tr></thead>
-            <tbody id="logBody"></tbody>
-          </table>
+      <div class="form-group">
+        <label for="visitReason" class="field-label">Reason for Visiting</label>
+        <select id="visitReason" class="input-field">
+          <option value="">-- Select Reason --</option>
+          <option value="Study / Reading">📚 Study / Reading</option>
+          <option value="Research">🔍 Research</option>
+          <option value="Borrow / Return Books">🔄 Borrow / Return Books</option>
+          <option value="Computer Use">💻 Computer Use</option>
+          <option value="Group Discussion">👥 Group Discussion</option>
+          <option value="Event / Activities">🎉 Event / Activities</option>
+        </select>
+      </div>
+
+      <button id="btnTimeIn" type="button" class="btn-primary btn-large">
+        ✅ TIME IN → 
+      </button>
+    </div>
+
+    <!-- QR Scan Section -->
+    <div id="qrScanSection" class="input-section hidden">
+      <div id="qr-reader" style="width: 100%; max-width: 400px; margin: 0 auto;"></div>
+      <div id="qr-reader-results" class="qr-results"></div>
+      <button id="btnStartScan" type="button" class="btn-secondary">📷 Start QR Scan</button>
+      <button id="btnStopScan" type="button" class="btn-secondary hidden">⏹️ Stop Scan</button>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+      <div class="stat-card-small">
+        <div class="stat-number" id="totalVisitorsSmall">0</div>
+        <div class="stat-label">Today's Visitors</div>
+      </div>
+      <div class="stat-card-small">
+        <div class="stat-number" id="activeUsersSmall">0</div>
+        <div class="stat-label">Currently Inside</div>
+      </div>
+    </div>
+
+    <!-- User Profile Display (After Scan/Input) -->
+    <div id="userProfile" class="user-profile hidden">
+      <div class="profile-container">
+        <div class="profile-header">
+          <h3 id="dispName" class="profile-name">Student Name</h3>
+          <p id="dispID" class="profile-id">ID: 12345678</p>
+          <p id="dispCollege" class="profile-college">CICS</p>
+        </div>
+        <div class="profile-actions">
+          <p id="statusMessage" class="status-message"></p>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div id="section-admin" class="hidden">
-    <div class="filter-bar">
-      <select id="filterReason">
-        <option value="All">All Reasons</option>
-        <option value="Study / Reading">Study</option>
-        <option value="Research">Research</option>
-        <option value="Borrow / Return Books">Books</option>
-        <option value="Computer Use">Computer</option>
-      </select>
+  <!-- ===== 2. DASHBOARD (Admin Analytics) ===== -->
+  <section id="section-dashboard" class="page-section hidden">
+    <h2 class="section-title">📊 Library Dashboard</h2>
+    <p class="section-subtitle">Real-time analytics and insights</p>
 
-      <select id="filterDept">
-        <option value="All">All Colleges</option>
-        <option value="CICS">CICS</option>
-        <option value="COE">COE</option>
-        <option value="CAS">CAS</option>
-        <option value="CBA">CBA</option>
-        <option value="CED">CED</option>
-        <option value="CON">CON</option>
-      </select>
-
-      <select id="filterType">
-        <option value="All">All Users</option>
-        <option value="Student">Student</option>
-        <option value="Faculty">Faculty</option>
-      </select>
-
-      <div class="record-count" id="countDisplay">0 RECORDS</div>
+    <!-- Filter Controls -->
+    <div class="dashboard-filters">
+      <div class="filter-group">
+        <label for="dashboardFilter">Time Period:</label>
+        <select id="dashboardFilter" class="input-field">
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="custom">Custom Range</option>
+        </select>
+      </div>
+      <div id="customDateRange" class="hidden">
+        <input type="date" id="startDate" class="input-field">
+        <input type="date" id="endDate" class="input-field">
+        <button id="btnApplyDateFilter" type="button" class="btn-secondary">Apply Filter</button>
+      </div>
     </div>
 
-    <div class="admin-grid">
-      <div>
-        <div class="admin-box">
-          <h3 class="box-title">Traffic Chart</h3>
-          <div class="chart-wrap"><canvas id="trafficChart"></canvas></div>
-        </div>
-
-        <div class="admin-box">
-          <h3 class="box-title">Database</h3>
-          <div class="table-wrapper table-scroll">
-            <table>
-              <thead><tr><th>Name</th><th>Dept</th><th>Action</th></tr></thead>
-              <tbody id="userListBody"></tbody>
-            </table>
-          </div>
-        </div>
+    <!-- Summary Cards -->
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <h3 id="totalVisitors">0</h3>
+        <p>Total Visitors</p>
       </div>
+      <div class="stat-card">
+        <div class="stat-icon">🚶</div>
+        <h3 id="activeUsers">0</h3>
+        <p>Currently Inside</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏱️</div>
+        <h3 id="avgStayDuration">0m</h3>
+        <p>Avg Stay Duration</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏰</div>
+        <h3 id="peakHour">--</h3>
+        <p>Peak Hour</p>
+      </div>
+    </div>
 
-      <div>
-        <div class="admin-box">
-          <div class="flex-header">
-            <h3 class="box-title">Activity Logs</h3>
-            <div class="flex-gap">
-              <button id="btnBulkDelete" class="btn-bulk-delete" type="button">Del</button>
-              <button id="btnClearLogs" class="btn-secondary" type="button">Clear</button>
-            </div>
+    <!-- Charts -->
+    <div class="dashboard-charts">
+      <div class="chart-container">
+        <h3>📍 College Breakdown</h3>
+        <canvas id="collegeChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>📈 Peak Hours</h3>
+        <canvas id="peakHoursChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3. LIBRARY LOGGER (Real-time Activity Feed) ===== -->
+  <section id="section-logger" class="page-section hidden">
+    <h2 class="section-title">📋 Library Logger</h2>
+    <p class="section-subtitle">Real-time activity and visitor tracking</p>
+
+    <!-- Search & Controls -->
+    <div class="logger-controls">
+      <input type="text" id="loggerSearch" placeholder="🔍 Search by name, ID, or college..." class="input-field">
+      <button id="btnRefreshLogger" type="button" class="btn-secondary">🔄 Refresh</button>
+    </div>
+
+    <!-- Live Activity Table -->
+    <div class="table-wrapper table-scroll">
+      <table id="loggerTable" class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th>College</th>
+            <th>Reason</th>
+            <th>Time In</th>
+            <th>Time Out</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="loggerBody">
+          <!-- Live logs will be populated here -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== 4. BOOK CATALOG (Inventory Management) ===== -->
+  <section id="section-books" class="page-section hidden">
+    <h2 class="section-title">📚 Book Catalog</h2>
+    <p class="section-subtitle">Manage library inventory</p>
+
+    <!-- Search & Add Book -->
+    <div class="book-controls">
+      <input type="text" id="bookSearch" placeholder="🔍 Search books by title, author, or ISBN..." class="input-field">
+      <button id="btnAddBook" type="button" class="btn-primary">➕ Add New Book</button>
+    </div>
+
+    <!-- Books Grid -->
+    <div class="book-grid" id="bookGrid">
+      <!-- Book cards will be populated here -->
+    </div>
+
+    <!-- Add/Edit Book Modal -->
+    <div id="bookModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="modal-close" id="closeBookModal">&times;</span>
+        <h3 id="bookModalTitle">Add New Book</h3>
+
+        <div class="form-group">
+          <label for="bookTitle">Book Title</label>
+          <input type="text" id="bookTitle" placeholder="Enter book title" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="bookAuthor">Author</label>
+          <input type="text" id="bookAuthor" placeholder="Enter author name" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="bookISBN">ISBN</label>
+          <input type="text" id="bookISBN" placeholder="Enter ISBN" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="bookCategory">Category</label>
+          <input type="text" id="bookCategory" placeholder="Enter category" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="bookPublisher">Publisher</label>
+          <input type="text" id="bookPublisher" placeholder="Enter publisher" class="input-field">
+        </div>
+
+        <div class="form-group">
+          <label for="bookYear">Publication Year</label>
+          <input type="number" id="bookYear" placeholder="YYYY" class="input-field">
+        </div>
+
+        <div class="form-group">
+          <label for="bookStatus">Status</label>
+          <select id="bookStatus" class="input-field">
+            <option value="Available">✅ Available</option>
+            <option value="Borrowed">📤 Borrowed</option>
+            <option value="Reserved">⏳ Reserved</option>
+            <option value="Lost">❌ Lost</option>
+          </select>
+        </div>
+
+        <button id="btnSaveBook" type="button" class="btn-primary">💾 Save Book</button>
+        <button id="btnDeleteBook" type="button" class="btn-danger hidden">🗑️ Delete Book</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 5. STUDENT RECORDS (Student Management & QR Generation) ===== -->
+  <section id="section-students" class="page-section hidden">
+    <h2 class="section-title">👥 Student Records</h2>
+    <p class="section-subtitle">Manage student database and generate QR codes</p>
+
+    <!-- Search & Add Student -->
+    <div class="student-controls">
+      <input type="text" id="studentSearch" placeholder="🔍 Search students by name or ID..." class="input-field">
+      <button id="btnAddStudent" type="button" class="btn-primary">➕ Add New Student</button>
+    </div>
+
+    <!-- Students Grid -->
+    <div class="student-grid" id="studentGrid">
+      <!-- Student cards will be populated here -->
+    </div>
+
+    <!-- Add/Edit Student Modal -->
+    <div id="studentModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="modal-close" id="closeStudentModal">&times;</span>
+        <h3 id="studentModalTitle">Add New Student</h3>
+
+        <div class="form-group">
+          <label for="studentID">Student ID</label>
+          <input type="text" id="studentID" placeholder="Enter Student ID" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="studentName">Full Name</label>
+          <input type="text" id="studentName" placeholder="Enter full name" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="studentEmail">Email</label>
+          <input type="email" id="studentEmail" placeholder="Enter email" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="studentCollege">College</label>
+          <select id="studentCollege" class="input-field" required>
+            <option value="">-- Select College --</option>
+            <option value="CICS">College of Informatics & Computing Sciences (CICS)</option>
+            <option value="COE">College of Engineering (COE)</option>
+            <option value="CAS">College of Arts and Sciences (CAS)</option>
+            <option value="CBA">College of Business Administration (CBA)</option>
+            <option value="CED">College of Education (CED)</option>
+            <option value="CON">College of Nursing (CON)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="studentYear">Year Level</label>
+          <select id="studentYear" class="input-field" required>
+            <option value="">-- Select Year --</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+            <option value="5th Year">5th Year</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="studentCourse">Course / Program</label>
+          <input type="text" id="studentCourse" placeholder="Enter course/program" class="input-field">
+        </div>
+
+        <!-- QR Code Display & Download -->
+        <div class="qr-code-section">
+          <h4>QR Code</h4>
+          <div id="qrCodeContainer" class="qr-code-display">
+            <p>QR Code will be generated after saving</p>
+            <div id="qrCodeDisplay"></div>
           </div>
+          <button id="btnDownloadQR" type="button" class="btn-secondary hidden">📥 Download QR Code</button>
+        </div>
 
+        <button id="btnSaveStudent" type="button" class="btn-primary">💾 Save Student</button>
+        <button id="btnDeleteStudent" type="button" class="btn-danger hidden">🗑️ Delete Student</button>
+      </div>
+    </div>
+
+    <!-- Student History Modal -->
+    <div id="studentHistoryModal" class="modal hidden">
+      <div class="modal-content large-modal">
+        <span class="modal-close" id="closeStudentHistoryModal">&times;</span>
+        <h3 id="studentHistoryTitle">Student Visit & Borrowing History</h3>
+        <div id="studentHistoryTabs">
+          <button class="tab-button active" data-tab="visits">📍 Visit History</button>
+          <button class="tab-button" data-tab="borrowing">📚 Borrowing History</button>
+        </div>
+        <div id="visitsTabContent" class="tab-content active">
           <div class="table-wrapper table-scroll">
-            <table>
+            <table class="data-table">
               <thead>
                 <tr>
-                  <th class="text-left th-checkbox"><input type="checkbox" id="selectAll"></th>
-                  <th class="text-left">User</th>
-                  <th>Time</th>
+                  <th>Date</th>
+                  <th>Time In</th>
+                  <th>Time Out</th>
+                  <th>Duration</th>
+                  <th>Reason</th>
+                  <th>Status</th>
                 </tr>
               </thead>
-              <tbody id="adminLogsBody"></tbody>
+              <tbody id="visitsHistoryBody">
+                <!-- Visit history will be populated here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="borrowingTabContent" class="tab-content hidden">
+          <div class="table-wrapper table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Book Title</th>
+                  <th>Author</th>
+                  <th>Borrow Date</th>
+                  <th>Return Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="borrowingHistoryBody">
+                <!-- Borrowing history will be populated here -->
+              </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div id="section-bookcatalog" class="hidden" style="padding: 20px;">
-    <h2 class="section-title">Book Catalog</h2>
-    <p>Manage your library's book collection here (this is a placeholder section based on your requested feature set).</p>
+  <!-- ===== 6. USER MANAGEMENT (Role-Based Access Control) ===== -->
+  <section id="section-users" class="page-section hidden">
+    <h2 class="section-title">🔐 User Management</h2>
+    <p class="section-subtitle">Manage system users and access roles</p>
+
+    <!-- Add User -->
+    <div class="user-controls">
+      <button id="btnAddUser" type="button" class="btn-primary">➕ Add New User</button>
+    </div>
+
+    <!-- Users List -->
     <div class="table-wrapper table-scroll">
-      <table>
-        <thead><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Category</th><th>Total</th><th>Available</th><th>Status</th></tr></thead>
-        <tbody id="bookCatalogBody">
-          <tr><td>Introduction to Programming</td><td>John Smith</td><td>978-0-123456-78-9</td><td>Technology</td><td>10</td><td>7</td><td>Available</td></tr>
-          <tr><td>Philippine History</td><td>Maria Garcia</td><td>978-0-987654-32-1</td><td>History</td><td>8</td><td>3</td><td>Low Stock</td></tr>
+      <table id="usersTable" class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Created Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersBody">
+          <!-- Users will be populated here -->
         </tbody>
       </table>
     </div>
-  </div>
 
-  <div id="section-librarylogger" class="hidden" style="padding: 20px;">
-    <h2 class="section-title">Library Logger</h2>
-    <p>Track borrowing/return transactions and export report from this section.</p>
-    <div class="table-wrapper table-scroll">
-      <table>
-        <thead><tr><th>Date</th><th>Student ID</th><th>Student Name</th><th>Book Title</th><th>Action</th><th>Due Date</th><th>Status</th></tr></thead>
-        <tbody id="libraryLoggerBody">
-          <tr><td>3/20/2026</td><td>S001</td><td>Juan Dela Cruz</td><td>Introduction to Programming</td><td>Borrowed</td><td>3/27/2026</td><td>Pending</td></tr>
-          <tr><td>3/19/2026</td><td>S002</td><td>Maria Santos</td><td>Philippine History</td><td>Returned</td><td>-</td><td>On-time</td></tr>
-        </tbody>
-      </table>
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="modal-close" id="closeUserModal">&times;</span>
+        <h3 id="userModalTitle">Add New User</h3>
+
+        <div class="form-group">
+          <label for="userName">Full Name</label>
+          <input type="text" id="userName" placeholder="Enter full name" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="userEmail">Email</label>
+          <input type="email" id="userEmail" placeholder="Enter email" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="userRole">Role</label>
+          <select id="userRole" class="input-field" required>
+            <option value="">-- Select Role --</option>
+            <option value="super-admin">👑 Super Admin (Full Access - Can delete records)</option>
+            <option value="librarian">📚 Librarian (Can scan, edit books, but cannot delete logs)</option>
+            <option value="staff">👤 Staff (Limited access - Can only view)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="userStatus">Status</label>
+          <select id="userStatus" class="input-field">
+            <option value="Active">✅ Active</option>
+            <option value="Inactive">🚫 Inactive</option>
+          </select>
+        </div>
+
+        <div class="role-permissions">
+          <h4>Permissions Summary</h4>
+          <ul id="permissionsList" class="permissions-list">
+            <li>Permissions will show based on selected role</li>
+          </ul>
+        </div>
+
+        <button id="btnSaveUser" type="button" class="btn-primary">💾 Save User</button>
+        <button id="btnDeleteUser" type="button" class="btn-danger hidden">🗑️ Delete User</button>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div id="section-studentrecords" class="hidden" style="padding: 20px;">
-    <h2 class="section-title">Student Records</h2>
-    <div class="table-wrapper table-scroll">
-      <table>
-        <thead><tr><th>Student ID</th><th>Name</th><th>Email</th><th>Course</th><th>Year</th><th>Borrowed</th><th>Status</th></tr></thead>
-        <tbody id="studentRecordsBody">
-          <tr><td>S001</td><td>Juan Dela Cruz</td><td>juan.delacruz@email.com</td><td>Computer Science</td><td>3rd Year</td><td>2</td><td>Active</td></tr>
-          <tr><td>S002</td><td>Maria Santos</td><td>maria.santos@email.com</td><td>Information Technology</td><td>2nd Year</td><td>0</td><td>Active</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="section-qrscanner" class="hidden" style="padding: 20px;">
-    <h2 class="section-title">QR Scanner</h2>
-    <p>Scan ID or book QR codes here (placeholder feature to implement as needed).</p>
-    <input type="text" id="qrInput" placeholder="Scan or type code..." style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;margin-bottom:8px;" />
-    <button id="btnProcessQR" type="button" class="btn-secondary">Process QR</button>
-    <p id="qrResult" style="margin-top:10px;color:#333;"></p>
-  </div>
-
-  <div id="section-usermanagement" class="hidden" style="padding: 20px;">
-    <h2 class="section-title">User Management</h2>
-    <p>Manage users, add/remove accounts, assign roles and permissions.</p>
-    <div class="table-wrapper table-scroll">
-      <table>
-        <thead><tr><th>Name</th><th>Department</th><th>Type</th><th>Action</th></tr></thead>
-        <tbody id="userManagementBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="authPanel" class="auth-toggle">
-    <span id="authSignUp" class="auth-link active">SIGN UP</span> |
-    <span id="authLogIn" class="auth-link">LOG IN</span>
-  </div>
-
-  <div id="section-login" class="hidden">
-    <h2 class="section-title">Log in</h2>
-    <button id="btnGoogleSignIn" type="button" class="btn-secondary">Sign in with Google</button>
-    <div id="googleUserInfo" class="hidden">Signed in as: <strong id="googleUserName"></strong></div>
-    <div class="mt-10">After signing in, proceed to <span id="authGoToSignup" class="link-text">Sign up</span>.</div>
-  </div>
-
-  <div id="section-signup" class="hidden">
-    <h2 class="section-title">Register Member</h2>
-
-    <input type="text" id="regID" placeholder="ID Number (e.g. 24-12787-308)">
-    <input type="text" id="regName" placeholder="Full Name">
-    <input type="hidden" id="regEmail">
-    <input type="hidden" id="regPhoto">
-
-    <span class="field-label">User Type</span>
-    <select id="regType">
-      <option value="Student">Student</option>
-      <option value="Faculty">Faculty</option>
-    </select>
-
-    <span class="field-label">College</span>
-    <select id="regDept">
-      <option value="CICS">College of Informatics & Computing Sciences (CICS)</option>
-      <option value="COE">College of Engineering (COE)</option>
-      <option value="CAS">College of Arts and Sciences (CAS)</option>
-      <option value="CBA">College of Business Administration (CBA)</option>
-      <option value="CED">College of Education (CED)</option>
-      <option value="CON">College of Nursing (CON)</option>
-    </select>
-
-    <span class="field-label">Year Level</span>
-    <select id="regYear">
-      <option value="1st Year">1st Year</option>
-      <option value="2nd Year">2nd Year</option>
-      <option value="3rd Year">3rd Year</option>
-      <option value="4th Year">4th Year</option>
-      <option value="5th Year">5th Year</option>
-      <option value="N/A">N/A (Faculty)</option>
-    </select>
-
-    <input type="text" id="regCourse" placeholder="Course (e.g. BSIT)">
-
-    <span class="field-label">Profile Photo</span>
-    <input type="file" id="regFile" accept="image/*" class="file-input">
-    <input type="hidden" id="regBase64">
-
-    <button id="regCreate" type="button">CREATE ACCOUNT</button>
-    <button id="btnCancelSignup" type="button" class="btn-secondary">CANCEL</button>
-  </div>
 </div>
 
 </body>
