@@ -371,10 +371,15 @@ function loadAnalytics() {
 }
 
 function switchAuthTab(tab) {
-  document.getElementById('authSignUp').classList.toggle('active', tab === 'signup');
-  document.getElementById('authLogIn').classList.toggle('active', tab === 'login');
-  document.getElementById('section-signup').classList.toggle('hidden', tab !== 'signup');
-  document.getElementById('section-login').classList.toggle('hidden', tab !== 'login');
+  const tabSignup = document.getElementById('tab-signup');
+  const tabLogin = document.getElementById('tab-login');
+  if (tabSignup) tabSignup.classList.toggle('active', tab === 'signup');
+  if (tabLogin) tabLogin.classList.toggle('active', tab === 'login');
+
+  const sectionSignup = document.getElementById('section-signup');
+  const sectionLogin = document.getElementById('section-login');
+  if (sectionSignup) sectionSignup.classList.toggle('hidden', tab !== 'signup');
+  if (sectionLogin) sectionLogin.classList.toggle('hidden', tab !== 'login');
 }
 
 function initEventListeners() {
@@ -384,23 +389,41 @@ function initEventListeners() {
   document.getElementById('link-studentrecords').addEventListener('click', () => switchTab('studentrecords'));
   document.getElementById('link-qrscanner').addEventListener('click', () => switchTab('qrscanner'));
   document.getElementById('link-usermanagement').addEventListener('click', () => switchTab('usermanagement'));
-  document.getElementById('logout-btn').addEventListener('click', () => {
-    handleGoogleSignOut();
-    switchTab('dashboard');
-  });
-  document.getElementById('btnGoogleSignIn').addEventListener('click', handleGoogleSignIn);
-  document.getElementById('btnTimeIn').addEventListener('click', handleTimeIn);
-  document.getElementById('authSignUp').addEventListener('click', () => switchAuthTab('signup'));
-  document.getElementById('authLogIn').addEventListener('click', () => switchAuthTab('login'));
-  document.getElementById('authGoToSignup').addEventListener('click', () => switchAuthTab('signup'));
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      handleGoogleSignOut();
+      switchTab('dashboard');
+    });
+  }
+
+  const btnGoogleSignIn = document.getElementById('btnGoogleSignIn');
+  if (btnGoogleSignIn) btnGoogleSignIn.addEventListener('click', handleGoogleSignIn);
+
+  const btnTimeIn = document.getElementById('btnTimeIn');
+  if (btnTimeIn) btnTimeIn.addEventListener('click', handleTimeIn);
+
+  const authSignUp = document.getElementById('authSignUp');
+  if (authSignUp) authSignUp.addEventListener('click', () => switchAuthTab('signup'));
+
+  const authLogIn = document.getElementById('authLogIn');
+  if (authLogIn) authLogIn.addEventListener('click', () => switchAuthTab('login'));
+
+  const authGoToSignup = document.getElementById('authGoToSignup');
+  if (authGoToSignup) authGoToSignup.addEventListener('click', () => switchAuthTab('signup'));
 
   document.getElementById('idInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') handleTimeIn();
   });
 
-  document.getElementById('link-signup').addEventListener('click', () => switchTab('signup'));
-  document.getElementById('regCreate').addEventListener('click', handleSignUp);
-  document.getElementById('btnCancelSignup').addEventListener('click', () => switchTab('timein'));
+  const linkSignup = document.getElementById('link-signup');
+  if (linkSignup) linkSignup.addEventListener('click', () => switchTab('signup'));
+
+  const regCreate = document.getElementById('regCreate');
+  if (regCreate) regCreate.addEventListener('click', handleSignUp);
+
+  const btnCancelSignup = document.getElementById('btnCancelSignup');
+  if (btnCancelSignup) btnCancelSignup.addEventListener('click', () => switchTab('timein'));
 
   document.getElementById('filterReason').addEventListener('change', loadLiveLogs);
   document.getElementById('filterDept').addEventListener('change', loadLiveLogs);
