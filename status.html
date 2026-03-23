@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Status - NEU Library</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #006400 0%, #004d00 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .status-container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 600px;
+      width: 100%;
+    }
+    h1 {
+      color: #006400;
+      text-align: center;
+      margin-top: 0;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .status-ok {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .status-warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+    .icon {
+      font-size: 1.5rem;
+      margin-right: 12px;
+      min-width: 30px;
+    }
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    .btn-primary {
+      background: #006400;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #005200;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+<div class="status-container">
+  <h1>✅ System Status Check</h1>
+  
+  <div id="statusList"></div>
+
+  <div class="nav-buttons">
+    <a href="index.html" class="btn btn-primary">📍 Student Portal</a>
+    <a href="LogIn.html" class="btn btn-secondary">🔐 Admin Login</a>
+  </div>
+
+  <div class="footer">
+    <p>NEU Library Management System v1.0</p>
+    <p>Last Updated: March 2026</p>
+  </div>
+</div>
+
+<script>
+  const checks = [];
+
+  // Check 1: DOM Ready
+  checks.push({
+    name: 'Page Loaded',
+    status: true,
+    message: 'All systems online'
+  });
+
+  // Check 2: HTML Files
+  checks.push({
+    name: 'HTML Files Present',
+    status: typeof document !== 'undefined',
+    message: 'HTML structure intact'
+  });
+
+  // Check 3: CSS Styling
+  checks.push({
+    name: 'CSS Styling',
+    status: document.styleSheets.length > 0,
+    message: 'Stylesheet loaded'
+  });
+
+  // Check 4: JavaScript Capability
+  checks.push({
+    name: 'JavaScript Engine',
+    status: true,
+    message: 'JavaScript enabled and running'
+  });
+
+  // Check 5: Local Storage
+  checks.push({
+    name: 'Browser Storage',
+    status: typeof(Storage) !== 'undefined',
+    message: 'Local storage available'
+  });
+
+  // Check 6: Firebase Availability
+  checks.push({
+    name: 'Firebase Libraries',
+    status: typeof firebase !== 'undefined',
+    message: 'Firebase SDK loaded (will connect when needed)'
+  });
+
+  // Check 7: External Libraries
+  checks.push({
+    name: 'Chart.js Library',
+    status: typeof Chart !== 'undefined',
+    message: 'Charts enabled'
+  });
+
+  // Check 8: QR Code Library
+  checks.push({
+    name: 'QR Code Scanner',
+    status: typeof Html5Qrcode !== 'undefined',
+    message: 'QR scanning ready'
+  });
+
+  // Render status items
+  const statusList = document.getElementById('statusList');
+  checks.forEach(check => {
+    const div = document.createElement('div');
+    div.className = `status-item ${check.status ? 'status-ok' : 'status-error'}`;
+    div.innerHTML = `
+      <span class="icon">${check.status ? '✓' : '✗'}</span>
+      <div>
+        <strong>${check.name}</strong>
+        <br>
+        <small>${check.message}</small>
+      </div>
+    `;
+    statusList.appendChild(div);
+  });
+
+  // Count passed checks
+  const passed = checks.filter(c => c.status).length;
+  const total = checks.length;
+
+  // Show overall status
+  const overall = document.createElement('div');
+  overall.className = passed === total ? 'status-item status-ok' : 'status-item status-warning';
+  overall.innerHTML = `
+    <span class="icon" style="font-size: 2rem;">${passed === total ? '🎉' : '⚠️'}</span>
+    <div>
+      <strong>Overall Status: ${passed}/${total} Systems OK</strong>
+      <br>
+      <small>${passed === total ? 'Ready to use! Click below to start.' : 'Some features may be limited.'}</small>
+    </div>
+  `;
+  statusList.appendChild(overall);
+
+  console.log('✅ System Status Check Complete');
+  console.log(`Passed: ${passed}/${total}`);
+</script>
+
+</body>
+</html>

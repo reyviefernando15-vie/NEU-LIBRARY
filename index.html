@@ -489,3 +489,61 @@
 
 </body>
 </html>
+        </thead>
+        <tbody id="usersBody">
+          <!-- Users will be populated here -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="modal-close" id="closeUserModal">&times;</span>
+        <h3 id="userModalTitle">Add New User</h3>
+
+        <div class="form-group">
+          <label for="userName">Full Name</label>
+          <input type="text" id="userName" placeholder="Enter full name" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="userEmail">Email</label>
+          <input type="email" id="userEmail" placeholder="Enter email" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="userRole">Role</label>
+          <select id="userRole" class="input-field" required>
+            <option value="">-- Select Role --</option>
+            <option value="super-admin">👑 Super Admin (Full Access - Can delete records)</option>
+            <option value="librarian">📚 Librarian (Can scan, edit books, but cannot delete logs)</option>
+            <option value="staff">👤 Staff (Limited access - Can only view)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="userStatus">Status</label>
+          <select id="userStatus" class="input-field">
+            <option value="Active">✅ Active</option>
+            <option value="Inactive">🚫 Inactive</option>
+          </select>
+        </div>
+
+        <div class="role-permissions">
+          <h4>Permissions Summary</h4>
+          <ul id="permissionsList" class="permissions-list">
+            <li>Permissions will show based on selected role</li>
+          </ul>
+        </div>
+
+        <button id="btnSaveUser" type="button" class="btn-primary">💾 Save User</button>
+        <button id="btnDeleteUser" type="button" class="btn-danger hidden">🗑️ Delete User</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
