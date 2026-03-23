@@ -346,6 +346,62 @@ th {
   text-decoration: underline;
 }
 
+.auth-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.auth-tab {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 2px solid transparent;
+}
+
+.auth-tab.active {
+  color: var(--neu-green);
+  border-bottom-color: var(--neu-green);
+}
+
+.auth-section {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.auth-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--neu-green);
+}
+
+.auth-section input,
+.auth-section select,
+.auth-section button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.auth-section button {
+  background: var(--neu-green);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.auth-section button:hover {
+  background: #004d00;
+}
+
 .mt-10 {
   margin-top: 10px;
 }

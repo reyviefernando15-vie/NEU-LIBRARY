@@ -60,16 +60,18 @@ auth.onAuthStateChanged(user => {
   updateGoogleSignupUI();
 
   const main = document.getElementById('mainContainer');
+  const authPanel = document.getElementById('authPanel');
+  const nav = document.querySelector('nav');
   if (!isAuthenticated()) {
     if (main) main.style.display = 'none';
-    if (window.location.pathname.endsWith('LogIn.html') || window.location.pathname.endsWith('LogIn.htm')) {
-      return;
-    }
-    window.location.href = 'LogIn.html';
+    if (authPanel) authPanel.style.display = 'block';
+    if (nav) nav.style.display = 'none';
     return;
   }
 
   if (main) main.style.display = 'block';
+  if (authPanel) authPanel.style.display = 'none';
+  if (nav) nav.style.display = 'block';
 });
 
 function handleTimeIn() {
@@ -161,7 +163,6 @@ function handleLocalSignIn(id, password) {
   if (id === '22-12345-123' && password === 'password') {
     localStorage.setItem('localLoggedIn', 'true');
     alert('Logged in successfully!');
-    window.location.href = 'index.html';
   } else {
     alert('Invalid Student ID number or password.');
   }
@@ -416,6 +417,17 @@ function initEventListeners() {
       document.getElementById('qrResult').innerText = value ? `Scanned/entered code: ${value}` : 'Please enter/scan a code first.';
     });
   }
+
+  // Auth panel listeners
+  document.getElementById('tab-login').addEventListener('click', () => switchAuthTab('login'));
+  document.getElementById('tab-signup').addEventListener('click', () => switchAuthTab('signup'));
+  document.getElementById('btnLocalLogin').addEventListener('click', () => {
+    const id = document.getElementById('loginID').value;
+    const password = document.getElementById('loginPassword').value;
+    handleLocalSignIn(id, password);
+  });
+  document.getElementById('btnGoogleLogin').addEventListener('click', handleGoogleSignIn);
+  document.getElementById('btnSignUp').addEventListener('click', handleSignUp);
 }
 
 window.addEventListener('DOMContentLoaded', () => {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -30,6 +30,41 @@
     <a id="logout-btn" class="logout-nav hidden">Sign Out</a>
   </div>
 </nav>
+
+<div id="authPanel" style="display:none;">
+  <div class="auth-tabs">
+    <button id="tab-login" class="auth-tab active">Login</button>
+    <button id="tab-signup" class="auth-tab">Sign Up</button>
+  </div>
+
+  <div id="section-login" class="auth-section">
+    <h2>Login</h2>
+    <input type="text" id="loginID" placeholder="Student ID">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button id="btnLocalLogin">Login</button>
+    <button id="btnGoogleLogin">Login with Google</button>
+  </div>
+
+  <div id="section-signup" class="auth-section hidden">
+    <h2>Sign Up</h2>
+    <div id="googleUserInfo" class="hidden">
+      <p>Welcome, <span id="googleUserName"></span>!</p>
+    </div>
+    <input type="text" id="regID" placeholder="Student ID">
+    <input type="text" id="regName" placeholder="Full Name">
+    <input type="email" id="regEmail" placeholder="Email" readonly>
+    <select id="regType">
+      <option value="Student">Student</option>
+      <option value="Faculty">Faculty</option>
+      <option value="Staff">Staff</option>
+    </select>
+    <input type="text" id="regDept" placeholder="Department">
+    <input type="text" id="regCourse" placeholder="Course">
+    <input type="text" id="regYear" placeholder="Year">
+    <input type="text" id="regPhoto" placeholder="Photo URL">
+    <button id="btnSignUp">Sign Up</button>
+  </div>
+</div>
 
   <div class="container" id="mainContainer" style="display:none;">
   <div id="section-timein">
