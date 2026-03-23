@@ -51,9 +51,25 @@ function updateGoogleSignupUI() {
   if (logoutBtn) logoutBtn.classList.remove('hidden');
 }
 
+function isAuthenticated() {
+  return Boolean(currentUser) || localStorage.getItem('localLoggedIn') === 'true';
+}
+
 auth.onAuthStateChanged(user => {
   currentUser = user;
   updateGoogleSignupUI();
+
+  const main = document.getElementById('mainContainer');
+  if (!isAuthenticated()) {
+    if (main) main.style.display = 'none';
+    if (window.location.pathname.endsWith('LogIn.html') || window.location.pathname.endsWith('LogIn.htm')) {
+      return;
+    }
+    window.location.href = 'LogIn.html';
+    return;
+  }
+
+  if (main) main.style.display = 'block';
 });
 
 function handleTimeIn() {
@@ -132,7 +148,23 @@ function handleGoogleSignIn() {
 }
 
 function handleGoogleSignOut() {
+  localStorage.removeItem('localLoggedIn');
   auth.signOut();
+}
+
+function handleLocalSignIn(id, password) {
+  if (!id || !password) {
+    return alert('Please enter student ID and password.');
+  }
+
+  // simple local auth (demo only)
+  if (id === '22-12345-123' && password === 'password') {
+    localStorage.setItem('localLoggedIn', 'true');
+    alert('Logged in successfully!');
+    window.location.href = 'index.html';
+  } else {
+    alert('Invalid Student ID number or password.');
+  }
 }
 
 function handleSignUp() {

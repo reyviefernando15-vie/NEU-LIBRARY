@@ -3,27 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NEU Library Time In</title>
+  <title>NEU Library - Login</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; }
-    .container { max-width: 600px; margin: 120px auto 0; padding: 30px; background: white; border-radius: 16px; box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
-    a.button { display: inline-block; padding: 14px 22px; background: #006400; color: white; text-decoration: none; border-radius: 10px; font-weight: 700; }
-    a.button:hover { background: #004d00; }
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(180deg, #f5fbff 0%, #eaf2f8 100%); }
+    .login-shell { display: flex; min-height: 100vh; align-items: center; justify-content: center; }
+    .login-card { width: 360px; background: #fff; border-radius: 20px; box-shadow: 0 16px 45px rgba(0,0,0,.12); padding: 32px; }
+    .login-card h1 { margin: 0 0 8px; font-size: 1.9rem; color: #202b50; }
+    .login-card p.subtitle { margin: 0 0 24px; color: #607796; font-weight: 500; }
+    .login-card .field { margin-bottom: 16px; }
+    .login-card .field label { display: block; margin-bottom: 6px; color: #546586; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; }
+    .login-card .field input { width: 100%; padding: 12px 14px; border: 1px solid #e4e9f2; border-radius: 10px; font-size: .95rem; }
+    .login-card .btn-main, .login-card .btn-google { width: 100%; border: 0; padding: 12px 14px; font-weight: 700; border-radius: 10px; cursor: pointer; }
+    .login-card .btn-main { background: #ffdaaf; color: #a15f0e; margin-top: 8px; }
+    .login-card .btn-main:hover { background: #ffd192; }
+    .login-card .or { text-align: center; margin: 20px 0; color: #7b89a5; letter-spacing: .08em; }
+    .login-card .btn-google { background: #f5f6fb; color: #2c3b5a; border: 1px solid #d9e1f0; }
+    .login-card .btn-google:hover { background: #eef2fc; }
+    .login-card .footer { text-align: center; margin-top: 18px; color: #455a80; }
+    .login-card .footer a { color: #ff8d30; text-decoration: none; font-weight: 700; }
+    .top-bar { height: 62px; width: 100%; background: #fff; display:flex; align-items:center; justify-content:center; border-bottom:1px solid #e7ebf3; font-weight:700; color:#202b50; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>NEU Library Time-in</h1>
-    <p>To start, run the backend and open the app in your browser:</p>
-    <ol>
-      <li>Install dependencies: <code>python -m pip install flask</code></li>
-      <li>Start the server: <code>python app.py</code></li>
-      <li>Open: <a href="http://127.0.0.1:5000">http://127.0.0.1:5000</a></li>
-    </ol>
+  <div class="top-bar">New Era University - Library Management System</div>
 
-    <p style="margin-top: 20px;"><a class="button" href="http://127.0.0.1:5000" target="_blank">Open App</a></p>
+  <div class="login-shell">
+    <div class="login-card">
+      <h1>Sign In</h1>
+      <p class="subtitle">Use your student ID number and password.</p>
 
-    <p class="small">Note: The system supports student and faculty time-in, signup, and viewing past time-in history.</p>
+      <div class="field">
+        <label for="loginId">Student ID Number</label>
+        <input id="loginId" type="text" placeholder="22-12345-123" />
+      </div>
+
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" placeholder="••••••••" />
+      </div>
+
+      <button id="btnLocalSignIn" class="btn-main" type="button">SIGN IN</button>
+
+      <div class="or">OR</div>
+
+      <button id="btnContinueGoogle" class="btn-google" type="button">Continue with Google</button>
+
+      <p class="footer">No account? <a id="createAccount" href="#">Create Account</a></p>
+    </div>
   </div>
+
+  <script>
+    function handleLocalSignInForm() {
+      const id = document.getElementById('loginId').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!id || !password) {
+        return alert('Please enter your Student ID and password.');
+      }
+
+      if (id === '22-12345-123' && password === 'password') {
+        localStorage.setItem('localLoggedIn', 'true');
+        alert('Login successful. Redirecting to dashboard...');
+        window.location.href = 'index.html';
+      } else {
+        alert('Invalid student ID or password.');
+      }
+    }
+
+    document.getElementById('btnLocalSignIn').addEventListener('click', handleLocalSignInForm);
+
+    document.getElementById('btnContinueGoogle').addEventListener('click', function() {
+      window.location.href = 'index.html';
+    });
+
+    document.getElementById('createAccount').addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Please sign up through the dashboard signup form after Google login.');
+      window.location.href = 'index.html';
+    });
+
+    if (localStorage.getItem('localLoggedIn') === 'true') {
+      window.location.href = 'index.html';
+    }
+  </script>
 </body>
 </html>
