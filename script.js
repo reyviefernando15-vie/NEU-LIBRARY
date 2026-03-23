@@ -222,6 +222,14 @@ function loadLiveLogs() {
     });
 
     document.getElementById('adminLogsBody').innerHTML = h || '<tr><td colspan="3">No History</td></tr>';
+    const libraryLoggerBody = document.getElementById('libraryLoggerBody');
+    if (libraryLoggerBody) {
+      const libraryH = logsArr.map(item => {
+        const l = item.data;
+        return `<tr><td>${l.date}</td><td>${l.id || ''}</td><td>${l.name || ''}</td><td>${l.course || ''}</td><td>${l.reason || ''}</td><td>${l.date || ''}</td><td>${l.time || ''}</td></tr>`;
+      }).join('');
+      libraryLoggerBody.innerHTML = libraryH || '<tr><td colspan="7">No History</td></tr>';
+    }
     document.getElementById('countDisplay').innerText = `DISPLAYING: ${count} RECORDS`;
 
     document.querySelectorAll('.log-check').forEach(cb => cb.addEventListener('change', updateBulkBtn));
@@ -233,26 +241,65 @@ function switchTab(tab) {
   const container = document.getElementById('mainContainer');
 
   // Admin view is accessible without a password.
-  if (tab === 'admin') container.classList.add('admin-mode');
+  if (tab === 'usermanagement') container.classList.add('admin-mode');
   else container.classList.remove('admin-mode');
 
-  // Hide any auth sections when switching to other tabs
+  // Hide auth sections when switching to other tabs
   document.getElementById('section-login').classList.add('hidden');
   document.getElementById('section-signup').classList.add('hidden');
 
-  // Show auth toggle + panels only on timein view
+  // Show auth toggle + panels only on dashboard/timein view
   const authPanel = document.getElementById('authPanel');
-  if (authPanel) authPanel.style.display = tab === 'timein' ? 'block' : 'none';
+  if (authPanel) authPanel.style.display = tab === 'dashboard' ? 'block' : 'none';
 
-  document.getElementById('section-timein').classList.add('hidden');
-  document.getElementById('section-admin').classList.add('hidden');
-  document.getElementById('section-' + tab).classList.remove('hidden');
+  const sectionIds = [
+    'section-timein',
+    'section-admin',
+    'section-bookcatalog',
+    'section-librarylogger',
+    'section-studentrecords',
+    'section-qrscanner',
+    'section-usermanagement'
+  ];
+
+  sectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
+
+  const tabMap = {
+    'dashboard': 'section-timein',
+    'bookcatalog': 'section-bookcatalog',
+    'librarylogger': 'section-librarylogger',
+    'studentrecords': 'section-studentrecords',
+    'qrscanner': 'section-qrscanner',
+    'usermanagement': 'section-usermanagement'
+  };
+
+  const showSection = tabMap[tab] || 'section-timein';
+  const sectionToShow = document.getElementById(showSection);
+  if (sectionToShow) sectionToShow.classList.remove('hidden');
+
+  // Dashboard should also include the admin grid section for combined view
+  if (tab === 'dashboard') {
+    const sectionAdmin = document.getElementById('section-admin');
+    if (sectionAdmin) sectionAdmin.classList.remove('hidden');
+  }
 
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-  const activeLink = document.getElementById('link-' + (tab === 'admin' ? 'admin' : 'timein'));
+  const activeLink = document.getElementById('link-' + tab);
   if (activeLink) activeLink.classList.add('active');
 
-  if (tab === 'admin') { loadAnalytics(); loadUserDB(); loadLiveLogs(); }
+  if (tab === 'usermanagement') {
+    loadUserDB();
+  }
+  if (tab === 'librarylogger' || tab === 'dashboard') {
+    loadLiveLogs();
+  }
+  if (tab === 'dashboard') {
+    loadAnalytics();
+    loadUserDB();
+  }
 }
 
 function loadUserDB() {
@@ -267,6 +314,9 @@ function loadUserDB() {
     });
 
     document.getElementById('userListBody').innerHTML = h;
+    const userManagementBody = document.getElementById('userManagementBody');
+    if (userManagementBody) userManagementBody.innerHTML = h;
+
     document.querySelectorAll('.btn-delete').forEach(btn => {
       btn.addEventListener('click', () => deleteUser(btn.dataset.userId));
     });
@@ -327,11 +377,15 @@ function switchAuthTab(tab) {
 }
 
 function initEventListeners() {
-  document.getElementById('link-timein').addEventListener('click', () => switchTab('timein'));
-  document.getElementById('link-admin').addEventListener('click', () => switchTab('admin'));
+  document.getElementById('link-dashboard').addEventListener('click', () => switchTab('dashboard'));
+  document.getElementById('link-bookcatalog').addEventListener('click', () => switchTab('bookcatalog'));
+  document.getElementById('link-librarylogger').addEventListener('click', () => switchTab('librarylogger'));
+  document.getElementById('link-studentrecords').addEventListener('click', () => switchTab('studentrecords'));
+  document.getElementById('link-qrscanner').addEventListener('click', () => switchTab('qrscanner'));
+  document.getElementById('link-usermanagement').addEventListener('click', () => switchTab('usermanagement'));
   document.getElementById('logout-btn').addEventListener('click', () => {
     handleGoogleSignOut();
-    switchTab('timein');
+    switchTab('dashboard');
   });
   document.getElementById('btnGoogleSignIn').addEventListener('click', handleGoogleSignIn);
   document.getElementById('btnTimeIn').addEventListener('click', handleTimeIn);
@@ -354,10 +408,18 @@ function initEventListeners() {
   document.getElementById('btnBulkDelete').addEventListener('click', deleteSelectedLogs);
   document.getElementById('btnClearLogs').addEventListener('click', clearLogs);
   document.getElementById('selectAll').addEventListener('change', e => toggleSelectAll(e.target));
+
+  const btnProcessQR = document.getElementById('btnProcessQR');
+  if (btnProcessQR) {
+    btnProcessQR.addEventListener('click', () => {
+      const value = document.getElementById('qrInput').value.trim();
+      document.getElementById('qrResult').innerText = value ? `Scanned/entered code: ${value}` : 'Please enter/scan a code first.';
+    });
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   initEventListeners();
-  switchTab('timein');
+  switchTab('dashboard');
   switchAuthTab('login');
 });

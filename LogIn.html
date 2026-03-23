@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NEU Library - Login</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(180deg, #f5fbff 0%, #eaf2f8 100%); }
-    .login-shell { display: flex; min-height: 100vh; align-items: center; justify-content: center; }
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); }
+    .login-shell { display: flex; min-height: calc(100vh - 70px); align-items: center; justify-content: center; padding: 20px; }
     .login-card { width: 360px; background: #fff; border-radius: 20px; box-shadow: 0 16px 45px rgba(0,0,0,.12); padding: 32px; }
     .login-card h1 { margin: 0 0 8px; font-size: 1.9rem; color: #202b50; }
     .login-card p.subtitle { margin: 0 0 24px; color: #607796; font-weight: 500; }
@@ -60,7 +61,16 @@
   </script>
 </head>
 <body>
-  <div class="top-bar">New Era University - Library Management System</div>
+  <nav class="topnav">
+    <div class="logo-area">
+      <img src="neu.png" alt="NEU Logo" class="logo-img" />
+      <div class="logo-text">NEU LIBRARY</div>
+    </div>
+    <div class="nav-links">
+      <a class="active">Login</a>
+      <a href="index.html">Dashboard</a>
+    </div>
+  </nav>
 
   <div class="login-shell">
     <div class="login-card">

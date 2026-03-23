@@ -21,9 +21,13 @@
     <div class="logo-text">NEU LIBRARY</div>
   </div>
   <div class="nav-links">
-    <a id="link-timein" class="active">Dashboard</a>
-    <a id="link-admin">Admin</a>
-    <a id="logout-btn" class="logout-nav hidden">Logout</a>
+    <a id="link-dashboard" class="active">Dashboard</a>
+    <a id="link-bookcatalog">Book Catalog</a>
+    <a id="link-librarylogger">Library Logger</a>
+    <a id="link-studentrecords">Student Records</a>
+    <a id="link-qrscanner">QR Scanner</a>
+    <a id="link-usermanagement">User Management</a>
+    <a id="logout-btn" class="logout-nav hidden">Sign Out</a>
   </div>
 </nav>
 
@@ -135,6 +139,66 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="section-bookcatalog" class="hidden" style="padding: 20px;">
+    <h2 class="section-title">Book Catalog</h2>
+    <p>Manage your library's book collection here (this is a placeholder section based on your requested feature set).</p>
+    <div class="table-wrapper table-scroll">
+      <table>
+        <thead><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Category</th><th>Total</th><th>Available</th><th>Status</th></tr></thead>
+        <tbody id="bookCatalogBody">
+          <tr><td>Introduction to Programming</td><td>John Smith</td><td>978-0-123456-78-9</td><td>Technology</td><td>10</td><td>7</td><td>Available</td></tr>
+          <tr><td>Philippine History</td><td>Maria Garcia</td><td>978-0-987654-32-1</td><td>History</td><td>8</td><td>3</td><td>Low Stock</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="section-librarylogger" class="hidden" style="padding: 20px;">
+    <h2 class="section-title">Library Logger</h2>
+    <p>Track borrowing/return transactions and export report from this section.</p>
+    <div class="table-wrapper table-scroll">
+      <table>
+        <thead><tr><th>Date</th><th>Student ID</th><th>Student Name</th><th>Book Title</th><th>Action</th><th>Due Date</th><th>Status</th></tr></thead>
+        <tbody id="libraryLoggerBody">
+          <tr><td>3/20/2026</td><td>S001</td><td>Juan Dela Cruz</td><td>Introduction to Programming</td><td>Borrowed</td><td>3/27/2026</td><td>Pending</td></tr>
+          <tr><td>3/19/2026</td><td>S002</td><td>Maria Santos</td><td>Philippine History</td><td>Returned</td><td>-</td><td>On-time</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="section-studentrecords" class="hidden" style="padding: 20px;">
+    <h2 class="section-title">Student Records</h2>
+    <div class="table-wrapper table-scroll">
+      <table>
+        <thead><tr><th>Student ID</th><th>Name</th><th>Email</th><th>Course</th><th>Year</th><th>Borrowed</th><th>Status</th></tr></thead>
+        <tbody id="studentRecordsBody">
+          <tr><td>S001</td><td>Juan Dela Cruz</td><td>juan.delacruz@email.com</td><td>Computer Science</td><td>3rd Year</td><td>2</td><td>Active</td></tr>
+          <tr><td>S002</td><td>Maria Santos</td><td>maria.santos@email.com</td><td>Information Technology</td><td>2nd Year</td><td>0</td><td>Active</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="section-qrscanner" class="hidden" style="padding: 20px;">
+    <h2 class="section-title">QR Scanner</h2>
+    <p>Scan ID or book QR codes here (placeholder feature to implement as needed).</p>
+    <input type="text" id="qrInput" placeholder="Scan or type code..." style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;margin-bottom:8px;" />
+    <button id="btnProcessQR" type="button" class="btn-secondary">Process QR</button>
+    <p id="qrResult" style="margin-top:10px;color:#333;"></p>
+  </div>
+
+  <div id="section-usermanagement" class="hidden" style="padding: 20px;">
+    <h2 class="section-title">User Management</h2>
+    <p>Manage users, add/remove accounts, assign roles and permissions.</p>
+    <div class="table-wrapper table-scroll">
+      <table>
+        <thead><tr><th>Name</th><th>Department</th><th>Type</th><th>Action</th></tr></thead>
+        <tbody id="userManagementBody"></tbody>
+      </table>
     </div>
   </div>
 
