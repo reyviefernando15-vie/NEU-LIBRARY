@@ -8,7 +8,20 @@ const firebaseConfig = {
   messagingSenderId: "701386389930",
   appId: "1:701386389930:web:d1d08e0f520dd7770993d3"
 };
+// Google Provider Setup
+const provider = new firebase.auth.GoogleAuthProvider();
 
+function handleGoogleLogin() {
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            console.log("Google Login Success:", result.user);
+            window.location.href = 'dashboard.html';
+        })
+        .catch((error) => {
+            console.error("Google Login Error:", error);
+            alert("Error with Google Login: " + error.message);
+        });
+}
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
