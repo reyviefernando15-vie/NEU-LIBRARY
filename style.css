@@ -529,3 +529,167 @@ td {
   justify-content: center;
   height: calc(100vh - 120px);
 }
+
+/* Responsive / Mobile Friendly Styles */
+@media screen and (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    overflow-y: auto !important;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 10;
+  }
+  .sidebar > div:first-child {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    padding: 15px !important;
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+    gap: 15px;
+  }
+  .sidebar > div:first-child img {
+    margin-bottom: 0 !important;
+    width: 45px !important;
+  }
+  .sidebar > div:first-child > div:nth-of-type(1) {
+    margin-bottom: 0 !important;
+    font-size: 1rem !important;
+    text-align: left;
+    line-height: 1.2 !important;
+  }
+  
+  .sidebar nav {
+    display: flex;
+    overflow-x: auto;
+  }
+  .nav-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 10px;
+    white-space: nowrap;
+    border-left: none !important;
+    border-bottom: 4px solid transparent;
+  }
+  .nav-item.active {
+    border-bottom: 4px solid white !important;
+    background: transparent !important;
+  }
+  
+  .sidebar > div:last-child {
+    position: relative !important;
+    padding: 15px !important;
+    display: block !important;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .stat-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .filters-section {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .filter-dropdown {
+    width: 100%;
+  }
+
+  .recent-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    white-space: nowrap;
+  }
+
+  .auth-card {
+    padding: 20px;
+    width: 90%;
+    margin: 20px auto;
+  }
+  
+  .modal-content {
+    width: 90%;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .auth-navbar {
+    padding: 0 15px;
+  }
+  .auth-navbar span {
+    font-size: 1rem !important;
+  }
+
+  /* Responsive headers with layout fixes */
+  .page-section > div[style*="display: flex"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 15px;
+  }
+  .page-section > div[style*="display: flex"] > div:last-child {
+    width: 100%;
+    flex-wrap: wrap;
+    display: flex;
+    gap: 10px;
+  }
+  .page-section > div[style*="display: flex"] > div:last-child button,
+  .page-section > div[style*="display: flex"] > div:last-child input,
+  .page-section > div[style*="display: flex"] > div:last-child select {
+    flex: 1;
+    min-width: 120px;
+    margin: 0 !important;
+    width: auto !important;
+  }
+
+  /* Responsive report layout */
+  .page-section > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .scanner-camera {
+    width: 200px;
+    height: 200px;
+  }
+  .portal-title {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .nav-item {
+    font-size: 0.8rem;
+    padding: 10px 5px;
+  }
+  .big-input {
+    font-size: 1.4rem !important;
+    padding: 15px !important;
+  }
+  .auth-card {
+    padding: 15px;
+  }
+  .stat-card h2 {
+    font-size: 1.5rem;
+  }
+  .page-section > div[style*="display: flex"] > div:last-child {
+    flex-direction: column;
+  }
+}
