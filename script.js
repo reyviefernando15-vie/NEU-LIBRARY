@@ -241,15 +241,23 @@ function handleLogin() {
         document.getElementById('portal-last-time').innerText = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
         document.getElementById('portal-profile-card').style.display = 'block';
+        
+        // Scroll smoothly to the profile card so it's visible on smaller screens
+        setTimeout(() => {
+          document.getElementById('portal-profile-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 50);
+
         document.getElementById('login-email').value = '';
 
         setTimeout(() => { document.getElementById('login-email').focus(); }, 100);
 
-        // Auto-hide Profile Card after 2 seconds for cleaner flow
+        // Auto-hide Profile Card after 5 seconds for cleaner flow
         clearTimeout(window.profileTimeout);
         window.profileTimeout = setTimeout(() => {
           document.getElementById('portal-profile-card').style.display = 'none';
-        }, 2000);
+          // Scroll back up to the top of the gateway
+          document.querySelector('.auth-overlay').scrollTo({ top: 0, behavior: 'smooth' });
+        }, 5000);
       }
     } else {
       alert("ID not recognized! If you are a new member, click 'Continue with Google'.");
@@ -280,6 +288,9 @@ function closeSuccessModal() {
 // --- 3. DASHBOARD FLOW (Filtering Magic) ---
 function syncUsers() {
   db.ref('users').on('value', snap => {
+    const searchEl = document.getElementById('user-search');
+    const searchTerm = searchEl ? searchEl.value.toLowerCase() : '';
+
     let html = "";
     let dashboardHtml = "";
     let uTotal = 0, uStudent = 0, uStaff = 0;
@@ -292,21 +303,30 @@ function syncUsers() {
       uTotal++;
       if (user.role === 'Student') uStudent++; else uStaff++;
 
-      const accessBadge = (user.is_admin || user.email === 'reyvie.fernando@neu.edu.ph' || user.email === 'jcesperanza@neu.edu.ph')
-        ? '<span class="badge" style="background:#1a1a1a;color:white;">ADMIN</span>'
-        : '<span class="badge">USER</span>';
-      html += `<tr>
-        <td>${user.id}</td>
-        <td><b>${user.name}</b></td>
-        <td>${user.email}</td>
-        <td>${user.college}</td>
-        <td><span class="badge">${user.role}</span></td>
-        <td>${accessBadge}</td>
-        <td style="display:flex; gap: 5px;">
-          <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: ${user.is_admin ? '#f59e0b' : '#3b82f6'}; width: auto;" onclick="toggleAdmin('${user.id}', '${user.email}', ${user.is_admin || false})">${user.is_admin ? 'Revoke Admin' : 'Make Admin'}</button>
-          <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: #ef4444; width: auto;" onclick="deleteUser('${user.id}', '${user.email}', ${user.is_admin || false})">Delete</button>
-        </td>
-      </tr>`;
+      let passSearch = true;
+      if (searchTerm) {
+        const searchable = (user.id + " " + user.name + " " + user.email + " " + (user.course||"") + " " + user.role).toLowerCase();
+        if (!searchable.includes(searchTerm)) passSearch = false;
+      }
+
+      if (passSearch) {
+        const accessBadge = (user.is_admin || user.email === 'reyvie.fernando@neu.edu.ph' || user.email === 'jcesperanza@neu.edu.ph')
+          ? '<span class="badge" style="background:#1a1a1a;color:white;">ADMIN</span>'
+          : '<span class="badge">USER</span>';
+        html += `<tr>
+          <td>${user.id}</td>
+          <td><b>${user.name}</b></td>
+          <td>${user.email}</td>
+          <td>${user.college}</td>
+          <td><span style="font-weight: 600; color: #475569;">${user.course || '-'}</span></td>
+          <td><span class="badge">${user.role}</span></td>
+          <td>${accessBadge}</td>
+          <td style="display:flex; gap: 5px;">
+            <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: ${user.is_admin ? '#f59e0b' : '#3b82f6'}; width: auto;" onclick="toggleAdmin('${user.id}', '${user.email}', ${user.is_admin || false})">${user.is_admin ? 'Revoke Admin' : 'Make Admin'}</button>
+            <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: #ef4444; width: auto;" onclick="deleteUser('${user.id}', '${user.email}', ${user.is_admin || false})">Delete</button>
+          </td>
+        </tr>`;
+      }
 
       if (uTotal <= 5) {
         dashboardHtml += `<tr>
@@ -317,14 +337,14 @@ function syncUsers() {
          </tr>`;
       }
     });
+
+    if (document.getElementById('user-mgt-total')) {
+      document.getElementById('user-mgt-total').innerText = uTotal;
+    }
+
     document.getElementById('user-list-body').innerHTML = html;
     if (document.getElementById('dash-reg-members')) {
       document.getElementById('dash-reg-members').innerHTML = dashboardHtml;
-    }
-    if (document.getElementById('dash-users-total')) {
-      document.getElementById('dash-users-total').innerText = uTotal;
-      document.getElementById('dash-users-students').innerText = uStudent;
-      document.getElementById('dash-users-staff').innerText = uStaff;
     }
   });
 }
@@ -398,38 +418,47 @@ function renderCharts(collegeData, actionData) {
   const ctxAct = document.getElementById('actionChart');
   if (!ctxCol || !ctxAct) return;
 
-  if (collegeChartInst) collegeChartInst.destroy();
-  if (actionChartInst) actionChartInst.destroy();
+  if (collegeChartInst) {
+    collegeChartInst.data.labels = Object.keys(collegeData);
+    collegeChartInst.data.datasets[0].data = Object.values(collegeData);
+    collegeChartInst.update();
+  } else {
+    collegeChartInst = new Chart(ctxCol, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(collegeData),
+        datasets: [{
+          label: 'Total Visits',
+          data: Object.values(collegeData),
+          backgroundColor: '#1e3a8a',
+          borderRadius: 4
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
 
-  collegeChartInst = new Chart(ctxCol, {
-    type: 'bar',
-    data: {
-      labels: Object.keys(collegeData),
-      datasets: [{
-        label: 'Total Visits',
-        data: Object.values(collegeData),
-        backgroundColor: '#1e3a8a',
-        borderRadius: 4
-      }]
-    },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
-
-  actionChartInst = new Chart(ctxAct, {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(actionData),
-      datasets: [{
-        data: Object.values(actionData),
-        backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6'],
-      }]
-    },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
+  if (actionChartInst) {
+    actionChartInst.data.labels = Object.keys(actionData);
+    actionChartInst.data.datasets[0].data = Object.values(actionData);
+    actionChartInst.update();
+  } else {
+    actionChartInst = new Chart(ctxAct, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(actionData),
+        datasets: [{
+          data: Object.values(actionData),
+          backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6'],
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
 }
 
 function syncDashboardViews() {
-  db.ref('attendance_logs').on('value', snap => {
+  db.ref('attendance_logs').orderByChild('rawDate').limitToLast(2000).on('value', snap => {
     const reasonEl = document.getElementById('dash-filter-reason');
     const rFilter = reasonEl ? reasonEl.value : 'All';
     const colEl = document.getElementById('dash-filter-college');
@@ -446,7 +475,23 @@ function syncDashboardViews() {
     snap.forEach(child => logsArr.push(child.val()));
     logsArr.reverse();
 
+    const todayStr = new Date().toISOString().substring(0, 10);
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const dist = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - dist);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    let tTotal = 0, tStudent = 0, tStaff = 0;
+
     logsArr.forEach(log => {
+      if (log.rawDate && log.rawDate.startsWith(todayStr)) {
+        tTotal++;
+        if (log.role === 'Student') tStudent++;
+        else tStaff++;
+      }
+
       let passR = (rFilter === 'All' || log.reason === rFilter);
       let passC = (cFilter === 'All' || log.college === cFilter);
       let passT = (tFilter === 'All' || log.role === tFilter);
@@ -456,8 +501,10 @@ function syncDashboardViews() {
 
         if (log.rawDate) {
           const d = new Date(log.rawDate);
-          const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-          daysData[dayNames[d.getDay()]]++;
+          if (d >= startOfWeek) {
+            const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            daysData[dayNames[d.getDay()]]++;
+          }
         }
 
         if (filterCount <= 15) {
@@ -484,6 +531,12 @@ function syncDashboardViews() {
       }
     });
 
+    if (document.getElementById('dash-today-total')) {
+      document.getElementById('dash-today-total').innerText = tTotal;
+      document.getElementById('dash-today-students').innerText = tStudent;
+      document.getElementById('dash-today-staff').innerText = tStaff;
+    }
+
     if (document.getElementById('dash-display-count')) {
       document.getElementById('dash-display-count').innerText = filterCount;
     }
@@ -493,28 +546,34 @@ function syncDashboardViews() {
 
     const ctxDash = document.getElementById('dashWeeklyChart');
     if (!ctxDash) return;
-    if (dashWeeklyChartInst) dashWeeklyChartInst.destroy();
-
-    dashWeeklyChartInst = new Chart(ctxDash, {
-      type: 'line',
-      data: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        datasets: [{
-          label: 'Visitors',
-          data: [daysData["Mon"], daysData["Tue"], daysData["Wed"], daysData["Thu"], daysData["Fri"], daysData["Sat"], daysData["Sun"]],
-          backgroundColor: 'rgba(22, 163, 74, 0.1)',
-          borderColor: '#16a34a',
-          borderWidth: 3,
-          tension: 0.1,
-          fill: true,
-          pointBackgroundColor: '#ffffff',
-          pointBorderColor: '#16a34a',
-          pointBorderWidth: 2,
-          pointRadius: 5
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
-    });
+    
+    const newData = [daysData["Mon"], daysData["Tue"], daysData["Wed"], daysData["Thu"], daysData["Fri"], daysData["Sat"], daysData["Sun"]];
+    
+    if (dashWeeklyChartInst) {
+      dashWeeklyChartInst.data.datasets[0].data = newData;
+      dashWeeklyChartInst.update();
+    } else {
+      dashWeeklyChartInst = new Chart(ctxDash, {
+        type: 'line',
+        data: {
+          labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          datasets: [{
+            label: 'Visitors',
+            data: newData,
+            backgroundColor: 'rgba(22, 163, 74, 0.1)',
+            borderColor: '#16a34a',
+            borderWidth: 3,
+            tension: 0.1,
+            fill: true,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#16a34a',
+            pointBorderWidth: 2,
+            pointRadius: 5
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+      });
+    }
   });
 }
 
