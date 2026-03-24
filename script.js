@@ -219,13 +219,13 @@ function handleLogin() {
         // Unification: Regular user triggers attendance logic dynamically on the sign-in screen
         const now = new Date();
         const logData = {
-          id: userMatch.id,
-          name: userMatch.name,
+          id: userMatch.id || "N/A",
+          name: userMatch.name || "Unknown",
           college: userMatch.college || "N/A",
           year_level: userMatch.year_level || "N/A",
           course: userMatch.course || "N/A",
-          role: userMatch.role,
-          reason: reason,
+          role: userMatch.role || "User",
+          reason: reason || "Study / Reading",
           profile_pic: userMatch.profile_pic || "",
           timestamp: now.toLocaleString(),
           rawDate: now.toISOString()
@@ -294,6 +294,7 @@ function closeSuccessModal() {
 // --- 3. DASHBOARD FLOW (Filtering Magic) ---
 function syncUsers() {
   db.ref('users').on('value', snap => {
+    console.log("== USERS LOADED ==", snap.val());
     const searchEl = document.getElementById('user-search');
     const searchTerm = searchEl ? searchEl.value.toLowerCase() : '';
 
@@ -468,6 +469,7 @@ function renderCharts(collegeData, actionData) {
 
 function syncDashboardViews() {
   db.ref('attendance_logs').orderByChild('rawDate').limitToLast(2000).on('value', snap => {
+    console.log("== DASHBOARD LOGS LOADED ==", snap.val());
     const reasonEl = document.getElementById('dash-filter-reason');
     const rFilter = reasonEl ? reasonEl.value : 'All';
     const colEl = document.getElementById('dash-filter-college');
@@ -596,6 +598,7 @@ function clearRecentUsers() {
 
 function syncLiveAttendance() {
   db.ref('attendance_logs').on('value', snap => {
+    console.log("== FULL ATTENDANCE LOGS LOADED ==", snap.val());
     const srchEl = document.getElementById('log-search');
     const searchTerm = srchEl ? srchEl.value.toLowerCase() : '';
     const actEl = document.getElementById('log-filter-action');
