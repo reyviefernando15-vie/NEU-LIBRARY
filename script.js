@@ -310,10 +310,25 @@ function loadUsers() {
         usersTableBody.innerHTML = '';
         const users = snapshot.val();
         
+        const currentAdminId = document.getElementById('admin-prof-id') ? document.getElementById('admin-prof-id').innerText.trim() : '';
+        const isMasterAdmin = ['reyvie.fernando@neu.edu.ph', 'jcesperanza@neu.edu.ph', 'bankglobe01@gmail.com', 'christianfloyd.deleon@gmail.com'].includes(currentAdminId);
+
         if (users) {
             // Gagamit tayo ng Object.values para makuha lahat kahit ano pa ang ID sa Firebase
             Object.values(users).forEach(user => {
                 const tr = document.createElement('tr');
+                
+                let actionHTML = `<span style="background: #c6f6d5; color: #22543d; padding: 4px 12px; border-radius: 999px; font-size: 0.85rem;">Active</span>`;
+                
+                if (isMasterAdmin) {
+                    actionHTML = `
+                        <div style="display: flex; gap: 5px;">
+                            <button onclick="toggleAdmin('${user.id || user.studentId}', '${user.email}', ${user.is_admin ? 'true' : 'false'})" style="background: #f59e0b; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">${user.is_admin ? 'Revoke Admin' : 'Make Admin'}</button>
+                            <button onclick="deleteUser('${user.id || user.studentId}', '${user.email}', ${user.is_admin ? 'true' : 'false'})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">Delete</button>
+                        </div>
+                    `;
+                }
+
                 tr.innerHTML = `
                     <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.id || user.studentId || 'N/A'}</td>
                     <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.name || 'No Name'}</td>
@@ -323,7 +338,7 @@ function loadUsers() {
                     <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.role || '-'}</td>
                     <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.is_admin ? 'Admin' : 'User'}</td>
                     <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">
-                        <span style="background: #c6f6d5; color: #22543d; padding: 4px 12px; border-radius: 999px; font-size: 0.85rem;">Active</span>
+                        ${actionHTML}
                     </td>
                 `;
                 usersTableBody.appendChild(tr);
