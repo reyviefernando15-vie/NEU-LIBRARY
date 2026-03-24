@@ -150,7 +150,10 @@ function handleRegister() {
     };
 
     // Proceed immediately to skip offline freezing
-    db.ref('users/' + id.replace(/\./g, '_')).set(userData).catch(() => { });
+    db.ref('users/' + id.replace(/\./g, '_')).set(userData).catch((err) => {
+      console.error("Register Error:", err);
+      alert("Failed to save account to DB. Check Firebase Console (Rules: permission_denied or otherwise).");
+    });
 
     setTimeout(() => {
       if (saveBtn) saveBtn.innerText = "CREATE ACCOUNT";
@@ -228,7 +231,10 @@ function handleLogin() {
           rawDate: now.toISOString()
         };
 
-        db.ref('attendance_logs').push(logData).catch(() => { });
+        db.ref('attendance_logs').push(logData).catch((err) => {
+          console.error("Attendance Log Write Error:", err);
+          alert("Failed to save time-in log. Check Firebase Rules (Write Permission).");
+        });
 
         // Show Profile Card Live
         const mockProfile = userMatch.profile_pic || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(userMatch.name || 'User') + "&background=random");
@@ -305,7 +311,7 @@ function syncUsers() {
 
       let passSearch = true;
       if (searchTerm) {
-        const searchable = (user.id + " " + user.name + " " + user.email + " " + (user.course||"") + " " + user.role).toLowerCase();
+        const searchable = ((user.id||'') + " " + (user.name||'') + " " + (user.email||'') + " " + (user.course||"") + " " + (user.role||'')).toLowerCase();
         if (!searchable.includes(searchTerm)) passSearch = false;
       }
 
@@ -346,6 +352,9 @@ function syncUsers() {
     if (document.getElementById('dash-reg-members')) {
       document.getElementById('dash-reg-members').innerHTML = dashboardHtml;
     }
+  }, error => {
+    console.error("syncUsers DB Fetch Error:", error);
+    alert("Error fetching User list. Check Firebase Rules (Read Permission).");
   });
 }
 
@@ -574,6 +583,8 @@ function syncDashboardViews() {
         options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
       });
     }
+  }, error => {
+    console.error("syncDashboardViews Error:", error);
   });
 }
 
@@ -657,6 +668,8 @@ function syncLiveAttendance() {
       document.getElementById('dash-lib-now').innerText = todayCount;
     }
     renderCharts(colData, actData);
+  }, error => {
+    console.error("syncLiveAttendance Error:", error);
   });
 }
 
