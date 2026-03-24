@@ -453,12 +453,20 @@ function renderCharts(collegeData, actionData) {
 
 // 2. AYOS SA PAG-UPDATE NG CHART AT RECENT ACTIVITY
 function updateCharts() {
-    db.ref('attendance_logs').on('value', (snapshot) => {
+    db.ref('logs').on('value', (snapshot) => {
         const logs = snapshot.val();
         let timeInCount = 0;
         let timeOutCount = 0;
         const recentActivityList = document.getElementById('dash-recent-users');
         
+        let daysData = { "Mon": 0, "Tue": 0, "Wed": 0, "Thu": 0, "Fri": 0, "Sat": 0, "Sun": 0 };
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        const dist = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - dist);
+        startOfWeek.setHours(0, 0, 0, 0);
+
         if (recentActivityList) recentActivityList.innerHTML = '';
 
         if (logs) {
@@ -471,20 +479,46 @@ function updateCharts() {
                 const logAction = log.action || log.reason || 'Time In';
                 if (logAction === 'Time In' || log.reason) timeInCount++;
                 if (logAction === 'Time Out') timeOutCount++;
+                
+                // Collect Graph Data
+                if (log.rawDate) {
+                  const d = new Date(log.rawDate);
+                  if (d >= startOfWeek) {
+                    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                    daysData[dayNames[d.getDay()]]++;
+                  }
+                }
 
                 // I-display sa Recent Activity list sa Dashboard (limit to 15)
                 if (recentActivityList && limit < 15) {
                     limit++;
+                    const mockProfile = log.profile_pic || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(log.name || 'User') + "&background=random");
                     const activityDiv = document.createElement('div');
                     activityDiv.className = 'activity-item'; // Siguraduhing may style ito sa CSS
-                    activityDiv.style = "display: flex; align-items: center; gap: 15px; padding: 12px; border-bottom: 1px solid #f8fafc;";
+                    activityDiv.style = "display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 12px; border-bottom: 1px solid #f8fafc;";
+                    
+                    let fTime = log.timestamp || log.rawDate;
+                    try {
+                      if (log.rawDate) fTime = new Date(log.rawDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                      else if (log.timestamp) fTime = new Date(log.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    } catch (e) { }
+
                     activityDiv.innerHTML = `
-                        <div style="width: 40px; height: 40px; background: ${logAction === 'Time In' || log.reason ? '#ebf8ff' : '#fff5f5'}; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ${logAction === 'Time In' || log.reason ? '#3182ce' : '#e53e3e'}; font-weight: bold;">
-                            ${logAction === 'Time In' || log.reason ? 'IN' : 'OUT'}
+                        <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+                            <div style="position: relative; width: 44px; height: 44px; flex-shrink: 0;">
+                              <img src="${mockProfile}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                              <div style="position: absolute; bottom: -4px; right: -4px; width: 22px; height: 22px; background: ${logAction === 'Time In' || log.reason ? '#ebf8ff' : '#fff5f5'}; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; color: ${logAction === 'Time In' || log.reason ? '#3182ce' : '#e53e3e'}; font-weight: 800; font-size: 0.55rem; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                                  ${logAction === 'Time In' || log.reason ? 'IN' : 'OUT'}
+                              </div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 800; color: #1e293b; font-size: 0.95rem; line-height: 1.2;">${log.name}</div>
+                                <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; margin-top: 2px;">${log.college || 'N/A'} - ${log.course || 'N/A'}</div>
+                                <div style="font-size: 0.75rem; color: #d97706; font-weight: 700; background: #fffbeb; display: inline-block; padding: 2px 6px; border-radius: 4px; margin-top: 4px;">Reason: ${log.reason || 'Study / Reading'}</div>
+                            </div>
                         </div>
-                        <div>
-                            <div style="font-weight: 600; color: #2d3748;">${log.name}</div>
-                            <div style="font-size: 0.8rem; color: #718096;">${log.timestamp || log.rawDate}</div>
+                        <div style="text-align: right; font-size: 0.8rem; color: #a0aec0; font-weight: 600; flex-shrink: 0;">
+                            ${fTime}
                         </div>
                     `;
                     recentActivityList.appendChild(activityDiv);
@@ -496,9 +530,35 @@ function updateCharts() {
             }
         }
 
-        // I-update ang Chart.js object (kung may dashboard chart)
-        if (dashWeeklyChartInst) {
-           // We keep the original traffic chart data rendering logic safe since actionChart is doughnut inside the report
+        const ctxDash = document.getElementById('dashWeeklyChart');
+        if (ctxDash) {
+          const newData = [daysData["Mon"], daysData["Tue"], daysData["Wed"], daysData["Thu"], daysData["Fri"], daysData["Sat"], daysData["Sun"]];
+          
+          if (typeof dashWeeklyChartInst !== 'undefined' && dashWeeklyChartInst) {
+            dashWeeklyChartInst.data.datasets[0].data = newData;
+            dashWeeklyChartInst.update();
+          } else {
+            dashWeeklyChartInst = new Chart(ctxDash, {
+              type: 'line',
+              data: {
+                labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                datasets: [{
+                  label: 'Visitors',
+                  data: newData,
+                  backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                  borderColor: '#16a34a',
+                  borderWidth: 3,
+                  tension: 0.1,
+                  fill: true,
+                  pointBackgroundColor: '#ffffff',
+                  pointBorderColor: '#16a34a',
+                  pointBorderWidth: 2,
+                  pointRadius: 5
+                }]
+              },
+              options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+            });
+          }
         }
         
         // Ensure total students on upper dashboard count is filled
