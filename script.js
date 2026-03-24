@@ -207,68 +207,76 @@ function handleLogin() {
 
   db.ref('users').orderByChild('id').equalTo(inputVal).once('value', snap => {
     if (snap.exists()) {
-      let userMatch = null;
-      snap.forEach(child => { userMatch = child.val(); });
-
-      if (userMatch.is_admin) {
-        document.getElementById('admin-prof-name').innerText = userMatch.name || "LIBRARY ADMIN";
-        document.getElementById('dash-howdy-name').innerText = (userMatch.name || "ADMIN").split(" ")[0];
-        document.getElementById('admin-prof-id').innerText = userMatch.id || "01-2345-678";
-        enterApp('Admin');
-      } else {
-        // Unification: Regular user triggers attendance logic dynamically on the sign-in screen
-        const now = new Date();
-        const logData = {
-          id: userMatch.id || "N/A",
-          name: userMatch.name || "Unknown",
-          college: userMatch.college || "N/A",
-          year_level: userMatch.year_level || "N/A",
-          course: userMatch.course || "N/A",
-          role: userMatch.role || "User",
-          reason: reason || "Study / Reading",
-          profile_pic: userMatch.profile_pic || "",
-          timestamp: now.toLocaleString(),
-          rawDate: now.toISOString()
-        };
-
-        db.ref('attendance_logs').push(logData).catch((err) => {
-          console.error("Attendance Log Write Error:", err);
-          alert("Failed to save time-in log. Check Firebase Rules (Write Permission).");
-        });
-
-        // Show Profile Card Live
-        const mockProfile = userMatch.profile_pic || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(userMatch.name || 'User') + "&background=random");
-        document.getElementById('portal-user-pic').src = mockProfile;
-        document.getElementById('portal-user-name').innerText = userMatch.name;
-        document.getElementById('portal-user-course').innerText = userMatch.college ? (userMatch.college + (userMatch.course ? (' - ' + userMatch.course) : '')) : "Staff/Member";
-        document.getElementById('portal-user-year').innerText = userMatch.year_level || "-";
-
-        document.getElementById('portal-last-date').innerText = new Date().toLocaleDateString('en-US');
-        document.getElementById('portal-last-time').innerText = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-        document.getElementById('portal-profile-card').style.display = 'block';
-        
-        // Scroll smoothly to the profile card so it's visible on smaller screens
-        setTimeout(() => {
-          document.getElementById('portal-profile-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 50);
-
-        document.getElementById('login-email').value = '';
-
-        setTimeout(() => { document.getElementById('login-email').focus(); }, 100);
-
-        // Auto-hide Profile Card after 5 seconds for cleaner flow
-        clearTimeout(window.profileTimeout);
-        window.profileTimeout = setTimeout(() => {
-          document.getElementById('portal-profile-card').style.display = 'none';
-          // Scroll back up to the top of the gateway
-          document.querySelector('.auth-overlay').scrollTo({ top: 0, behavior: 'smooth' });
-        }, 5000);
-      }
+      processLoginSnap(snap, reason);
     } else {
-      alert("ID not recognized! If you are a new member, click 'Continue with Google'.");
+      // Fallback: Also allow Time-In using Email address (kung email ang tinype nila)
+      db.ref('users').orderByChild('email').equalTo(inputVal).once('value', snapEmail => {
+        if (snapEmail.exists()) {
+          processLoginSnap(snapEmail, reason);
+        } else {
+          alert("ID or Email not recognized! If you are a new member, click 'Continue with Google' to complete your Registration.");
+        }
+      });
     }
   });
+}
+
+function processLoginSnap(snap, reason) {
+  let userMatch = null;
+  snap.forEach(child => { userMatch = child.val(); });
+
+  if (userMatch.is_admin) {
+    document.getElementById('admin-prof-name').innerText = userMatch.name || "LIBRARY ADMIN";
+    document.getElementById('dash-howdy-name').innerText = (userMatch.name || "ADMIN").split(" ")[0];
+    document.getElementById('admin-prof-id').innerText = userMatch.id || "01-2345-678";
+    enterApp('Admin');
+  } else {
+    // Regular user triggers attendance logic dynamically
+    const now = new Date();
+    const logData = {
+      id: userMatch.id || "N/A",
+      name: userMatch.name || "Unknown",
+      college: userMatch.college || "N/A",
+      year_level: userMatch.year_level || "N/A",
+      course: userMatch.course || "N/A",
+      role: userMatch.role || "User",
+      reason: reason || "Study / Reading",
+      profile_pic: userMatch.profile_pic || "",
+      timestamp: now.toLocaleString(),
+      rawDate: now.toISOString(),
+      action: "Time In" // Added to align with log tracking
+    };
+
+    db.ref('attendance_logs').push(logData).catch((err) => {
+      console.error("Attendance Log Write Error:", err);
+      alert("Failed to save time-in log. Check Firebase Rules.");
+    });
+
+    // Show Profile Card Live
+    const mockProfile = userMatch.profile_pic || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(userMatch.name || 'User') + "&background=random");
+    document.getElementById('portal-user-pic').src = mockProfile;
+    document.getElementById('portal-user-name').innerText = userMatch.name;
+    document.getElementById('portal-user-course').innerText = userMatch.college ? (userMatch.college + (userMatch.course ? (' - ' + userMatch.course) : '')) : "Staff/Member";
+    document.getElementById('portal-user-year').innerText = userMatch.year_level || "-";
+
+    document.getElementById('portal-last-date').innerText = new Date().toLocaleDateString('en-US');
+    document.getElementById('portal-last-time').innerText = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    document.getElementById('portal-profile-card').style.display = 'block';
+    
+    setTimeout(() => {
+      document.getElementById('portal-profile-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+
+    document.getElementById('login-email').value = '';
+    setTimeout(() => { document.getElementById('login-email').focus(); }, 100);
+
+    clearTimeout(window.profileTimeout);
+    window.profileTimeout = setTimeout(() => {
+      document.getElementById('portal-profile-card').style.display = 'none';
+      document.querySelector('.auth-overlay').scrollTo({ top: 0, behavior: 'smooth' });
+    }, 5000);
+  }
 }
 
 function enterApp(mode) {
@@ -291,7 +299,7 @@ function closeSuccessModal() {
   document.getElementById('modal-success').style.display = 'none';
 }
 
-// --- 3. DASHBOARD FLOW (Filtering Magic) ---
+// 1. AYOS SA PAG-LOAD NG ACCOUNTS (Modified to fit your system)
 function syncUsers() {
   db.ref('users').on('value', snap => {
     console.log("== USERS LOADED ==", snap.val());
@@ -302,54 +310,65 @@ function syncUsers() {
     let dashboardHtml = "";
     let uTotal = 0, uStudent = 0, uStaff = 0;
 
-    let usersArr = [];
-    snap.forEach(child => usersArr.push(child.val()));
-    usersArr.reverse();
+    const users = snap.val();
+    
+    if (users) {
+      let usersArr = [];
+      snap.forEach(child => usersArr.push(child.val()));
+      usersArr.reverse();
 
-    usersArr.forEach(user => {
-      uTotal++;
-      if (user.role === 'Student') uStudent++; else uStaff++;
+      usersArr.forEach(user => {
+        uTotal++;
+        if (user.role === 'Student') uStudent++; else uStaff++;
 
-      let passSearch = true;
-      if (searchTerm) {
-        const searchable = ((user.id||'') + " " + (user.name||'') + " " + (user.email||'') + " " + (user.course||"") + " " + (user.role||'')).toLowerCase();
-        if (!searchable.includes(searchTerm)) passSearch = false;
-      }
+        let passSearch = true;
+        if (searchTerm) {
+          const searchable = ((user.id||'') + " " + (user.name||'') + " " + (user.email||'') + " " + (user.course||"") + " " + (user.role||'')).toLowerCase();
+          if (!searchable.includes(searchTerm)) passSearch = false;
+        }
 
-      if (passSearch) {
-        const accessBadge = (user.is_admin || user.email === 'reyvie.fernando@neu.edu.ph' || user.email === 'jcesperanza@neu.edu.ph')
-          ? '<span class="badge" style="background:#1a1a1a;color:white;">ADMIN</span>'
-          : '<span class="badge">USER</span>';
-        html += `<tr>
-          <td>${user.id}</td>
-          <td><b>${user.name}</b></td>
-          <td>${user.email}</td>
-          <td>${user.college}</td>
-          <td><span style="font-weight: 600; color: #475569;">${user.course || '-'}</span></td>
-          <td><span class="badge">${user.role}</span></td>
-          <td>${accessBadge}</td>
-          <td style="display:flex; gap: 5px;">
-            <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: ${user.is_admin ? '#f59e0b' : '#3b82f6'}; width: auto;" onclick="toggleAdmin('${user.id}', '${user.email}', ${user.is_admin || false})">${user.is_admin ? 'Revoke Admin' : 'Make Admin'}</button>
-            <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: #ef4444; width: auto;" onclick="deleteUser('${user.id}', '${user.email}', ${user.is_admin || false})">Delete</button>
-          </td>
-        </tr>`;
-      }
+        if (passSearch) {
+          const accessBadge = (user.is_admin || user.email === 'reyvie.fernando@neu.edu.ph' || user.email === 'jcesperanza@neu.edu.ph')
+            ? '<span class="badge" style="background:#1a1a1a;color:white;">ADMIN</span>'
+            : '<span class="badge" style="background:#10b981;color:white;">Active</span>';
+          html += `<tr>
+            <td>${user.id || 'N/A'}</td>
+            <td><b>${user.name || 'No Name'}</b></td>
+            <td>${user.email || 'No Email'}</td>
+            <td>${user.college || '-'}</td>
+            <td><span style="font-weight: 600; color: #475569;">${user.course || '-'}</span></td>
+            <td><span class="badge">${user.role || '-'}</span></td>
+            <td>${accessBadge}</td>
+            <td style="display:flex; gap: 5px;">
+              <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: ${user.is_admin ? '#f59e0b' : '#3b82f6'}; width: auto;" onclick="toggleAdmin('${user.id}', '${user.email}', ${user.is_admin || false})">${user.is_admin ? 'Revoke Admin' : 'Make Admin'}</button>
+              <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: #ef4444; width: auto;" onclick="deleteUser('${user.id}', '${user.email}', ${user.is_admin || false})">Delete</button>
+            </td>
+          </tr>`;
+        }
 
-      if (uTotal <= 5) {
-        dashboardHtml += `<tr>
-            <td style="font-family: monospace; font-size: 0.9rem;">${user.id}</td>
-            <td style="font-weight: 600; color: #1e293b;">${user.name}</td>
-            <td style="color: #475569; font-size: 0.85rem;">${user.role}</td>
-            <td style="color: #475569; font-size: 0.85rem;">${user.year_level || '-'}</td>
-         </tr>`;
-      }
-    });
+        if (uTotal <= 5) {
+          dashboardHtml += `<tr>
+              <td style="font-family: monospace; font-size: 0.9rem;">${user.id || 'N/A'}</td>
+              <td style="font-weight: 600; color: #1e293b;">${user.name || 'No Name'}</td>
+              <td style="color: #475569; font-size: 0.85rem;">${user.role || '-'}</td>
+              <td style="color: #475569; font-size: 0.85rem;">${user.year_level || '-'}</td>
+           </tr>`;
+        }
+      });
+    } else {
+      // No users found case
+      html = '<tr><td colspan="8" style="text-align:center; padding: 20px; color: #ef4444; font-weight: bold;">No registered users found. Ensure users complete the registration form!</td></tr>';
+      dashboardHtml = '<tr><td colspan="4" style="text-align:center; padding: 20px;">No users found.</td></tr>';
+    }
 
     if (document.getElementById('user-mgt-total')) {
       document.getElementById('user-mgt-total').innerText = uTotal;
     }
 
-    document.getElementById('user-list-body').innerHTML = html;
+    if (document.getElementById('user-list-body')) {
+      document.getElementById('user-list-body').innerHTML = html;
+    }
+    
     if (document.getElementById('dash-reg-members')) {
       document.getElementById('dash-reg-members').innerHTML = dashboardHtml;
     }
