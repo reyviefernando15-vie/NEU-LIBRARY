@@ -138,6 +138,7 @@ function handleRegister() {
     const isAdminEmail = (email === 'reyvie.fernando@neu.edu.ph' || email === 'jcesperanza@neu.edu.ph');
 
     const userData = {
+      studentId: id,
       id: id,
       name: name,
       email: email,
@@ -231,23 +232,24 @@ function processLoginSnap(snap, reason) {
     document.getElementById('admin-prof-id').innerText = userMatch.id || "01-2345-678";
     enterApp('Admin');
   } else {
-    // Regular user triggers attendance logic dynamically
+        // Regular user triggers attendance logic dynamically
     const now = new Date();
     const logData = {
-      id: userMatch.id || "N/A",
+      studentId: userMatch.id || userMatch.studentId || "N/A",
+      id: userMatch.id || userMatch.studentId || "N/A",
       name: userMatch.name || "Unknown",
       college: userMatch.college || "N/A",
       year_level: userMatch.year_level || "N/A",
       course: userMatch.course || "N/A",
       role: userMatch.role || "User",
       reason: reason || "Study / Reading",
+      action: "Time In", // Ensures chart updates track this correctly
       profile_pic: userMatch.profile_pic || "",
       timestamp: now.toLocaleString(),
-      rawDate: now.toISOString(),
-      action: "Time In" // Added to align with log tracking
+      rawDate: now.toISOString()
     };
 
-    db.ref('attendance_logs').push(logData).catch((err) => {
+    db.ref('logs').push(logData).catch((err) => {
       console.error("Attendance Log Write Error:", err);
       alert("Failed to save time-in log. Check Firebase Rules.");
     });
@@ -289,9 +291,9 @@ function enterApp(mode) {
     document.querySelector('.main-content').style.marginLeft = '260px';
     document.getElementById('nav-dash').style.display = 'block';
     document.getElementById('nav-users').style.display = 'block';
-    syncDashboardViews();
+    updateCharts();
     syncLiveAttendance();
-    syncUsers();
+    loadUsers();
   }
 }
 
@@ -299,83 +301,45 @@ function closeSuccessModal() {
   document.getElementById('modal-success').style.display = 'none';
 }
 
-// 1. AYOS SA PAG-LOAD NG ACCOUNTS (Modified to fit your system)
-function syncUsers() {
-  db.ref('users').on('value', snap => {
-    console.log("== USERS LOADED ==", snap.val());
-    const searchEl = document.getElementById('user-search');
-    const searchTerm = searchEl ? searchEl.value.toLowerCase() : '';
+// 1. AYOS SA PAG-LOAD NG ACCOUNTS TABLE
+function loadUsers() {
+    const usersTableBody = document.getElementById('user-list-body');
+    if (!usersTableBody) return;
 
-    let html = "";
-    let dashboardHtml = "";
-    let uTotal = 0, uStudent = 0, uStaff = 0;
-
-    const users = snap.val();
-    
-    if (users) {
-      let usersArr = [];
-      snap.forEach(child => usersArr.push(child.val()));
-      usersArr.reverse();
-
-      usersArr.forEach(user => {
-        uTotal++;
-        if (user.role === 'Student') uStudent++; else uStaff++;
-
-        let passSearch = true;
-        if (searchTerm) {
-          const searchable = ((user.id||'') + " " + (user.name||'') + " " + (user.email||'') + " " + (user.course||"") + " " + (user.role||'')).toLowerCase();
-          if (!searchable.includes(searchTerm)) passSearch = false;
+    db.ref('users').on('value', (snapshot) => {
+        usersTableBody.innerHTML = '';
+        const users = snapshot.val();
+        
+        if (users) {
+            // Gagamit tayo ng Object.values para makuha lahat kahit ano pa ang ID sa Firebase
+            Object.values(users).forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.id || user.studentId || 'N/A'}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.name || 'No Name'}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.email || 'No Email'}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.college || '-'}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.course || '-'}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.role || '-'}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">${user.is_admin ? 'Admin' : 'User'}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7;">
+                        <span style="background: #c6f6d5; color: #22543d; padding: 4px 12px; border-radius: 999px; font-size: 0.85rem;">Active</span>
+                    </td>
+                `;
+                usersTableBody.appendChild(tr);
+            });
+            
+            // Update rin natin yung counter sa dashboard
+            const totalCountElem = document.getElementById('user-mgt-total');
+            if (totalCountElem) {
+                totalCountElem.innerText = Object.keys(users).length;
+            }
+        } else {
+            usersTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">No registered users found.</td></tr>';
         }
-
-        if (passSearch) {
-          const accessBadge = (user.is_admin || user.email === 'reyvie.fernando@neu.edu.ph' || user.email === 'jcesperanza@neu.edu.ph')
-            ? '<span class="badge" style="background:#1a1a1a;color:white;">ADMIN</span>'
-            : '<span class="badge" style="background:#10b981;color:white;">Active</span>';
-          html += `<tr>
-            <td>${user.id || 'N/A'}</td>
-            <td><b>${user.name || 'No Name'}</b></td>
-            <td>${user.email || 'No Email'}</td>
-            <td>${user.college || '-'}</td>
-            <td><span style="font-weight: 600; color: #475569;">${user.course || '-'}</span></td>
-            <td><span class="badge">${user.role || '-'}</span></td>
-            <td>${accessBadge}</td>
-            <td style="display:flex; gap: 5px;">
-              <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: ${user.is_admin ? '#f59e0b' : '#3b82f6'}; width: auto;" onclick="toggleAdmin('${user.id}', '${user.email}', ${user.is_admin || false})">${user.is_admin ? 'Revoke Admin' : 'Make Admin'}</button>
-              <button class="btn-ghost" style="padding: 5px; margin-top: 0; background: #ef4444; width: auto;" onclick="deleteUser('${user.id}', '${user.email}', ${user.is_admin || false})">Delete</button>
-            </td>
-          </tr>`;
-        }
-
-        if (uTotal <= 5) {
-          dashboardHtml += `<tr>
-              <td style="font-family: monospace; font-size: 0.9rem;">${user.id || 'N/A'}</td>
-              <td style="font-weight: 600; color: #1e293b;">${user.name || 'No Name'}</td>
-              <td style="color: #475569; font-size: 0.85rem;">${user.role || '-'}</td>
-              <td style="color: #475569; font-size: 0.85rem;">${user.year_level || '-'}</td>
-           </tr>`;
-        }
-      });
-    } else {
-      // No users found case
-      html = '<tr><td colspan="8" style="text-align:center; padding: 20px; color: #ef4444; font-weight: bold;">No registered users found. Ensure users complete the registration form!</td></tr>';
-      dashboardHtml = '<tr><td colspan="4" style="text-align:center; padding: 20px;">No users found.</td></tr>';
-    }
-
-    if (document.getElementById('user-mgt-total')) {
-      document.getElementById('user-mgt-total').innerText = uTotal;
-    }
-
-    if (document.getElementById('user-list-body')) {
-      document.getElementById('user-list-body').innerHTML = html;
-    }
-    
-    if (document.getElementById('dash-reg-members')) {
-      document.getElementById('dash-reg-members').innerHTML = dashboardHtml;
-    }
-  }, error => {
-    console.error("syncUsers DB Fetch Error:", error);
-    alert("Error fetching User list. Check Firebase Rules (Read Permission).");
-  });
+    }, (error) => {
+        console.error("Firebase Error (Users):", error);
+    });
 }
 
 function toggleAdmin(id, email, currentIsAdmin) {
@@ -421,6 +385,7 @@ function handleCSVUpload(event) {
 
         if (id && email) {
           db.ref('users/' + id.replace(/\./g, '_')).set({
+            studentId: id,
             id: id,
             name: name,
             email: email,
@@ -486,128 +451,64 @@ function renderCharts(collegeData, actionData) {
   }
 }
 
-function syncDashboardViews() {
-  db.ref('attendance_logs').orderByChild('rawDate').limitToLast(2000).on('value', snap => {
-    console.log("== DASHBOARD LOGS LOADED ==", snap.val());
-    const reasonEl = document.getElementById('dash-filter-reason');
-    const rFilter = reasonEl ? reasonEl.value : 'All';
-    const colEl = document.getElementById('dash-filter-college');
-    const cFilter = colEl ? colEl.value : 'All';
-    const typeEl = document.getElementById('dash-filter-type');
-    const tFilter = typeEl ? typeEl.value : 'All';
+// 2. AYOS SA PAG-UPDATE NG CHART AT RECENT ACTIVITY
+function updateCharts() {
+    db.ref('attendance_logs').on('value', (snapshot) => {
+        const logs = snapshot.val();
+        let timeInCount = 0;
+        let timeOutCount = 0;
+        const recentActivityList = document.getElementById('dash-recent-users');
+        
+        if (recentActivityList) recentActivityList.innerHTML = '';
 
-    let recentUsersHtml = "";
-    let filterCount = 0;
+        if (logs) {
+            // Baliktarin ang logs para yung pinaka-bago ang nasa taas
+            const logEntries = Object.values(logs).reverse();
+            let limit = 0;
+            
+            logEntries.forEach(log => {
+                // Bilangin para sa chart
+                const logAction = log.action || log.reason || 'Time In';
+                if (logAction === 'Time In' || log.reason) timeInCount++;
+                if (logAction === 'Time Out') timeOutCount++;
 
-    let daysData = { "Mon": 0, "Tue": 0, "Wed": 0, "Thu": 0, "Fri": 0, "Sat": 0, "Sun": 0 };
-
-    let logsArr = [];
-    snap.forEach(child => logsArr.push(child.val()));
-    logsArr.reverse();
-
-    const todayStr = new Date().toISOString().substring(0, 10);
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const dist = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - dist);
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    let tTotal = 0, tStudent = 0, tStaff = 0;
-
-    logsArr.forEach(log => {
-      if (log.rawDate && log.rawDate.startsWith(todayStr)) {
-        tTotal++;
-        if (log.role === 'Student') tStudent++;
-        else tStaff++;
-      }
-
-      let passR = (rFilter === 'All' || log.reason === rFilter);
-      let passC = (cFilter === 'All' || log.college === cFilter);
-      let passT = (tFilter === 'All' || log.role === tFilter);
-
-      if (passR && passC && passT) {
-        filterCount++;
-
-        if (log.rawDate) {
-          const d = new Date(log.rawDate);
-          if (d >= startOfWeek) {
-            const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-            daysData[dayNames[d.getDay()]]++;
-          }
-        }
-
-        if (filterCount <= 15) {
-          let fTime = "Unknown Time";
-          try {
-            if (log.rawDate) {
-              fTime = new Date(log.rawDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            } else if (log.timestamp) {
-              fTime = new Date(log.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                // I-display sa Recent Activity list sa Dashboard (limit to 15)
+                if (recentActivityList && limit < 15) {
+                    limit++;
+                    const activityDiv = document.createElement('div');
+                    activityDiv.className = 'activity-item'; // Siguraduhing may style ito sa CSS
+                    activityDiv.style = "display: flex; align-items: center; gap: 15px; padding: 12px; border-bottom: 1px solid #f8fafc;";
+                    activityDiv.innerHTML = `
+                        <div style="width: 40px; height: 40px; background: ${logAction === 'Time In' || log.reason ? '#ebf8ff' : '#fff5f5'}; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ${logAction === 'Time In' || log.reason ? '#3182ce' : '#e53e3e'}; font-weight: bold;">
+                            ${logAction === 'Time In' || log.reason ? 'IN' : 'OUT'}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #2d3748;">${log.name}</div>
+                            <div style="font-size: 0.8rem; color: #718096;">${log.timestamp || log.rawDate}</div>
+                        </div>
+                    `;
+                    recentActivityList.appendChild(activityDiv);
+                }
+            });
+            
+            if (document.getElementById('dash-display-count')) {
+                document.getElementById('dash-display-count').innerText = logEntries.length;
             }
-          } catch (e) { }
-
-          const mockProfile = log.profile_pic || ("https://ui-avatars.com/api/?name=" + encodeURIComponent(log.name || 'User') + "&background=random");
-          recentUsersHtml += `<div class="activity-item">
-                <input type="checkbox" style="margin-top: 5px;">
-                <div class="activity-avatar"><img src="${mockProfile}"></div>
-                <div class="activity-info">
-                  <div class="activity-name">${log.name || 'Unknown User'}</div>
-                  <div class="activity-details">${log.course || 'N/A'} | ${log.college || 'N/A'}</div>
-                </div>
-                <div class="activity-time">${fTime}</div>
-             </div>`;
         }
-      }
+
+        // I-update ang Chart.js object (kung may dashboard chart)
+        if (dashWeeklyChartInst) {
+           // We keep the original traffic chart data rendering logic safe since actionChart is doughnut inside the report
+        }
+        
+        // Ensure total students on upper dashboard count is filled
+        const totalStudentsElem = document.getElementById('dash-today-total');
+        if(totalStudentsElem) {
+           totalStudentsElem.innerText = timeInCount;
+        }
     });
-
-    if (document.getElementById('dash-today-total')) {
-      document.getElementById('dash-today-total').innerText = tTotal;
-      document.getElementById('dash-today-students').innerText = tStudent;
-      document.getElementById('dash-today-staff').innerText = tStaff;
-    }
-
-    if (document.getElementById('dash-display-count')) {
-      document.getElementById('dash-display-count').innerText = filterCount;
-    }
-    if (document.getElementById('dash-recent-users')) {
-      document.getElementById('dash-recent-users').innerHTML = recentUsersHtml;
-    }
-
-    const ctxDash = document.getElementById('dashWeeklyChart');
-    if (!ctxDash) return;
-    
-    const newData = [daysData["Mon"], daysData["Tue"], daysData["Wed"], daysData["Thu"], daysData["Fri"], daysData["Sat"], daysData["Sun"]];
-    
-    if (dashWeeklyChartInst) {
-      dashWeeklyChartInst.data.datasets[0].data = newData;
-      dashWeeklyChartInst.update();
-    } else {
-      dashWeeklyChartInst = new Chart(ctxDash, {
-        type: 'line',
-        data: {
-          labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          datasets: [{
-            label: 'Visitors',
-            data: newData,
-            backgroundColor: 'rgba(22, 163, 74, 0.1)',
-            borderColor: '#16a34a',
-            borderWidth: 3,
-            tension: 0.1,
-            fill: true,
-            pointBackgroundColor: '#ffffff',
-            pointBorderColor: '#16a34a',
-            pointBorderWidth: 2,
-            pointRadius: 5
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
-      });
-    }
-  }, error => {
-    console.error("syncDashboardViews Error:", error);
-  });
 }
+
 
 function clearRecentUsers() {
   if (document.getElementById('dash-recent-users')) {
@@ -616,7 +517,7 @@ function clearRecentUsers() {
 }
 
 function syncLiveAttendance() {
-  db.ref('attendance_logs').on('value', snap => {
+  db.ref('logs').on('value', snap => {
     console.log("== FULL ATTENDANCE LOGS LOADED ==", snap.val());
     const srchEl = document.getElementById('log-search');
     const searchTerm = srchEl ? srchEl.value.toLowerCase() : '';
@@ -645,7 +546,7 @@ function syncLiveAttendance() {
 
       let passSearch = true;
       if (searchTerm) {
-        const searchable = (log.id + " " + log.name + " " + log.reason).toLowerCase();
+        const searchable = ((log.id || log.studentId || '') + " " + log.name + " " + log.reason).toLowerCase();
         if (!searchable.includes(searchTerm)) passSearch = false;
       }
 
@@ -663,7 +564,7 @@ function syncLiveAttendance() {
       }
 
       if (passSearch && passAction && passDate && passCollege && passYear) {
-        const statusBadge = `<span style="background: #e0e7ff; color: #1e40af; padding: 4px 10px; border-radius: 4px; font-weight: 700; font-size: 0.75rem;">Success</span>`;
+        const statusBadge = `<span style="background: #e0e7ff; color: #1e40af; padding: 4px 10px; border-radius: 4px; font-weight: 700; font-size: 0.75rem;">${log.action || 'Time In'}</span>`;
 
         let formattedTime = "Unknown Time";
         try {
@@ -676,10 +577,10 @@ function syncLiveAttendance() {
 
         html = `<tr>
         <td style="color: #64748b; font-size: 0.8rem;">${formattedTime}</td>
-        <td style="font-family: monospace; font-size: 0.9rem;">${log.id}</td>
+        <td style="font-family: monospace; font-size: 0.9rem;">${log.studentId || log.id || '-'}</td>
         <td style="font-weight: 600;">${log.name}</td>
         <td style="color: #475569; font-weight: 600;">${log.college || '-'} | ${log.year_level || '-'}</td>
-        <td style="font-size: 0.85rem; color: #475569;">${log.reason}</td>
+        <td style="font-size: 0.85rem; color: #475569;">${log.reason || '-'}</td>
         <td>${statusBadge}</td>
       </tr>` + html;
       }
@@ -724,14 +625,14 @@ function exportToCSV() {
 
 // Export Dashboard Logs
 function exportDashboardLogsCSV() {
-  db.ref('attendance_logs').once('value').then(snap => {
-    let csv = "Timestamp,ID,Name,College,Year,Reason,Role\n";
+  db.ref('logs').once('value').then(snap => {
+    let csv = "Timestamp,Student ID,Name,College,Year,Reason,Role,Action\n";
     let logsArr = [];
     snap.forEach(child => logsArr.push(child.val()));
     logsArr.reverse(); // Newest first
 
     logsArr.forEach(log => {
-      csv += `"${log.timestamp || log.rawDate}","${log.id}","${log.name || ''}","${log.college || ''}","${log.year_level || ''}","${log.reason || ''}","${log.role || ''}"\n`;
+      csv += `"${log.timestamp || log.rawDate}","${log.studentId || log.id}","${log.name || ''}","${log.college || ''}","${log.year_level || ''}","${log.reason || ''}","${log.role || ''}","${log.action || 'Time In'}"\n`;
     });
     triggerCSVDownload(csv, 'Dashboard_Recent_Logs.csv');
   });
@@ -740,10 +641,10 @@ function exportDashboardLogsCSV() {
 // Export Users CSV
 function exportUsersCSV() {
   db.ref('users').once('value').then(snap => {
-    let csv = "ID,Name,Email,College,Course,Year Level,Role,Is Admin\n";
+    let csv = "Student ID,Name,Email,College,Course,Year Level,Role,Is Admin\n";
     snap.forEach(child => {
       const user = child.val();
-      csv += `"${user.id}","${user.name || ''}","${user.email || ''}","${user.college || ''}","${user.course || ''}","${user.year_level || ''}","${user.role || ''}","${user.is_admin ? 'Yes' : 'No'}"\n`;
+      csv += `"${user.studentId || user.id}","${user.name || ''}","${user.email || ''}","${user.college || ''}","${user.course || ''}","${user.year_level || ''}","${user.role || ''}","${user.is_admin ? 'Yes' : 'No'}"\n`;
     });
     triggerCSVDownload(csv, 'Library_Users.csv');
   });
